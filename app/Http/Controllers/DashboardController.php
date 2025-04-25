@@ -15,7 +15,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->hasRole('admin')) {
+        if (Auth::user()->hasAnyRole(['admin', 'moderator'])) {
             $totalStories = Story::count();
 
             $totalComments = Comment::count();
