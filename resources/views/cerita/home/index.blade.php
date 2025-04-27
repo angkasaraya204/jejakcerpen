@@ -43,6 +43,7 @@
                                 {{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                @role('user')
                                 <li>
                                     <a class="dropdown-item" href="{{ route('stories.create') }}">
                                         <i class="fas fa-plus me-2"></i> Buat Cerita
@@ -51,6 +52,7 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
+                                @endrole
                                 <li>
                                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
                                         <i class="fas fa-cog me-2"></i> Pengaturan
@@ -468,7 +470,7 @@
                 </div>
             </div>
             <div class="border-top mt-4 pt-4 text-center">
-                <p class="text-muted small mb-0">&copy; 2025 JejakCerpen.</p>
+                <p class="text-muted small mb-0">Copyright &copy; 2025 JejakCerpen | Angkasa Raya (10122184).</p>
             </div>
         </div>
     </footer>

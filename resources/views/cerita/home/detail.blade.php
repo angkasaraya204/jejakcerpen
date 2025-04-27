@@ -301,7 +301,7 @@
                 </div>
             </div>
             <div class="border-top mt-4 pt-4 text-center">
-                <p class="text-muted small mb-0">&copy; 2025 JejakCerpen.</p>
+                <p class="text-muted small mb-0">Copyright &copy; 2025 JejakCerpen | Angkasa Raya (10122184).</p>
             </div>
         </div>
     </footer>
