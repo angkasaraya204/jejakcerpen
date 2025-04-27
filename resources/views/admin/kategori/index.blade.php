@@ -34,7 +34,7 @@
                                 <td>{{ $category->stories_count }}</td>
                                 <td>
                                     <a href="{{ route('categories.edit', $category) }}" class="text-blue-600 hover:underline mr-3">Edit</a>
-                                    @if($category->id !== auth()->id())
+                                    {{-- @if($category->id !== auth()->id()) --}}
                                         <form action="{{ route('categories.destroy', $category) }}"
                                             method="POST" class="inline">
                                             @csrf
@@ -43,7 +43,7 @@
                                                 Hapus
                                             </button>
                                         </form>
-                                    @endif
+                                    {{-- @endif --}}
                                 </td>
                             </tr>
                         @endforeach

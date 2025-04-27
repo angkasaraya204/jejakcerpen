@@ -119,10 +119,8 @@
     <!-- Main Content -->
     <div class="container py-5" id="mainContent">
         <!-- Categories Section (Tabs) -->
+        <h4 class="mb-3"><i class="fas fa-tags me-2 text-primary"></i>Kategori Populer</h4>
         <div class="card mb-4 fade-in">
-            <div class="card-header bg-transparent">
-                <h5 class="mb-0"><i class="fas fa-tags me-2 text-primary"></i>Kategori Populer</h5>
-            </div>
             <div class="card-body">
                 <!-- Tabs navigation -->
                 <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
@@ -183,7 +181,7 @@
                                     <div class="card story-card fade-in mb-4">
                                         <div class="story-header">
                                             <div class="user-info">
-                                                <img src="/api/placeholder/40/40" alt="User Avatar" class="avatar">
+                                                <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
                                                 <div>
                                                     <div class="fw-bold">
                                                         @if($story->anonymous)
@@ -413,15 +411,12 @@
 
             <!-- Right Sidebar - Trending -->
             <div class="col-lg-3">
+                <h4 class="mb-3"><i class="fas fa-fire text-danger me-2"></i>Cerita Trending</h4>
                 <div class="card mb-4 fade-in">
-                    <div class="card-header bg-transparent">
-                        <h5 class="mb-0"><i class="fas fa-fire text-danger me-2"></i>Cerita Trending</h5>
-                    </div>
                     <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group">
                             @forelse($trendingStories as $index => $trendingStory)
-                                <li
-                                    class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom">
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
                                     <div>
                                         <span class="badge bg-secondary rounded-pill me-2">{{ $index + 1 }}</span>
                                         <a href="{{ route('stories.show', $trendingStory) }}"
@@ -439,37 +434,12 @@
                     </div>
                 </div>
 
+                <h4 class="mb-3"><i class="fas fa-users me-2 text-success"></i>Penulis Populer</h4>
                 <div class="card mb-4 fade-in">
-                    <div class="card-header bg-transparent">
-                        <h5 class="mb-0"><i class="fas fa-tags me-2 text-primary"></i>Kategori Populer</h5>
-                    </div>
                     <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            @forelse($popularCategories as $popularCategory)
-                                <a href="{{ route('stories.index', ['category' => $popularCategory->slug]) }}"
-                                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                    {{ $popularCategory->name }}
-                                    <span
-                                        class="badge bg-primary rounded-pill">{{ $popularCategory->stories_count }}</span>
-                                </a>
-                            @empty
-                                <div class="list-group-item">
-                                    <p class="mb-0 text-muted">Belum ada kategori populer.</p>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card mb-4 fade-in">
-                    <div class="card-header bg-transparent">
-                        <h5 class="mb-0"><i class="fas fa-users me-2 text-success"></i>Penulis Populer</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group">
                             @forelse($popularAuthors as $author)
-                                <li class="list-group-item d-flex align-items-center border-0 border-bottom py-3">
-                                    <img src="/api/placeholder/32/32" alt="User" class="rounded-circle me-3">
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
                                     <div>
                                         <h6 class="mb-0">{{ $author->name }}</h6>
                                         <small class="text-muted">{{ $author->stories_count }} cerita</small>

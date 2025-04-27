@@ -122,6 +122,31 @@ class StoryController extends Controller
         return back()->with('success', 'Cerita telah dikirim dan menunggu persetujuan.');
     }
 
+    public function edit(Story $story)
+    {
+        $categories = Category::all();
+        return view('cerita.edit', compact('story', 'categories'));
+    }
+
+    public function update(Request $request, Story $story)
+    {
+        $validated = $request->validate([
+            'title' => 'required|max:255',
+            'content' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'anonymous' => 'boolean',
+        ]);
+
+        $story->update([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'category_id' => $validated['category_id'],
+            'anonymous' => $validated['anonymous'] ?? false,
+        ]);
+
+        return back()->with('success', 'Cerita telah diperbarui.');
+    }
+
     public function moderate()
     {
         $pendingStories = Story::with(['user', 'category'])->where('status', 'pending')->latest()->paginate(10);

@@ -64,6 +64,14 @@
                                     <td>{{ $story->comments->count() }} komentar</td>
                                     <td>{{ Str::limit(strip_tags($story->content), 200) }}</td>
                                     <td>
+                                        <a href="{{ route('stories.edit', $story) }}"
+                                            class="text-blue-600 hover:underline mr-3">Ubah</a>
+                                        <form action="{{ route('stories.destroy', $story) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:underline">Hapus</button>
+                                        </form>
                                         <a href="{{ route('stories.show', $story) }}"
                                             class="text-blue-600 hover:underline mr-3">Baca selengkapnya →</a>
                                     </td>
