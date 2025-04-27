@@ -1,91 +1,180 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    @role('admin')
-                    <h3 class="text-lg font-semibold mb-4">Statistik Platform</h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-blue-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $totalStories }}</div>
-                            <div class="text-gray-600">Total Cerita</div>
+@extends('layouts.master')
+@section('title', 'Dashboard')
+@section('content')
+<div class="page-header">
+    <h3 class="page-title"> Statistik Platform </h3>
+</div>
+@role('admin')
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $totalStories }}</h3>
+                            </div>
                         </div>
-                        <div class="bg-yellow-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $pendingStories }}</div>
-                            <div class="text-gray-600">Cerita Menunggu</div>
-                        </div>
-                        <div class="bg-green-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $approvedStories }}</div>
-                            <div class="text-gray-600">Cerita Dipublikasi</div>
-                        </div>
-                        <div class="bg-red-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $rejectedStories }}</div>
-                            <div class="text-gray-600">Cerita Ditolak</div>
-                        </div>
-                        <div class="bg-purple-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $totalUsers }}</div>
-                            <div class="text-gray-600">Total Pengguna</div>
-                        </div>
-                        <div class="bg-indigo-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $totalComments }}</div>
-                            <div class="text-gray-600">Total Komentar</div>
+                        <div class="col-3">
+                            <div class="icon icon-box-success">
+                                <span class="mdi mdi-arrow-top-right icon-item"></span>
+                            </div>
                         </div>
                     </div>
+                    <h6 class="text-muted font-weight-normal">Total Cerita</h6>
+                </div>
+            </div>
+        </div>
 
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold mb-4">Aktivitas 7 Hari Terakhir</h3>
-                        <canvas id="activityChart" width="400" height="200"></canvas>
-                    </div>
-
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold mb-4">Distribusi Kategori</h3>
-                        <canvas id="categoryChart" width="400" height="200"></canvas>
-                    </div>
-                    @endrole
-
-                    @role('user')
-                    <h3 class="text-lg font-semibold mb-4">Statistik Platform</h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-blue-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $totalStories }}</div>
-                            <div class="text-gray-600">Total Cerita</div>
-                        </div>
-                        <div class="bg-indigo-100 p-4 rounded shadow">
-                            <div class="text-xl font-bold">{{ $totalComments }}</div>
-                            <div class="text-gray-600">Total Komentar</div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $pendingStories }}</h3>
+                            </div>
                         </div>
                     </div>
+                    <h6 class="text-muted font-weight-normal">Cerita Menunggu</h6>
+                </div>
+            </div>
+        </div>
 
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold mb-4">Aktivitas 7 Hari Terakhir</h3>
-                        <canvas id="activityChart" width="400" height="200"></canvas>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $approvedStories }}</h3>
+                            </div>
+                        </div>
                     </div>
-                    @endrole
+                    <h6 class="text-muted font-weight-normal">Cerita Dipublikasi</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $rejectedStories }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Cerita Ditolak</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $totalUsers }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Total Pengguna</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $totalComments }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Total Komentar</h6>
                 </div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Aktivitas 7 Hari Terakhir</h4>
+                    <canvas id="activityChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Distribusi Kategori</h4>
+                    <canvas id="categoryChart" style="height:100px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+@endrole
 
-    @push('scripts')
+@role('user')
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $totalStories }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Total Cerita</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $totalComments }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Total Komentar</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Aktivitas 7 Hari Terakhir</h4>
+                <canvas id="activityChart" style="height:250px"></canvas>
+            </div>
+        </div>
+    </div>
+@endrole
+@endsection
+
+@push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Activity Chart
             const activityCtx = document.getElementById('activityChart').getContext('2d');
             new Chart(activityCtx, {
                 type: 'line',
                 data: {
                     labels: @json($dates),
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'Cerita Baru',
                             data: @json($storyCounts),
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -138,6 +227,6 @@
                 }
             });
         });
+
     </script>
-    @endpush
-</x-app-layout>
+@endpush

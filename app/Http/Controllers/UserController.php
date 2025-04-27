@@ -11,13 +11,13 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('roles')->paginate(20);
-        return view('users.index', compact('users'));
+        return view('admin.user.index', compact('users'));
     }
 
     public function edit(User $user)
     {
         $roles = Role::all();
-        return view('users.edit', compact('user', 'roles'));
+        return view('admin.user.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, User $user)

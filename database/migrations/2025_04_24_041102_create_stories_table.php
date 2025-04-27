@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->foreignId('user_id')->nullable()->constrained();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained();
             $table->boolean('anonymous')->default(false);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

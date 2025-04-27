@@ -1,0 +1,76 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+      <a class="sidebar-brand brand-logo" href=""><img src="{{ asset('assets/images/logo.svg') }}" alt="logo" /></a>
+      <a class="sidebar-brand brand-logo-mini" href=""><img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" /></a>
+    </div>
+    <ul class="nav">
+      <li class="nav-item profile">
+        <div class="profile-desc">
+          <div class="profile-pic">
+            <div class="count-indicator">
+              <img class="img-xs rounded-circle " src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+              <span class="count bg-success"></span>
+            </div>
+            <div class="profile-name">
+              <h5 class="mb-0 font-weight-normal">{{ Auth::user()->name }}</h5>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item nav-category">
+        <span class="nav-link">Navigation</span>
+      </li>
+
+      @hasanyrole(['admin','moderator','user'])
+      <li class="nav-item menu-items {{ url()->current() == route('dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('dashboard') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+      @endhasanyrole
+
+      @role('user')
+      <li class="nav-item menu-items {{ url()->current() == route('stories.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('stories.index') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Cerita</span>
+        </a>
+      </li>
+      @endrole
+
+      @role('admin')
+      <li class="nav-item menu-items {{ url()->current() == route('users.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Pengguna</span>
+        </a>
+      </li>
+      <li class="nav-item menu-items {{ url()->current() == route('categories.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('categories.index') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Kategori</span>
+        </a>
+      </li>
+      @endrole
+
+      @hasanyrole(['admin','moderator'])
+      <li class="nav-item menu-items {{ url()->current() == route('stories.moderate') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('stories.moderate') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Moderasi</span>
+        </a>
+      </li>
+      @endhasanyrole
+    </ul>
+  </nav>

@@ -9,33 +9,81 @@ use Illuminate\Support\Facades\Auth;
 
 class StoryController extends Controller
 {
+    private function getTrendingStories($limit = 5)
+    {
+        return Story::with(['user', 'category'])
+            ->where('status', 'approved')
+            ->withCount(['votes' => function($query) {
+                $query->where('vote_type', 'like');
+            }])
+            ->withCount('comments')
+            ->orderByDesc('votes_count')
+            ->orderByDesc('comments_count')
+            ->orderByDesc('published_at')
+            ->take($limit)
+            ->get();
+    }
+
+    private function getPopularCategories($limit = 5)
+    {
+        return Category::withCount(['stories' => function($query) {
+            $query->where('status', 'approved');
+        }])
+        ->orderByDesc('stories_count')
+        ->take($limit)
+        ->get();
+    }
+
+    private function getPopularAuthors($limit = 5)
+    {
+        return \App\Models\User::withCount(['stories' => function($query) {
+            $query->where('status', 'approved');
+        }])
+        ->withCount(['votes' => function($query) {
+            $query->where('vote_type', 'like');
+        }])
+        ->having('stories_count', '>', 0)
+        ->orderByDesc('votes_count')
+        ->orderByDesc('stories_count')
+        ->take($limit)
+        ->get();
+    }
+
     public function index(Request $request)
     {
-        if (Auth::guest()) {
-            $query = Story::with(['user', 'category'])->where('status', 'approved');
+        $query = Story::with(['user', 'category'])->where('status', 'approved');
 
-            if ($request->has('category')) {
-                $query->whereHas('category', function($q) use ($request) {
-                    $q->where('slug', $request->category);
-                });
-            }
+        $stories = $query->where('user_id', Auth::id())->latest('published_at')->paginate(10);
+        $categories = Category::all();
 
-            $stories = $query->latest('published_at')->paginate(10);
-            $categories = Category::all();
-        } elseif (Auth::user()->hasRole('user')) {
-            $query = Story::with(['user', 'category'])->where('status', 'approved');
+        return view('cerita.index', compact('stories'));
+    }
 
-            if ($request->has('category')) {
-                $query->whereHas('category', function($q) use ($request) {
-                    $q->where('slug', $request->category);
-                });
-            }
+    public function home(Request $request)
+    {
+        $query = Story::with(['user', 'category'])->where('status', 'approved');
 
-            $stories = $query->where('user_id', Auth::id())->latest('published_at')->paginate(10);
-            $categories = Category::all();
+        if ($request->has('category')) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
         }
 
-        return view('stories.index', compact('stories', 'categories'));
+        $stories = $query->latest('published_at')->paginate(10);
+        $categories = Category::all();
+
+        // Get trending stories, popular categories, and popular authors
+        $trendingStories = $this->getTrendingStories();
+        $popularCategories = $this->getPopularCategories();
+        $popularAuthors = $this->getPopularAuthors();
+
+        return view('cerita.home.index', compact(
+            'stories',
+            'categories',
+            'trendingStories',
+            'popularCategories',
+            'popularAuthors'
+        ));
     }
 
     public function show(Story $story)
@@ -48,13 +96,13 @@ class StoryController extends Controller
             $query->whereNull('parent_id')->with(['user', 'replies.user']);
         }]);
 
-        return view('stories.show', compact('story'));
+        return view('cerita.home.detail', compact('story'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('stories.create', compact('categories'));
+        return view('cerita.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -77,7 +125,7 @@ class StoryController extends Controller
     public function moderate()
     {
         $pendingStories = Story::with(['user', 'category'])->where('status', 'pending')->latest()->paginate(10);
-        return view('stories.moderate', compact('pendingStories'));
+        return view('moderasi.index', compact('pendingStories'));
     }
 
     public function approve(Story $story)
