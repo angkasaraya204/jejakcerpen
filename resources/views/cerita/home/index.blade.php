@@ -307,7 +307,7 @@
                                     <div class="card story-card fade-in mb-4">
                                         <div class="story-header">
                                             <div class="user-info">
-                                                <img src="/api/placeholder/40/40" alt="User Avatar" class="avatar">
+                                                <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
                                                 <div>
                                                     <div class="fw-bold">
                                                         @if($story->anonymous)
