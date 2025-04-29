@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Vote;
 use App\Models\Story;
+use App\Models\Follow;
 use App\Models\Comment;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -118,7 +120,7 @@ class DashboardController extends Controller
         $commentMonthly = $commentMonthly ?? [];
         $voteMonthly = $voteMonthly ?? [];
 
-        return view('dashboard', compact(
+        return view('dashboard.index', compact(
             'totalStories',
             'pendingStories',
             'approvedStories',
@@ -138,5 +140,58 @@ class DashboardController extends Controller
             'commentMonthly',
             'voteMonthly'
         ));
+    }
+
+    // Fitur Follow/Teman
+    public function followers()
+    {
+        $followers = Follow::where('followed_id', Auth::id())
+            ->with('follower')
+            ->paginate(15);
+
+        return view('dashboard.followers', compact('followers'));
+    }
+
+    public function following()
+    {
+        $following = Follow::where('follower_id', Auth::id())
+            ->with('followed')
+            ->paginate(15);
+
+        return view('dashboard.following', compact('following'));
+    }
+
+    public function follow(User $user)
+    {
+        // Mencegah user mem-follow dirinya sendiri
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat mengikuti diri sendiri.');
+        }
+
+        // Cek apakah sudah follow sebelumnya
+        $existingFollow = Follow::where('follower_id', Auth::id())
+            ->where('followed_id', $user->id)
+            ->first();
+
+        if ($existingFollow) {
+            return redirect()->back()->with('info', 'Anda sudah mengikuti pengguna ini.');
+        }
+
+        // Buat follow baru
+        Follow::create([
+            'follower_id' => Auth::id(),
+            'followed_id' => $user->id
+        ]);
+
+        return redirect()->back()->with('success', 'Berhasil mengikuti pengguna.');
+    }
+
+    public function unfollow(User $user)
+    {
+        Follow::where('follower_id', Auth::id())
+            ->where('followed_id', $user->id)
+            ->delete();
+
+        return redirect()->back()->with('success', 'Berhasil berhenti mengikuti pengguna.');
     }
 }
