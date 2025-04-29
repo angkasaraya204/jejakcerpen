@@ -41,10 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/followers', [DashboardController::class, 'followers'])->name('profile.followers');
-    Route::get('/following', [DashboardController::class, 'following'])->name('profile.following');
-    Route::get('/follow/{user}', [DashboardController::class, 'follow'])->name('profile.follow');
-    Route::get('/unfollow/{user}', [DashboardController::class, 'unfollow'])->name('profile.unfollow');
+    Route::get('/followers', [DashboardController::class, 'followers'])->name('dashboard.followers');
+    Route::get('/following', [DashboardController::class, 'following'])->name('dashboard.following');
+    Route::post('/follow/{user}', [DashboardController::class, 'follow'])->name('dashboard.follow');
+    Route::post('/unfollow/{user}', [DashboardController::class, 'unfollow'])->name('dashboard.unfollow');
 
     Route::middleware(['role:admin|moderator|user'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

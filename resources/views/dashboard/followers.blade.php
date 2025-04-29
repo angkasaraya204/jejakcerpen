@@ -39,10 +39,6 @@
                                         <td>{{ $follow->follower->email }}</td>
                                         <td>{{ $follow->created_at->format('d M Y, H:i') }}</td>
                                         <td>
-                                            <a href="{{ route('user.profile', $follow->follower->id) }}" class="btn btn-sm btn-info">
-                                                <i class="mdi mdi-account-details"></i> Lihat Profil
-                                            </a>
-
                                             @if(Auth::user()->isFollowing($follow->follower))
                                                 <a href="{{ route('dashboard.unfollow', $follow->follower->id) }}" class="btn btn-sm btn-danger">
                                                     <i class="mdi mdi-account-minus"></i> Berhenti Ikuti

@@ -39,10 +39,6 @@
                                         <td>{{ $follow->followed->email }}</td>
                                         <td>{{ $follow->created_at->format('d M Y, H:i') }}</td>
                                         <td>
-                                            <a href="{{ route('user.profile', $follow->followed->id) }}" class="btn btn-sm btn-info">
-                                                <i class="mdi mdi-account-details"></i> Lihat Profil
-                                            </a>
-
                                             <a href="{{ route('dashboard.unfollow', $follow->followed->id) }}" class="btn btn-sm btn-danger">
                                                 <i class="mdi mdi-account-minus"></i> Berhenti Ikuti
                                             </a>

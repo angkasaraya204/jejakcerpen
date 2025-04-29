@@ -165,7 +165,7 @@
                         </div>
                     </div>
                     <h6 class="text-muted font-weight-normal">Mengikuti</h6>
-                    <a href="{{ route('profile.following') }}" class="btn btn-sm btn-primary mt-2">Lihat</a>
+                    <a href="{{ route('dashboard.following') }}" class="btn btn-sm btn-primary mt-2">Lihat</a>
                 </div>
             </div>
         </div>
@@ -181,7 +181,7 @@
                         </div>
                     </div>
                     <h6 class="text-muted font-weight-normal">Pengikut</h6>
-                    <a href="{{ route('profile.followers') }}" class="btn btn-sm btn-primary mt-2">Lihat</a>
+                    <a href="{{ route('dashboard.followers') }}" class="btn btn-sm btn-primary mt-2">Lihat</a>
                 </div>
             </div>
         </div>

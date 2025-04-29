@@ -173,25 +173,28 @@ class DashboardController extends Controller
             ->where('followed_id', $user->id)
             ->first();
 
-        if ($existingFollow) {
-            return redirect()->back()->with('info', 'Anda sudah mengikuti pengguna ini.');
+        if (!$existingFollow) {
+            // Buat follow baru
+            Follow::create([
+                'follower_id' => Auth::id(),
+                'followed_id' => $user->id
+            ]);
+            return redirect()->back()->with('success', 'Berhasil mengikuti pengguna.');
         }
 
-        // Buat follow baru
-        Follow::create([
-            'follower_id' => Auth::id(),
-            'followed_id' => $user->id
-        ]);
-
-        return redirect()->back()->with('success', 'Berhasil mengikuti pengguna.');
+        return redirect()->back()->with('info', 'Anda sudah mengikuti pengguna ini.');
     }
 
     public function unfollow(User $user)
     {
-        Follow::where('follower_id', Auth::id())
+        $deleted = Follow::where('follower_id', Auth::id())
             ->where('followed_id', $user->id)
             ->delete();
 
-        return redirect()->back()->with('success', 'Berhasil berhenti mengikuti pengguna.');
+        if ($deleted) {
+            return redirect()->back()->with('success', 'Berhasil berhenti mengikuti pengguna.');
+        }
+
+        return redirect()->back()->with('info', 'Anda belum mengikuti pengguna ini.');
     }
 }

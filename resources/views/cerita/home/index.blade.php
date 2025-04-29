@@ -44,14 +44,14 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 @role('user')
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('stories.create') }}">
-                                            <i class="fas fa-plus me-2"></i> Buat Cerita
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('stories.create') }}">
+                                        <i class="fas fa-plus me-2"></i> Buat Cerita
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 @endrole
                                 <li>
                                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
@@ -96,25 +96,25 @@
                 </li>
             </ul>
             @auth
-                <h5 class="mb-3 fw-bold mt-4">Akun</h5>
-                <ul class="sidebar-menu">
+            <h5 class="mb-3 fw-bold mt-4">Akun</h5>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ route('profile.edit') }}">
+                        <i class="fas fa-cog"></i>
+                        Pengaturan
+                    </a>
+                </li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
                     <li>
-                        <a href="{{ route('profile.edit') }}">
-                            <i class="fas fa-cog"></i>
-                            Pengaturan
+                        <a href="{{ route('logout') }}" class="text-danger"
+                            onclick="event.preventDefault(); this.closest('form').submit();">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Keluar
                         </a>
                     </li>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <li>
-                            <a href="{{ route('logout') }}" class="text-danger"
-                                onclick="event.preventDefault(); this.closest('form').submit();">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Keluar
-                            </a>
-                        </li>
-                    </form>
-                </ul>
+                </form>
+            </ul>
             @endauth
         </div>
     </div>
@@ -185,8 +185,7 @@
                                     <div class="card story-card fade-in mb-4">
                                         <div class="story-header">
                                             <div class="user-info">
-                                                <img src="{{ asset('assets/images/faces/face23.jpg') }}"
-                                                    alt="User Avatar" class="avatar">
+                                                <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
                                                 <div>
                                                     <div class="fw-bold">
                                                         @if($story->anonymous)
@@ -209,21 +208,33 @@
                                                     aria-expanded="false">
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
-                                                @auth
-                                                    @if(Auth::id() != Auth::user()->id)
-                                                        @if($isFollowing)
-                                                            <li><a class="dropdown-item" href="{{ route('profile.unfollow', $user->id) }}"><i class="fas fa-bookmark me-2"></i> Berhenti Mengikuti</a></li>
-                                                        @else
-                                                            <a href="{{ route('profile.follow', $user->id) }}"
-                                                                class="btn btn-primary btn-md">
-                                                                <i class="mdi mdi-account-plus"></i> Ikuti
-                                                            </a>
-                                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                                <li><a class="dropdown-item" href="{{ route('profile.follow', $user->id) }}"><i class="fas fa-bookmark me-2"></i> Ikuti</a></li>
-                                                            </ul>
-                                                        @endif
-                                                    @endif
-                                                @endauth
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    @auth
+                                                        @role('user')
+                                                            @if(Auth::id() != $story->user_id && $story->user_id)
+                                                                @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
+                                                                    <li>
+                                                                        <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
+                                                                            @csrf
+                                                                            <button type="submit" class="dropdown-item">
+                                                                                <i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">
+                                                                            @csrf
+                                                                            <button type="submit" class="dropdown-item">
+                                                                                <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                @endif
+                                                            @endif
+                                                        @endrole
+                                                    @endauth
+                                                </ul>
                                             </div>
                                         </div>
                                         <div class="story-content">
@@ -317,8 +328,7 @@
                                     <div class="card story-card fade-in mb-4">
                                         <div class="story-header">
                                             <div class="user-info">
-                                                <img src="{{ asset('assets/images/faces/face23.jpg') }}"
-                                                    alt="User Avatar" class="avatar">
+                                                <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
                                                 <div>
                                                     <div class="fw-bold">
                                                         @if($story->anonymous)
@@ -342,12 +352,31 @@
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li><a class="dropdown-item" href="#"><i
-                                                                class="fas fa-bookmark me-2"></i>
-                                                            Simpan</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i
-                                                                class="fas fa-ban me-2"></i>
-                                                            Laporkan</a></li>
+                                                    @auth
+                                                        @role('user')
+                                                            @if(Auth::id() != $story->user_id && $story->user_id)
+                                                                @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
+                                                                    <li>
+                                                                        <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
+                                                                            @csrf
+                                                                            <button type="submit" class="dropdown-item">
+                                                                                <i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">
+                                                                            @csrf
+                                                                            <button type="submit" class="dropdown-item">
+                                                                                <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                @endif
+                                                            @endif
+                                                        @endrole
+                                                    @endauth
                                                 </ul>
                                             </div>
                                         </div>

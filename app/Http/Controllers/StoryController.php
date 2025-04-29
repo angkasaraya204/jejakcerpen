@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Story;
+use App\Models\Follow;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,6 +70,20 @@ class StoryController extends Controller
             });
         }
 
+        $isFollowing = [];
+
+        // Jika user login, cek status following untuk semua penulis cerita
+        if (Auth::check()) {
+            $stories = $query->latest('published_at')->get();
+            foreach ($stories as $story) {
+                if ($story->user_id) {
+                    $isFollowing[$story->user_id] = Follow::where('follower_id', Auth::id())
+                        ->where('followed_id', $story->user_id)
+                        ->exists();
+                }
+            }
+        }
+
         $stories = $query->latest('published_at')->paginate(10);
         $categories = Category::all();
 
@@ -77,12 +92,15 @@ class StoryController extends Controller
         $popularCategories = $this->getPopularCategories();
         $popularAuthors = $this->getPopularAuthors();
 
+        $isFollowing = $isFollowing ?? false;
+
         return view('cerita.home.index', compact(
             'stories',
             'categories',
             'trendingStories',
             'popularCategories',
-            'popularAuthors'
+            'popularAuthors',
+            'isFollowing'
         ));
     }
 

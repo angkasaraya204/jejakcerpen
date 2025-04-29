@@ -1,11 +1,10 @@
 // Sidebar Toggle
-document.getElementById('sidebarToggle').addEventListener('click', function () {
+document.getElementById('sidebarToggle').addEventListener('click', function() {
     document.getElementById('sidebar').classList.toggle('active');
-    document.getElementById('sidebarOverlay').style.display = document.getElementById('sidebar')
-        .classList.contains('active') ? 'block' : 'none';
+    document.getElementById('sidebarOverlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none';
 });
 
-document.getElementById('sidebarOverlay').addEventListener('click', function () {
+document.getElementById('sidebarOverlay').addEventListener('click', function() {
     document.getElementById('sidebar').classList.remove('active');
     this.style.display = 'none';
 });
@@ -14,7 +13,7 @@ document.getElementById('sidebarOverlay').addEventListener('click', function () 
 const darkModeToggle = document.getElementById('darkModeToggle');
 const html = document.documentElement;
 
-darkModeToggle.addEventListener('click', function () {
+darkModeToggle.addEventListener('click', function() {
     this.classList.toggle('active');
 
     if (this.classList.contains('active')) {
@@ -53,7 +52,7 @@ function hideDetail() {
 }
 
 // Add animations to elements when scrolling
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const animateElements = document.querySelectorAll('.fade-in, .slide-up');
 
     function checkScroll() {

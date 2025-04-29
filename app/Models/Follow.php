@@ -13,7 +13,7 @@ class Follow extends Model
     protected $fillable = ['follower_id', 'followed_id'];
 
     /**
-     * Get the user who is following
+     * Get the user that is following.
      */
     public function follower()
     {
@@ -21,7 +21,7 @@ class Follow extends Model
     }
 
     /**
-     * Get the user being followed
+     * Get the user being followed.
      */
     public function followed()
     {
