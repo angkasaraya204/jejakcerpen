@@ -5,12 +5,12 @@
     <h3 class="page-title"> Tambah Cerita </h3>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">Cerita</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('stories.index') }}">Cerita</a></li>
             <li class="breadcrumb-item active" aria-current="page">Tambah</li>
         </ol>
     </nav>
 </div>
-<div class="grid-margin stretch-card">
+<div class="col-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form class="forms-sample" action="{{ route('stories.store') }}" method="POST">

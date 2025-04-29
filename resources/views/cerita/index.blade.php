@@ -66,8 +66,7 @@
                                     <td>
                                         <a href="{{ route('stories.edit', $story) }}"
                                             class="text-blue-600 hover:underline mr-3">Ubah</a>
-                                        <form action="{{ route('stories.destroy', $story) }}" method="POST"
-                                            class="inline">
+                                        <form action="{{ route('stories.destroy', $story) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus cerita ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:underline">Hapus</button>

@@ -50,6 +50,50 @@ class DashboardController extends Controller
                 $storyCounts[] = Story::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
                 $commentCounts[] = Comment::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
             }
+
+            // Tambahan untuk fitur Follow/Teman
+            $followingCount = Follow::where('follower_id', Auth::id())->count();
+            $followersCount = Follow::where('followed_id', Auth::id())->count();
+
+            // Data untuk profil dan aktivitas pribadi
+            $upvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
+                ->where('stories.user_id', Auth::id())
+                ->where('votes.vote_type', 'upvote')
+                ->count();
+
+            $downvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
+                ->where('stories.user_id', Auth::id())
+                ->where('votes.vote_type', 'downvote')
+                ->count();
+
+            // Data untuk chart aktivitas bulanan
+            $monthlyData = [];
+            $monthlyLabels = [];
+
+            for ($i = 5; $i >= 0; $i--) {
+                $month = Carbon::now()->subMonths($i);
+                $monthlyLabels[] = $month->format('M Y');
+
+                $monthlyData[] = [
+                    'stories' => Story::where('user_id', Auth::id())
+                        ->whereYear('created_at', $month->year)
+                        ->whereMonth('created_at', $month->month)
+                        ->count(),
+                    'comments' => Comment::where('user_id', Auth::id())
+                        ->whereYear('created_at', $month->year)
+                        ->whereMonth('created_at', $month->month)
+                        ->count(),
+                    'votes' => Vote::where('user_id', Auth::id())
+                        ->whereYear('created_at', $month->year)
+                        ->whereMonth('created_at', $month->month)
+                        ->count()
+                ];
+            }
+
+            // Mengumpulkan data untuk chart aktivitas
+            $storyMonthly = collect($monthlyData)->pluck('stories');
+            $commentMonthly = collect($monthlyData)->pluck('comments');
+            $voteMonthly = collect($monthlyData)->pluck('votes');
         }
 
         $pendingStories = Story::where('status', 'pending')->count();
@@ -64,6 +108,16 @@ class DashboardController extends Controller
             ->groupBy('categories.name')
             ->get();
 
+        // Set data default untuk user
+        $followingCount = $followingCount ?? 0;
+        $followersCount = $followersCount ?? 0;
+        $upvotesReceived = $upvotesReceived ?? 0;
+        $downvotesReceived = $downvotesReceived ?? 0;
+        $monthlyLabels = $monthlyLabels ?? [];
+        $storyMonthly = $storyMonthly ?? [];
+        $commentMonthly = $commentMonthly ?? [];
+        $voteMonthly = $voteMonthly ?? [];
+
         return view('dashboard', compact(
             'totalStories',
             'pendingStories',
@@ -74,7 +128,15 @@ class DashboardController extends Controller
             'dates',
             'storyCounts',
             'commentCounts',
-            'categoryStats'
+            'categoryStats',
+            'followingCount',
+            'followersCount',
+            'upvotesReceived',
+            'downvotesReceived',
+            'monthlyLabels',
+            'storyMonthly',
+            'commentMonthly',
+            'voteMonthly'
         ));
     }
 }

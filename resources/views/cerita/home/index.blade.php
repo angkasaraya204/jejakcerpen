@@ -95,6 +95,7 @@
                     </a>
                 </li>
             </ul>
+            @auth
             <h5 class="mb-3 fw-bold mt-4">Akun</h5>
             <ul class="sidebar-menu">
                 <li>
@@ -114,6 +115,7 @@
                     </li>
                 </form>
             </ul>
+            @endauth
         </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>

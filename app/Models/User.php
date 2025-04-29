@@ -41,4 +41,30 @@ class User extends Authenticatable
     {
         return $this->hasMany(Vote::class);
     }
+
+    /**
+     * Get users that this user follows
+     */
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get users that follow this user
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if user follows another user
+     */
+    public function isFollowing(User $user)
+    {
+        return $this->following()->where('followed_id', $user->id)->exists();
+    }
 }

@@ -178,4 +178,10 @@ class StoryController extends Controller
         $status = $story->is_sensitive ? 'ditandai sebagai sensitif' : 'ditandai sebagai tidak sensitif';
         return back()->with('success', "Cerita berhasil $status.");
     }
+
+    public function destroy(Story $story)
+    {
+        $story->delete();
+        return redirect()->route('stories.index')->with('success', 'Cerita berhasil dihapus.');
+    }
 }

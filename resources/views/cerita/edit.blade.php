@@ -5,7 +5,7 @@
     <h3 class="page-title"> Ubah Cerita </h3>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">Cerita</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('stories.index') }}">Cerita</a></li>
             <li class="breadcrumb-item active" aria-current="page">Ubah</li>
         </ol>
     </nav>
