@@ -18,7 +18,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
                 <i class="fas fa-book-open me-2 text-primary"></i>
-                CeritaKita
+                JejakCerita
             </a>
             <div class="d-flex align-items-center">
                 <div class="dark-mode-toggle me-3" id="darkModeToggle">
@@ -504,13 +504,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h5 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-primary"></i>CeritaKita</h5>
+                    <h5 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-primary"></i>JejakCerita</h5>
                     <p class="text-muted">Platform berbagi cerita terpopuler di Indonesia. Temukan inspirasi dan bagikan
                         kisahmu dengan ribuan pembaca di seluruh negeri.</p>
                 </div>
             </div>
             <div class="border-top mt-4 pt-4 text-center">
-                <p class="text-muted small mb-0">Copyright &copy; 2025 JejakCerpen | Angkasa Raya (10122184).</p>
+                <p class="text-muted small mb-0">Copyright &copy; 2025 JejakCerita | Angkasa Raya (10122184).</p>
             </div>
         </div>
     </footer>
