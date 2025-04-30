@@ -17,7 +17,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->hasAnyRole(['admin', 'moderator'])) {
+        if (Auth::user()->hasAnyRole(['admin'])) {
             $totalStories = Story::count();
 
             $totalComments = Comment::count();
@@ -44,6 +44,7 @@ class DashboardController extends Controller
             $dates = [];
             $storyCounts = [];
             $commentCounts = [];
+            $voteCounts = [];
 
             for ($i = 0; $i < 7; $i++) {
                 $date = $dateStart->copy()->addDays($i);
@@ -126,8 +127,10 @@ class DashboardController extends Controller
         $storyMonthly = $storyMonthly ?? [];
         $commentMonthly = $commentMonthly ?? [];
         $voteMonthly = $voteMonthly ?? [];
+        $voteCounts = $voteCounts ?? [];
 
-        return view('dashboard.index', compact(
+        // Menyiapkan variabel untuk compact berdasarkan role
+        $viewData = [
             'totalStories',
             'pendingStories',
             'approvedStories',
@@ -137,18 +140,26 @@ class DashboardController extends Controller
             'dates',
             'storyCounts',
             'commentCounts',
-            'voteCounts',
             'categoryStats',
-            'followingCount',
-            'followersCount',
-            'upvotesReceived',
-            'downvotesReceived',
-            'commentReceived',
-            'monthlyLabels',
-            'storyMonthly',
-            'commentMonthly',
-            'voteMonthly'
-        ));
+        ];
+
+        // Tambahkan variabel khusus user jika role-nya user
+        if (Auth::user()->hasRole('user')) {
+            $viewData = array_merge($viewData, [
+                'voteCounts',
+                'followingCount',
+                'followersCount',
+                'upvotesReceived',
+                'downvotesReceived',
+                'commentReceived',
+                'monthlyLabels',
+                'storyMonthly',
+                'commentMonthly',
+                'voteMonthly'
+            ]);
+        }
+
+        return view('dashboard.index', compact(...$viewData));
     }
 
     // Fitur Follow/Teman

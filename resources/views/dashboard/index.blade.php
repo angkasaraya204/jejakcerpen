@@ -106,7 +106,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Aktivitas 7 Hari Terakhir</h4>
-                    <canvas id="activityChart" style="height:250px"></canvas>
+                    <canvas id="activityChartAdmin" style="height:250px"></canvas>
                 </div>
             </div>
         </div>
@@ -193,7 +193,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Aktivitas 7 Hari Terakhir</h4>
-                    <canvas id="activityChart" style="height:250px"></canvas>
+                    <canvas id="activityChartUser" style="height:250px"></canvas>
                 </div>
             </div>
         </div>
@@ -251,8 +251,9 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            @role('admin')
             // Activity Chart
-            const activityCtx = document.getElementById('activityChart').getContext('2d');
+            const activityCtx = document.getElementById('activityChartAdmin').getContext('2d');
             new Chart(activityCtx, {
                 type: 'line',
                 data: {
@@ -272,14 +273,6 @@
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             tension: 0.3
-                        },
-                        {
-                            label: 'Vote',
-                            data: @json($voteCounts),
-                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 2,
-                            tension: 0.3
                         }
                     ]
                 },
@@ -292,7 +285,6 @@
                 }
             });
 
-            @role('admin')
             // Category Chart
             const categoryData = @json($categoryStats);
             const categoryLabels = categoryData.map(item => item.name);
@@ -321,35 +313,93 @@
             @endrole
 
             @role('user')
+            // Activity Chart
+            const activityCtx = document.getElementById('activityChartUser').getContext('2d');
+
+            // Pastikan dataset yang dimasukkan sesuai dengan data yang tersedia
+            const datasets = [
+                {
+                    label: 'Cerita Baru',
+                    data: @json($storyCounts),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: 'Komentar Baru',
+                    data: @json($commentCounts),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ];
+
+            // Periksa ketersediaan variabel voteCounts sebelum menambahkannya ke dataset
+            @if(isset($voteCounts) && count($voteCounts) > 0)
+            datasets.push({
+                label: 'Vote',
+                data: @json($voteCounts),
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 2,
+                tension: 0.3
+            });
+            @endif
+
+            new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($dates),
+                    datasets: datasets
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
             // Monthly Activity Chart
             const monthlyCtx = document.getElementById('monthlyActivityChart').getContext('2d');
+
+            // Persiapkan dataset untuk monthly chart
+            const monthlyDatasets = [
+                {
+                    label: 'Cerita',
+                    data: @json($storyMonthly),
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Komentar',
+                    data: @json($commentMonthly),
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ];
+
+            // Periksa ketersediaan variabel voteMonthly sebelum menambahkannya ke dataset
+            @if(isset($voteMonthly) && count($voteMonthly) > 0)
+            monthlyDatasets.push({
+                label: 'Vote',
+                data: @json($voteMonthly),
+                backgroundColor: 'rgba(255, 206, 86, 0.7)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            });
+            @endif
+
             new Chart(monthlyCtx, {
                 type: 'bar',
                 data: {
                     labels: @json($monthlyLabels),
-                    datasets: [
-                        {
-                            label: 'Cerita',
-                            data: @json($storyMonthly),
-                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Komentar',
-                            data: @json($commentMonthly),
-                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Vote',
-                            data: @json($voteMonthly),
-                            backgroundColor: 'rgba(255, 206, 86, 0.7)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 1
-                        }
-                    ]
+                    datasets: monthlyDatasets
                 },
                 options: {
                     scales: {
