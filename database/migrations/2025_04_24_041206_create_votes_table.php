@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained();
             $table->foreignId('story_id')->constrained()->onDelete('cascade');
-            $table->enum('vote_type', ['like', 'dislike']);
+            $table->enum('vote_type', ['upvote', 'downvote']);
             $table->timestamps();
 
             $table->unique(['user_id', 'story_id']);

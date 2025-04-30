@@ -212,17 +212,21 @@
                                 <span>Downvotes Diterima:</span>
                                 <span class="badge badge-danger">{{ $downvotesReceived }}</span>
                             </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Komen Diterima:</span>
+                                <span class="badge badge-primary">{{ $commentReceived }}</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="progress mb-3">
                                 <div class="progress-bar bg-success" role="progressbar"
-                                    style="width: {{ $upvotesReceived + $downvotesReceived > 0 ? ($upvotesReceived / ($upvotesReceived + $downvotesReceived) * 100) : 0 }}%"
+                                    style="width: {{ $upvotesReceived + $downvotesReceived + $commentReceived > 0 ? ($upvotesReceived / ($upvotesReceived + $downvotesReceived + $commentReceived) * 100) : 0 }}%"
                                     aria-valuenow="{{ $upvotesReceived }}" aria-valuemin="0"
-                                    aria-valuemax="{{ $upvotesReceived + $downvotesReceived }}">
-                                    {{ $upvotesReceived + $downvotesReceived > 0 ? round(($upvotesReceived / ($upvotesReceived + $downvotesReceived) * 100), 1) : 0 }}%
+                                    aria-valuemax="{{ $upvotesReceived + $downvotesReceived + $commentReceived }}">
+                                    {{ $upvotesReceived + $downvotesReceived + $commentReceived > 0 ? round(($upvotesReceived / ($upvotesReceived + $downvotesReceived + $commentReceived) * 100), 1) : 0 }}%
                                 </div>
                             </div>
-                            <small class="text-muted">Rasio Upvote/Downvote</small>
+                            <small class="text-muted">Rasio Upvote/Downvote/Komentar</small>
                         </div>
                     </div>
                 </div>
@@ -235,7 +239,7 @@
         <div class="col-md-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Pola Partisipasi Bulanan</h4>
+                    <h4 class="card-title">Pola Partisipasi Bulanan (6 bulan terakhir)</h4>
                     <canvas id="monthlyActivityChart" style="height:250px"></canvas>
                 </div>
             </div>
@@ -266,6 +270,14 @@
                             data: @json($commentCounts),
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Vote',
+                            data: @json($voteCounts),
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
                             borderWidth: 2,
                             tension: 0.3
                         }

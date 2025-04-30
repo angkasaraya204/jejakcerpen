@@ -15,7 +15,7 @@ class StoryController extends Controller
         return Story::with(['user', 'category'])
             ->where('status', 'approved')
             ->withCount(['votes' => function($query) {
-                $query->where('vote_type', 'like');
+                $query->where('vote_type', 'upvote');
             }])
             ->withCount('comments')
             ->orderByDesc('votes_count')
@@ -41,7 +41,7 @@ class StoryController extends Controller
             $query->where('status', 'approved');
         }])
         ->withCount(['votes' => function($query) {
-            $query->where('vote_type', 'like');
+            $query->where('vote_type', 'upvote');
         }])
         ->having('stories_count', '>', 0)
         ->orderByDesc('votes_count')

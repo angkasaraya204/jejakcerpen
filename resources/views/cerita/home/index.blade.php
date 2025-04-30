@@ -266,20 +266,20 @@
                                                     action="{{ route('stories.vote', $story) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
-                                                    <input type="hidden" name="vote_type" value="like">
+                                                    <input type="hidden" name="vote_type" value="upvote">
                                                     <button class="vote-btn upvote">
-                                                        <i class="fas fa-thumbs-up"></i>
-                                                        <span>{{ $story->votes()->where('vote_type', 'like')->count() }}</span>
+                                                        <i class="fas fa-arrow-up"></i>
+                                                        <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                     </button>
                                                 </form>
                                                 <form
                                                     action="{{ route('stories.vote', $story) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
-                                                    <input type="hidden" name="vote_type" value="dislike">
+                                                    <input type="hidden" name="vote_type" value="downvote">
                                                     <button class="vote-btn downvote">
-                                                        <i class="fas fa-thumbs-down"></i>
-                                                        <span>{{ $story->votes()->where('vote_type', 'dislike')->count() }}</span>
+                                                        <i class="fas fa-arrow-down"></i>
+                                                        <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                     </button>
                                                 </form>
                                             </div>
@@ -409,20 +409,20 @@
                                                     action="{{ route('stories.vote', $story) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
-                                                    <input type="hidden" name="vote_type" value="like">
+                                                    <input type="hidden" name="vote_type" value="upvote">
                                                     <button class="vote-btn upvote">
-                                                        <i class="fas fa-thumbs-up"></i>
-                                                        <span>{{ $story->votes()->where('vote_type', 'like')->count() }}</span>
+                                                        <i class="fas fa-arrow-up"></i>
+                                                        <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                     </button>
                                                 </form>
                                                 <form
                                                     action="{{ route('stories.vote', $story) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
-                                                    <input type="hidden" name="vote_type" value="dislike">
+                                                    <input type="hidden" name="vote_type" value="downvote">
                                                     <button class="vote-btn downvote">
-                                                        <i class="fas fa-thumbs-down"></i>
-                                                        <span>{{ $story->votes()->where('vote_type', 'dislike')->count() }}</span>
+                                                        <i class="fas fa-arrow-down"></i>
+                                                        <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                     </button>
                                                 </form>
                                             </div>

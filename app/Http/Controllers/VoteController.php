@@ -12,7 +12,7 @@ class VoteController extends Controller
     public function vote(Request $request, Story $story)
     {
         $validated = $request->validate([
-            'vote_type' => 'required|in:like,dislike',
+            'vote_type' => 'required|in:upvote,downvote',
         ]);
 
         $userId = Auth::check() ? Auth::id() : null;

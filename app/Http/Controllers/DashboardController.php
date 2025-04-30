@@ -51,6 +51,7 @@ class DashboardController extends Controller
 
                 $storyCounts[] = Story::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
                 $commentCounts[] = Comment::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
+                $voteCounts[] = Vote::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
             }
 
             // Tambahan untuk fitur Follow/Teman
@@ -66,6 +67,11 @@ class DashboardController extends Controller
             $downvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
                 ->where('stories.user_id', Auth::id())
                 ->where('votes.vote_type', 'downvote')
+                ->count();
+
+            $commentReceived = Comment::join('stories', 'comments.story_id', '=', 'stories.id')
+                ->where('stories.user_id', Auth::id())
+                ->where('comments.parent_id', null)
                 ->count();
 
             // Data untuk chart aktivitas bulanan
@@ -115,6 +121,7 @@ class DashboardController extends Controller
         $followersCount = $followersCount ?? 0;
         $upvotesReceived = $upvotesReceived ?? 0;
         $downvotesReceived = $downvotesReceived ?? 0;
+        $commentReceived = $commentReceived ?? 0;
         $monthlyLabels = $monthlyLabels ?? [];
         $storyMonthly = $storyMonthly ?? [];
         $commentMonthly = $commentMonthly ?? [];
@@ -130,11 +137,13 @@ class DashboardController extends Controller
             'dates',
             'storyCounts',
             'commentCounts',
+            'voteCounts',
             'categoryStats',
             'followingCount',
             'followersCount',
             'upvotesReceived',
             'downvotesReceived',
+            'commentReceived',
             'monthlyLabels',
             'storyMonthly',
             'commentMonthly',
