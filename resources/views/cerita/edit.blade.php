@@ -21,7 +21,7 @@
                     <label for="title">Judul Cerita</label>
                     <input type="text" id="title" name="title"
                         class="form-control @error('title') border-red-500 @enderror"
-                        value="{{ old('title', $story->title) }}">
+                        value="{{ old('title', $story->title) }}" placeholder="Judul Cerita" required>
 
                     @error('title')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label for="content">Isi Cerita</label>
                     <textarea id="content" name="content"
-                        class="form-control @error('content') border-red-500 @enderror">{{ old('content', $story->content) }}</textarea>
+                        class="form-control @error('content') border-red-500 @enderror">{{ old('content', $story->content) }} Masukkan Isi Cerita </textarea>
 
                     @error('content')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>

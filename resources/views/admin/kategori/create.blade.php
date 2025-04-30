@@ -20,7 +20,7 @@
                 <div class="form-group">
                     <label for="name">Nama Kategori</label>
                     <input type="text" id="name" name="name"
-                        class="form-control @error('name') border-red-500 @enderror" value="{{ old('name') }}">
+                        class="form-control @error('name') border-red-500 @enderror" value="{{ old('name') }}" placeholder="Nama Kategori">
 
                     @error('name')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
@@ -29,7 +29,7 @@
                 <div class="form-group">
                     <label for="description">Deskripsi:</label>
                     <textarea id="description" name="description"
-                        class="form-control @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                        class="form-control @error('description') border-red-500 @enderror">{{ old('description') }} Masukkan deskripsi kategori disini</textarea>
 
                     @error('description')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>

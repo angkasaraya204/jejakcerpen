@@ -21,7 +21,7 @@
                 <div class="form-group">
                     <label for="name">Nama</label>
                     <input type="text" id="name" name="name"
-                        class="form-control @error('name') border-red-500 @enderror" value="{{ old('name', $user->name) }}">
+                        class="form-control @error('name') border-red-500 @enderror" value="{{ old('name', $user->name) }}" placeholder="Nama Pengguna">
 
                     @error('name')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
@@ -30,7 +30,7 @@
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email"
-                        class="form-control @error('email') border-red-500 @enderror" value="{{ old('email', $user->email) }}">
+                        class="form-control @error('email') border-red-500 @enderror" value="{{ old('email', $user->email) }}" placeholder="Email Pengguna">
 
                     @error('email')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
