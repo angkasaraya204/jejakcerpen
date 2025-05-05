@@ -86,4 +86,14 @@ class CommentController extends Controller
 
         return redirect()->route('stories.show', $story_id)->with('success', 'Komentar berhasil dihapus.');
     }
+
+    public function markSensitive(Comment $comment)
+    {
+        $comment->is_sensitive = !$comment->is_sensitive;
+        $comment->save();
+
+        $status = $comment->is_sensitive ? 'ditandai sebagai sensitif' : 'ditandai sebagai tidak sensitif';
+        return back()->with('success', "Cerita berhasil $status.");
+    }
+
 }

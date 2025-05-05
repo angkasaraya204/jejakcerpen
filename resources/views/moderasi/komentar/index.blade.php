@@ -61,6 +61,9 @@
                                             Baca selengkapnya →
                                         </a>
                                         @endhasanyrole
+                                        @role('moderator')
+                                        <a href="{{ route('stories.sensitive', $story) }}" class="btn btn-warning mr-3">Tandai Sensitif</a>
+                                        @endrole
                                     </td>
                                 </tr>
                             @endforeach

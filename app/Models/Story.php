@@ -43,13 +43,8 @@ class Story extends Model
         return $this->hasMany(Vote::class);
     }
 
-    public function scopeApproved($query)
+    public function reports()
     {
-        return $query->where('status', 'approved');
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
+        return $this->morphMany(Report::class, 'reportable');
     }
 }

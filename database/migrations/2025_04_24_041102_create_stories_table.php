@@ -15,7 +15,6 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained();
             $table->boolean('anonymous')->default(false);
-            $table->boolean('is_sensitive')->default(false);
             $table->timestamps();
         });
     }

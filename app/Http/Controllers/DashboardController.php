@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vote;
 use App\Models\Story;
 use App\Models\Follow;
+use App\Models\Report;
 use App\Models\Comment;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->hasAnyRole(['admin','moderator'])) {
+        if (Auth::user()->hasRole('admin')) {
             $totalStories = Story::count();
 
             $totalComments = Comment::count();
@@ -103,6 +104,12 @@ class DashboardController extends Controller
             $storyMonthly = collect($monthlyData)->pluck('stories');
             $commentMonthly = collect($monthlyData)->pluck('comments');
             $voteMonthly = collect($monthlyData)->pluck('votes');
+        } elseif (Auth::user()->hasRole('moderator')) {
+            $pendingReports = Report::where('status', 'pending')->count();
+            $reportsPerDay  = Report::selectRaw('DATE(created_at) as date, count(*) as total')->groupBy('date')->orderBy('date')->get();
+
+            // Opsi 2: hitung spam comments via reports
+            $spamComments = Report::where('reportable_type', Comment::class)->where('status', 'pending')->count();
         }
 
         $totalUsers = User::count();
@@ -127,19 +134,16 @@ class DashboardController extends Controller
         $voteCounts = $voteCounts ?? [];
 
         // Menyiapkan variabel untuk compact berdasarkan role
-        $viewData = [
-            'totalStories',
-            'totalUsers',
-            'totalComments',
-            'dates',
-            'storyCounts',
-            'commentCounts',
-            'categoryStats',
-        ];
+        $viewData = [];
 
         // Tambahkan variabel khusus user jika role-nya user
         if (Auth::user()->hasRole('user')) {
             $viewData = array_merge($viewData, [
+                'totalStories',
+                'totalComments',
+                'storyCounts',
+                'commentCounts',
+                'dates',
                 'voteCounts',
                 'followingCount',
                 'followersCount',
@@ -150,6 +154,29 @@ class DashboardController extends Controller
                 'storyMonthly',
                 'commentMonthly',
                 'voteMonthly'
+            ]);
+        }
+
+        // Tambahkan variabel khusus moderator jika role-nya moderator
+        if (Auth::user()->hasRole('moderator')) {
+            $viewData = array_merge($viewData, [
+                'pendingReports',
+                'reportsPerDay',
+                'spamComments'
+            ]);
+        }
+
+        // Tambahkan variabel khusus admin jika role-nya admin
+        if (Auth::user()->hasRole('admin')) {
+            $viewData = array_merge($viewData, [
+                'storyCounts',
+                'commentCounts',
+                'totalStories',
+                'totalComments',
+                'totalUsers',
+                'categoryStats',
+                'dates',
+                'commentCounts',
             ]);
         }
 

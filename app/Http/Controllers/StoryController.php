@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Story;
 use App\Models\Follow;
+use App\Models\Report;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,24 +47,27 @@ class StoryController extends Controller
         ->get();
     }
 
-    public function index(Request $request)
-    {
+        public function index(Request $request, Report $report)
+        {
+            if (Auth::user()->hasRole('user')) {
+                $query = Story::with(['user', 'category']);
 
+                $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);
+                $categories = Category::all();
+                return view('moderasi.cerita.index', compact('stories'));
+            } elseif (Auth::user()->hasRole('admin')) {
+                $query = Story::with(['user', 'category']);
 
-        if (Auth::user()->hasRole('user')) {
-            $query = Story::with(['user', 'category']);
+                $stories = $query->latest('created_at')->paginate(10);
+                $categories = Category::all();
 
-            $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);
-            $categories = Category::all();
-        } elseif (Auth::user()->hasRole(['moderator', 'admin'])) {
-            $query = Story::with(['user', 'category']);
-
-            $stories = $query->latest('created_at')->paginate(10);
-            $categories = Category::all();
+                return view('moderasi.cerita.index', compact('stories'));
+            } elseif (Auth::user()->hasRole('moderator')) {
+                // Eager load the polymorphic relation
+                $reports = Report::with('reportable')->orderBy('created_at', 'desc')->paginate(10);
+                return view('moderasi.cerita.index', compact('reports'));
+            }
         }
-
-        return view('moderasi.cerita.index', compact('stories'));
-    }
 
     public function home(Request $request)
     {
@@ -137,7 +141,7 @@ class StoryController extends Controller
         $story->user_id = Auth::id();
         $story->save();
 
-        return back()->route('stories.index')->with('success', 'Cerita telah dikirim dan menunggu persetujuan.');
+        return redirect()->route('stories.index')->with('success', 'Cerita telah dikirim.');
     }
 
     public function edit(Story $story)
@@ -162,16 +166,7 @@ class StoryController extends Controller
             'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
-        return back()->route('stories.index')->with('success', 'Cerita telah diperbarui.');
-    }
-
-    public function markSensitive(Story $story)
-    {
-        $story->is_sensitive = !$story->is_sensitive;
-        $story->save();
-
-        $status = $story->is_sensitive ? 'ditandai sebagai sensitif' : 'ditandai sebagai tidak sensitif';
-        return back()->with('success', "Cerita berhasil $status.");
+        return redirect()->route('stories.index')->with('success', 'Cerita telah diperbarui.');
     }
 
     public function destroy(Story $story)

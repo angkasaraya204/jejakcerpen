@@ -1,17 +1,19 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\StoryController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\VoteController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoteController;
+use App\Http\Controllers\StoryController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 
 // Public routes (with or without authentication)
 Route::get('/', [StoryController::class, 'home'])->name('home');
 Route::get('/stories/{story}', [StoryController::class, 'show'])->name('stories.show');
+Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -61,6 +63,7 @@ Route::middleware('auth')->group(function () {
 
     // Admin & Moderator routes
     Route::middleware(['role:moderator'])->group(function () {
+        Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
         Route::patch('/stories/{story}/sensitive', [StoryController::class, 'markSensitive'])->name('stories.sensitive');
     });
 

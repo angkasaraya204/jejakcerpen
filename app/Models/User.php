@@ -42,6 +42,11 @@ class User extends Authenticatable
         return $this->hasMany(Vote::class);
     }
 
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
     /**
      * Users that are following this user
      */

@@ -21,7 +21,7 @@
         <span class="nav-link">Navigation</span>
       </li>
 
-      @hasanyrole(['admin','moderator','user'])
+      @hasanyrole(['admin','user'])
       <li class="nav-item menu-items {{ url()->current() == route('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('dashboard') }}">
           <span class="menu-icon">
@@ -47,6 +47,25 @@
       </li>
       @endhasanyrole
 
+      @role('moderator')
+      <li class="nav-item menu-items {{ url()->current() == route('dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('dashboard') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item menu-items {{ url()->current() == route('stories.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('stories.index') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Laporan</span>
+        </a>
+      </li>
+      @endrole
+
       @role('admin')
       <li class="nav-item menu-items {{ url()->current() == route('users.index') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('users.index') }}">
@@ -62,17 +81,6 @@
             <i class="mdi mdi-speedometer"></i>
           </span>
           <span class="menu-title">Kategori</span>
-        </a>
-      </li>
-      @endrole
-
-      @role('moderator')
-      <li class="nav-item menu-items {{ url()->current() == route('users.index') ? 'active' : '' }}">
-        <a class="nav-link" href="">
-          <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
-          </span>
-          <span class="menu-title">Laporan Cerita</span>
         </a>
       </li>
       @endrole

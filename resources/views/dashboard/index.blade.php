@@ -196,6 +196,51 @@
         </div>
     </div>
 @endrole
+
+@role('moderator')
+  <div class="row">
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $pendingReports }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Total Laporan Pending</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $spamComments }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Total Komentar Spam</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+  {{-- Grafik Laporan Harian --}}
+  <div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Grafik Laporan Harian</h4>
+                <canvas id="reportsChart" style="height:250px"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+@endrole
 @endsection
 
 @push('scripts')
@@ -359,6 +404,29 @@
                     }
                 }
             });
+            @endrole
+
+            @role('moderator')
+                const ctx = document.getElementById('reportsChart').getContext('2d');
+                const reportsData = @json($reportsPerDay);
+                new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: reportsData.map(r => r.date),
+                    datasets: [{
+                    label: 'Laporan per Hari',
+                    data: reportsData.map(r => r.total),
+                    fill: false,
+                    borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    x: { display: true },
+                    y: { beginAtZero: true }
+                    }
+                }
+                });
             @endrole
         });
     </script>

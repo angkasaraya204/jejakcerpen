@@ -184,6 +184,7 @@
                                 @foreach($stories as $story)
                                     <div class="card story-card fade-in mb-4">
                                         <div class="story-header">
+
                                             <div class="user-info">
                                                 <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
                                                 <div>
@@ -198,6 +199,19 @@
                                                         {{ $story->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
+                                            @if(Auth::id() != $story->user_id)
+                                                {{-- Alert Section --}}
+                                                @if(session('success'))
+                                                <div class="alert alert-success">
+                                                    {{ session('success') }}
+                                                </div>
+                                                @endif
+                                                @if(session('error'))
+                                                <div class="alert alert-danger">
+                                                    {{ session('error') }}
+                                                </div>
+                                                @endif
+                                            @endif
                                             <div class="dropdown">
                                                 @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                     <span class="badge bg-danger rounded-pill me-2">
@@ -223,20 +237,23 @@
                                                     @endguest
                                                     @auth
                                                         @role('user')
-                                                            <li>
-                                                                <button @disabled(true) class="dropdown-item">
-                                                                    <i class="fas fa-user-plus me-2"></i> Ikuti
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <form action="" method="POST">
-                                                                    <button type="submit" class="dropdown-item">
+                                                            @if(Auth::id() === $story->user_id)
+                                                                <li>
+                                                                    <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="dropdown-item text-danger">
+                                                                            <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                            @if(Auth::id() != $story->user_id && $story->user_id)
+                                                                <li>
+                                                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
                                                                         <i class="fas fa-exclamation-circle me-2"></i> Laporkan
                                                                     </button>
-                                                                </form>
-                                                            </li>
-                                                            @if(Auth::id() != $story->user_id && $story->user_id)
-
+                                                                </li>
                                                                 @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
                                                                     <li>
                                                                         <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
@@ -257,6 +274,17 @@
                                                                     </li>
                                                                 @endif
                                                             @endif
+                                                        @endrole
+                                                        @role('moderator')
+                                                            <li>
+                                                                <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                         @endrole
                                                     @endauth
                                                 </ul>
@@ -315,6 +343,53 @@
                                                     Komentar
                                                 </span>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
+                                                @csrf
+                                                <input type="hidden" name="reportable_id" value="{{ $story->id }}">
+                                                <input type="hidden" name="reportable_type" value="story">
+
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
+                                                    <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
+                                                    <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa">
+                                                    <label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
+                                                    <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
+                                                </div>
+                                                <!-- Jika mau teks bebas saat 'Lainnya', bisa ditambahkan textarea yang muncul via JS -->
+                                                <textarea
+                                                    name="other_reason"
+                                                    id="otherReasonText-{{ $story->id }}"
+                                                    class="form-control mt-2 d-none"
+                                                    placeholder="Jelaskan alasanmu..."
+                                                ></textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                                            </div>
+                                        </form>
                                         </div>
                                     </div>
                                 @endforeach
@@ -365,6 +440,19 @@
                                                         {{ $story->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
+                                            @if(Auth::id() != $story->user_id)
+                                                {{-- Alert Section --}}
+                                                @if(session('success'))
+                                                <div class="alert alert-success">
+                                                    {{ session('success') }}
+                                                </div>
+                                                @endif
+                                                @if(session('error'))
+                                                <div class="alert alert-danger">
+                                                    {{ session('error') }}
+                                                </div>
+                                                @endif
+                                            @endif
                                             <div class="dropdown">
                                                 @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                     <span class="badge bg-danger rounded-pill me-2">
@@ -376,21 +464,37 @@
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end">
+                                                    @guest
+                                                    <li>
+                                                        <button @disabled(true) class="dropdown-item">
+                                                            <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button @disabled(true) class="dropdown-item">
+                                                            <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                        </button>
+                                                    </li>
+                                                    @endguest
                                                     @auth
                                                         @role('user')
-                                                            <li>
-                                                                <button @disabled(true) class="dropdown-item">
-                                                                    <i class="fas fa-user-plus me-2"></i> Ikuti
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <form action="" method="POST">
-                                                                    <button type="submit" class="dropdown-item">
+                                                            @if(Auth::id() === $story->user_id)
+                                                                <li>
+                                                                    <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="dropdown-item text-danger">
+                                                                            <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                            @if(Auth::id() != $story->user_id && $story->user_id)
+                                                                <li>
+                                                                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
                                                                         <i class="fas fa-exclamation-circle me-2"></i> Laporkan
                                                                     </button>
-                                                                </form>
-                                                            </li>
-                                                            @if(Auth::id() != $story->user_id && $story->user_id)
+                                                                </li>
                                                                 @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
                                                                     <li>
                                                                         <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
@@ -411,6 +515,17 @@
                                                                     </li>
                                                                 @endif
                                                             @endif
+                                                        @endrole
+                                                        @role('moderator')
+                                                            <li>
+                                                                <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                         @endrole
                                                     @endauth
                                                 </ul>
@@ -471,10 +586,54 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- Move this modal inside the loop to ensure $story is defined -->
+                                    <!-- Report Modal for each story -->
+                                    <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
+                                                @csrf
+                                                <input type="hidden" name="story_id" value="{{ $story->id }}">
+
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
+                                                    <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
+                                                    <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa">
+                                                    <label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
+                                                    <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
+                                                </div>
+                                                <textarea
+                                                    name="other_reason"
+                                                    id="otherReasonText-{{ $story->id }}"
+                                                    class="form-control mt-2 d-none"
+                                                    placeholder="Jelaskan alasanmu..."
+                                                ></textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
                                 @empty
                                     <div class="alert alert-info">
-                                        <p class="mb-0">Belum ada cerita untuk kategori {{ $popularCategory->name }}.
-                                        </p>
+                                        <p class="mb-0">Belum ada cerita untuk kategori {{ $popularCategory->name }}.</p>
                                     </div>
                                 @endforelse
 

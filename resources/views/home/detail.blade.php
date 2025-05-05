@@ -129,12 +129,6 @@
                 </nav>
 
                 <div class="story-detail slide-up">
-                    @if($story->is_sensitive)
-                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                            <p class="font-bold">Konten Sensitif</p>
-                            <p>Cerita ini mengandung konten yang mungkin tidak sesuai untuk semua pembaca.</p>
-                        </div>
-                    @endif
                     <div class="story-detail-header">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge-category">{{ $story->category->name }}</span>
@@ -197,7 +191,6 @@
 
                         <!-- Comments List -->
                         <div class="comment-list">
-                            <!-- Comment 1 -->
                             @forelse($story->comments->where('parent_id', null) as $comment)
                             <div class="card mb-3">
                                 <div class="card-body comment">
@@ -209,29 +202,38 @@
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
-                                            @hasanyrole(['user','moderator'])
-                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2">
-                                                @csrf
-                                                @method('DELETE')
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li><a class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')"><i class="fas fa-trash me-2"></i> Hapus</a>
-                                                    </li>
-                                                </ul>
-                                            </form>
-                                            @endhasanyrole
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                @auth
+                                                    @hasanyrole(['moderator', 'user'])
+                                                        @if(Auth::id() === $comment->user_id)
+                                                            <li>
+                                                                <button type="button" class="dropdown-item report-button" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}">
+                                                                    <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                </button>
+                                                            </li>
+                                                        @endif
+                                                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <li><a class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')"><i class="fas fa-trash me-2"></i> Hapus</a>
+                                                            </li>
+                                                        </form>
+                                                    @endhasanyrole
+                                                @endauth
+                                            </ul>
                                         </div>
                                     </div>
                                     <div class="comment-body">
                                         <p>{{ $comment->content }}</p>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <button class="btn btn-sm btn-light" onclick="toggleReplyForm('reply-form-1')">
+                                        <button class="btn btn-sm btn-light" onclick="toggleReplyForm('reply-form-{{ $comment->id }}')">
                                             <i class="fas fa-reply me-1"></i> Balas
                                         </button>
                                     </div>
 
                                     <!-- Reply Form (Hidden by Default) -->
-                                    <div id="reply-form-1" class="reply-form mt-3" style="display: none;">
+                                    <div id="reply-form-{{ $comment->id }}" class="reply-form mt-3" style="display: none;">
                                         <form action="{{ route('comments.store', $story) }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
@@ -241,8 +243,8 @@
                                                 <button class="btn btn-primary" type="submit">Balas</button>
                                             </div>
                                             <div class="form-check">
-                                                <input type="checkbox" name="anonymous" class="form-check-input" id="anonymousReply1">
-                                                <label class="form-check-label" for="anonymousReply1">Balas sebagai
+                                                <input type="checkbox" name="anonymous" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
+                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai
                                                     anonim</label>
                                             </div>
                                         </form>
@@ -260,16 +262,25 @@
                                                     data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
-                                                @hasanyrole(['user','moderator'])
-                                                <form action="{{ route('comments.destroy', $reply) }}" method="POST" class="inline ml-2">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')"><i class="fas fa-trash me-2"></i> Hapus</a>
-                                                        </li>
-                                                    </ul>
-                                                </form>
-                                                @endhasanyrole
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    @auth
+                                                        @hasanyrole(['moderator', 'user'])
+                                                            @if(Auth::id() === $comment->user_id)
+                                                                <li>
+                                                                    <button type="button" class="dropdown-item report-button" data-bs-toggle="modal" data-bs-target="#reportReplyModal-{{ $reply->id }}">
+                                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                    </button>
+                                                                </li>
+                                                            @endif
+                                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <li><a class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')"><i class="fas fa-trash me-2"></i> Hapus</a>
+                                                                </li>
+                                                            </form>
+                                                        @endhasanyrole
+                                                    @endauth
+                                                </ul>
                                             </div>
                                         </div>
                                         <div class="comment-body mb-4">
@@ -290,6 +301,112 @@
         </div>
     </div>
 
+    <!-- Report Comment Modal -->
+    @foreach($story->comments->where('parent_id', null) as $comment)
+    <div class="modal fade" id="reportCommentModal-{{ $comment->id }}" tabindex="-1" aria-labelledby="reportCommentModalLabel-{{ $comment->id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('reports.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
+                    <input type="hidden" name="reportable_type" value="comment">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reportCommentModalLabel-{{ $comment->id }}">Laporkan Komentar</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" id="reasonSpamComment-{{ $comment->id }}" value="Spam" checked>
+                            <label class="form-check-label" for="reasonSpamComment-{{ $comment->id }}">Spam</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" id="reasonHarassmentComment-{{ $comment->id }}" value="Pelecehan">
+                            <label class="form-check-label" for="reasonHarassmentComment-{{ $comment->id }}">Pelecehan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" id="reasonHateSpeechComment-{{ $comment->id }}" value="Ujaran Kebencian">
+                            <label class="form-check-label" for="reasonHateSpeechComment-{{ $comment->id }}">Ujaran Kebencian</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" id="reasonMisinfoComment-{{ $comment->id }}" value="Informasi Palsu">
+                            <label class="form-check-label" for="reasonMisinfoComment-{{ $comment->id }}">Informasi Palsu</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" id="reasonViolenceComment-{{ $comment->id }}" value="Kekerasan">
+                            <label class="form-check-label" for="reasonViolenceComment-{{ $comment->id }}">Kekerasan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" id="reasonOtherComment-{{ $comment->id }}" value="Lainnya">
+                            <label class="form-check-label" for="reasonOtherComment-{{ $comment->id }}">Lainnya</label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
+    <!-- Reply Report Modals -->
+    @foreach($story->comments as $comment)
+        @foreach($comment->replies ?? [] as $reply)
+        <div class="modal fade" id="reportReplyModal-{{ $reply->id }}" tabindex="-1" aria-labelledby="reportReplyModalLabel-{{ $reply->id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('reports.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="reportable_id" value="{{ $reply->id }}">
+                        <input type="hidden" name="reportable_type" value="comment">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reportReplyModalLabel-{{ $reply->id }}">Laporkan Balasan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" id="reasonSpamReply-{{ $reply->id }}" value="Spam" checked>
+                                <label class="form-check-label" for="reasonSpamReply-{{ $reply->id }}">Spam</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" id="reasonHarassmentReply-{{ $reply->id }}" value="Pelecehan">
+                                <label class="form-check-label" for="reasonHarassmentReply-{{ $reply->id }}">Pelecehan</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" id="reasonHateSpeechReply-{{ $reply->id }}" value="Ujaran Kebencian">
+                                <label class="form-check-label" for="reasonHateSpeechReply-{{ $reply->id }}">Ujaran Kebencian</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" id="reasonMisinfoReply-{{ $reply->id }}" value="Informasi Palsu">
+                                <label class="form-check-label" for="reasonMisinfoReply-{{ $reply->id }}">Informasi Palsu</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" id="reasonViolenceReply-{{ $reply->id }}" value="Kekerasan">
+                                <label class="form-check-label" for="reasonViolenceReply-{{ $reply->id }}">Kekerasan</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" id="reasonOtherReply-{{ $reply->id }}" value="Lainnya">
+                                <label class="form-check-label" for="reasonOtherReply-{{ $reply->id }}">Lainnya</label>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    @endforeach
+
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -309,6 +426,64 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store the element that had focus before opening the modal
+            let previouslyFocusedElement;
+
+            // All modals on the page
+            const modals = document.querySelectorAll('.modal');
+
+            modals.forEach(modal => {
+                // When modal is about to be shown
+                modal.addEventListener('show.bs.modal', function() {
+                    // Store the element that currently has focus
+                    previouslyFocusedElement = document.activeElement;
+                });
+
+                // When modal is hidden
+                modal.addEventListener('hidden.bs.modal', function() {
+                    // Return focus to the element that had focus before the modal was opened
+                    if (previouslyFocusedElement) {
+                        previouslyFocusedElement.focus();
+                    }
+                });
+
+                // Handle keyboard focus loop within the modal
+                modal.addEventListener('keydown', function(event) {
+                    if (event.key === 'Tab') {
+                        // Get all focusable elements in the modal
+                        const focusableElements = modal.querySelectorAll(
+                            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                        );
+
+                        const firstElement = focusableElements[0];
+                        const lastElement = focusableElements[focusableElements.length - 1];
+
+                        // If shift key is pressed and focus is on first element, move to last element
+                        if (event.shiftKey && document.activeElement === firstElement) {
+                            event.preventDefault();
+                            lastElement.focus();
+                        }
+                        // If focus is on last element, move to first element
+                        else if (!event.shiftKey && document.activeElement === lastElement) {
+                            event.preventDefault();
+                            firstElement.focus();
+                        }
+                    }
+
+                    // Close modal on Escape key
+                    if (event.key === 'Escape') {
+                        const bsModal = bootstrap.Modal.getInstance(modal);
+                        if (bsModal) {
+                            bsModal.hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
