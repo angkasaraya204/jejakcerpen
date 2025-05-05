@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 29, 2025 at 05:39 PM
+-- Generation Time: May 05, 2025 at 04:16 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.2.1
 
@@ -65,12 +65,12 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'Romance', 'romance', 'Cerita dengan tema percintaan dan romansa', '2025-04-26 07:56:12', '2025-04-26 07:56:12'),
-(2, 'Horrors', 'horrors', 'Cerita dengan tema seram dan menakutkan', '2025-04-26 07:56:12', '2025-04-26 08:13:23'),
-(3, 'Comedy', 'comedy', 'Cerita dengan unsur humor dan komedi', '2025-04-26 07:56:12', '2025-04-26 07:56:12'),
-(4, 'Drama', 'drama', 'Cerita dengan konflik kehidupan sehari-hari', '2025-04-26 07:56:12', '2025-04-26 07:56:12'),
-(5, 'Fantasi', 'fantasi', 'Cerita dengan elemen fantasi dan imajinasi', '2025-04-26 07:56:12', '2025-04-26 07:56:12'),
-(6, 'Inspiratif', 'inspiratif', 'Cerita yang memberikan inspirasi dan motivasi', '2025-04-26 07:56:12', '2025-04-26 07:56:12');
+(1, 'Romantis', 'romantis', 'Cerita dengan tema percintaan dan romansa', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(2, 'Horor', 'horor', 'Cerita dengan tema seram dan menakutkan', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(3, 'Komedi', 'komedi', 'Cerita dengan unsur humor dan komedi', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(4, 'Drama', 'drama', 'Cerita dengan konflik kehidupan sehari-hari', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(5, 'Fantasi', 'fantasi', 'Cerita dengan elemen fantasi dan imajinasi', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(6, 'Inspiratif', 'inspiratif', 'Cerita yang memberikan inspirasi dan motivasi', '2025-05-05 07:09:30', '2025-05-05 07:09:30');
 
 -- --------------------------------------------------------
 
@@ -88,14 +88,6 @@ CREATE TABLE `comments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `comments`
---
-
-INSERT INTO `comments` (`id`, `content`, `user_id`, `story_id`, `parent_id`, `anonymous`, `created_at`, `updated_at`) VALUES
-(1, 'sfsfsdf', 3, 2, NULL, 0, '2025-04-26 22:29:23', '2025-04-26 22:29:23'),
-(2, 'efsdfsdfsdfsdf', 3, 2, 1, 0, '2025-04-26 22:29:50', '2025-04-26 22:29:50');
 
 -- --------------------------------------------------------
 
@@ -187,7 +179,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (6, '2025_04_24_041102_create_stories_table', 1),
 (7, '2025_04_24_041144_create_comments_table', 1),
 (8, '2025_04_24_041206_create_votes_table', 1),
-(9, '2025_04_29_165445_create_follows_table', 2);
+(9, '2025_04_29_165445_create_follows_table', 1),
+(10, '2025_05_05_101619_create_reports_table', 1);
 
 -- --------------------------------------------------------
 
@@ -220,7 +213,9 @@ CREATE TABLE `model_has_roles` (
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\User', 1),
 (2, 'App\\Models\\User', 2),
-(3, 'App\\Models\\User', 3);
+(3, 'App\\Models\\User', 3),
+(3, 'App\\Models\\User', 4),
+(3, 'App\\Models\\User', 5);
 
 -- --------------------------------------------------------
 
@@ -253,22 +248,45 @@ CREATE TABLE `permissions` (
 --
 
 INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'view stories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(2, 'create stories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(3, 'edit stories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(4, 'delete stories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(5, 'approve stories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(6, 'reject stories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(7, 'mark sensitive', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(8, 'create comments', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(9, 'edit comments', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(10, 'delete comments', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(11, 'view users', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(12, 'edit users', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(13, 'delete users', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(14, 'access dashboard', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(15, 'view statistics', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(16, 'manage categories', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11');
+(1, 'view stories', 'web', '2025-05-05 07:09:29', '2025-05-05 07:09:29'),
+(2, 'create stories', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(3, 'edit stories', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(4, 'delete stories', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(5, 'mark sensitive', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(6, 'create comments', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(7, 'edit comments', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(8, 'delete comments', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(9, 'view users', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(10, 'edit users', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(11, 'delete users', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(12, 'access dashboard', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(13, 'view statistics', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(14, 'manage categories', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reports`
+--
+
+CREATE TABLE `reports` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `reportable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reportable_id` bigint UNSIGNED NOT NULL,
+  `reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('pending','valid','tidak-valid') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reports`
+--
+
+INSERT INTO `reports` (`id`, `user_id`, `reportable_type`, `reportable_id`, `reason`, `status`, `created_at`, `updated_at`) VALUES
+(8, 3, 'App\\Models\\Story', 4, 'Spam', 'pending', '2025-05-05 08:55:44', '2025-05-05 08:55:44'),
+(9, 4, 'App\\Models\\Story', 4, 'Spam', 'pending', '2025-05-05 09:06:46', '2025-05-05 09:06:46');
 
 -- --------------------------------------------------------
 
@@ -289,9 +307,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(2, 'moderator', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11'),
-(3, 'user', 'web', '2025-04-26 07:56:11', '2025-04-26 07:56:11');
+(1, 'admin', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(2, 'moderator', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(3, 'user', 'web', '2025-05-05 07:09:30', '2025-05-05 07:09:30');
 
 -- --------------------------------------------------------
 
@@ -309,27 +327,32 @@ CREATE TABLE `role_has_permissions` (
 --
 
 INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
-(5, 1),
-(6, 1),
+(1, 1),
+(3, 1),
+(4, 1),
+(7, 1),
+(8, 1),
+(9, 1),
+(10, 1),
 (11, 1),
 (12, 1),
 (13, 1),
 (14, 1),
-(15, 1),
-(16, 1),
 (1, 2),
-(7, 2),
-(10, 2),
-(14, 2),
+(4, 2),
+(5, 2),
+(8, 2),
+(12, 2),
+(13, 2),
 (1, 3),
 (2, 3),
 (3, 3),
 (4, 3),
+(6, 3),
+(7, 3),
 (8, 3),
-(9, 3),
-(10, 3),
-(14, 3),
-(15, 3);
+(12, 3),
+(13, 3);
 
 -- --------------------------------------------------------
 
@@ -351,7 +374,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('QQh3Wp7miq4WPFdWVLJkyraByqZwSej3ul71Td2L', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieXVCb1ZRV1hmazljakdhME5zbFJ1MWszalZydmRlVWc2aEtFaTF6eSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1745948155);
+('uvltvkWDEWsHue1gF4MFpA00qHkgzOnedNwkySUB', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQ1BVRmxid3ZUOG14ckk3eGhBaUZEU2dqNVhnZXdlMlFkTnRhNjZrTiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjQ7fQ==', 1746461761);
 
 -- --------------------------------------------------------
 
@@ -366,9 +389,6 @@ CREATE TABLE `stories` (
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `category_id` bigint UNSIGNED NOT NULL,
   `anonymous` tinyint(1) NOT NULL DEFAULT '0',
-  `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `is_sensitive` tinyint(1) NOT NULL DEFAULT '0',
-  `published_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -377,9 +397,9 @@ CREATE TABLE `stories` (
 -- Dumping data for table `stories`
 --
 
-INSERT INTO `stories` (`id`, `title`, `content`, `user_id`, `category_id`, `anonymous`, `status`, `is_sensitive`, `published_at`, `created_at`, `updated_at`) VALUES
-(1, 'dfgdfgfd', 'dfgdfgdfg', 3, 1, 0, 'rejected', 1, NULL, '2025-04-26 09:13:19', '2025-04-26 09:16:36'),
-(2, 'dsgfg', 'dfgdgdfg', 3, 6, 0, 'approved', 0, '2025-04-26 09:14:48', '2025-04-26 09:13:39', '2025-04-27 01:23:03');
+INSERT INTO `stories` (`id`, `title`, `content`, `user_id`, `category_id`, `anonymous`, `created_at`, `updated_at`) VALUES
+(4, 'dfgfdsg', 'Masukkan Isi Cerita', 5, 2, 0, '2025-05-05 08:55:30', '2025-05-05 08:55:30'),
+(5, 'sdfsdf', 'Masukkan Isi Cerita', 4, 3, 0, '2025-05-05 09:06:38', '2025-05-05 09:06:38');
 
 -- --------------------------------------------------------
 
@@ -403,9 +423,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin@example.com', NULL, '$2y$12$H5CG0/OpvHCrmY45audaD.dkg.Ni1rTBHyih2238oMmHhQfqor3DW', NULL, '2025-04-26 07:56:12', '2025-04-26 07:56:12'),
-(2, 'Moderator', 'moderator@example.com', NULL, '$2y$12$irR5jCLU9/njLN13eNKZYeRPUD6kbAkvqaKWvkgPwlj7cusV8M75a', NULL, '2025-04-26 07:56:12', '2025-04-26 07:56:12'),
-(3, 'User', 'user@example.com', NULL, '$2y$12$FMSISKGSMn8.4HRMXaJm3O2b3MpYsN.GGwFXcD4UKxDOs36zXUryi', NULL, '2025-04-26 07:56:12', '2025-04-26 07:56:12');
+(1, 'Admin', 'admin@example.com', NULL, '$2y$12$HuMAkmDa3lAZXB5Jl4HSyOOKtxi2vRBWv6lUIfJLM6HTmxHwTgq6.', NULL, '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(2, 'Moderator', 'moderator@example.com', NULL, '$2y$12$H68Fdlo/l1XcAf6MXT6m4OOqnWmCmxJcJ3dVefuMFWazarfIUqvNO', NULL, '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(3, 'User', 'user@example.com', NULL, '$2y$12$FMVTu8TTfQnGx6U3WXxCKeI2c979VPKF3QVT789eyVU9LU0/W.DO2', NULL, '2025-05-05 07:09:30', '2025-05-05 07:09:30'),
+(4, 'anon', 'anon@example.com', NULL, '$2y$12$eBNaB5lx5vURxML6ZDXf4e/NhS22oY.RfH/0YZrM9KLkBql7xkPDC', NULL, '2025-05-05 07:09:52', '2025-05-05 07:09:52'),
+(5, 'ehh', 'ehh@example.com', NULL, '$2y$12$.XzKM5rYN4.XrgLHNaPclOJfKWN6C.GZUWoLM1qddzMb50mvXbEOW', NULL, '2025-05-05 08:41:22', '2025-05-05 08:41:22');
 
 -- --------------------------------------------------------
 
@@ -417,17 +439,10 @@ CREATE TABLE `votes` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `story_id` bigint UNSIGNED NOT NULL,
-  `vote_type` enum('like','dislike') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `vote_type` enum('upvote','downvote') COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `votes`
---
-
-INSERT INTO `votes` (`id`, `user_id`, `story_id`, `vote_type`, `created_at`, `updated_at`) VALUES
-(1, 3, 2, 'like', '2025-04-26 22:49:55', '2025-04-26 22:50:01');
 
 --
 -- Indexes for dumped tables
@@ -523,6 +538,14 @@ ALTER TABLE `permissions`
   ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
 
 --
+-- Indexes for table `reports`
+--
+ALTER TABLE `reports`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reports_user_id_foreign` (`user_id`),
+  ADD KEY `reports_reportable_type_reportable_id_index` (`reportable_type`,`reportable_id`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -575,7 +598,7 @@ ALTER TABLE `votes`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `comments`
@@ -605,13 +628,19 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `reports`
+--
+ALTER TABLE `reports`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -623,19 +652,19 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `stories`
 --
 ALTER TABLE `stories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `votes`
 --
 ALTER TABLE `votes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -667,6 +696,12 @@ ALTER TABLE `model_has_permissions`
 --
 ALTER TABLE `model_has_roles`
   ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `reports`
+--
+ALTER TABLE `reports`
+  ADD CONSTRAINT `reports_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `role_has_permissions`

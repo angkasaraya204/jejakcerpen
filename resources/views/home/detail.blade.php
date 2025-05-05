@@ -205,7 +205,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 @auth
                                                     @hasanyrole(['moderator', 'user'])
-                                                        @if(Auth::id() === $comment->user_id)
+                                                        @if(Auth::id() != $comment->user_id && $comment->user_id)
                                                             <li>
                                                                 <button type="button" class="dropdown-item report-button" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}">
                                                                     <i class="fas fa-exclamation-circle me-2"></i> Laporkan
@@ -265,7 +265,7 @@
                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                     @auth
                                                         @hasanyrole(['moderator', 'user'])
-                                                            @if(Auth::id() === $comment->user_id)
+                                                            @if(Auth::id() != $comment->user_id && $comment->user_id)
                                                                 <li>
                                                                     <button type="button" class="dropdown-item report-button" data-bs-toggle="modal" data-bs-target="#reportReplyModal-{{ $reply->id }}">
                                                                         <i class="fas fa-exclamation-circle me-2"></i> Laporkan
