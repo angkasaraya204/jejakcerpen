@@ -22,8 +22,9 @@
           <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
             <div class="card col-lg-4 mx-auto">
               <div class="card-body px-5 py-5">
-                <h3 class="card-title text-left mb-3">Login</h3>
-                <form>
+                <h3 class="card-title text-left mb-3">Daftar</h3>
+                <form action="{{ route('register') }}" method="POST">
+                    @csrf
                   <div class="form-group">
                     <label for="name">Nama</label>
                     <input type="text" id="name" name="name" class="form-control p_input" placeholder="Masukkan nama anda" autocomplete="name" required>
@@ -53,7 +54,7 @@
                   </div>
                   <div class="form-group">
                     <label for="password_confirmation">Konfirmasi Kata Sandi</label>
-                    <input type="text" id="password_confirmation" class="form-control p_input" placeholder="Konfirmasi kata sandi" name="password_confirmation" autocomplete="new-password" required>
+                    <input type="password" id="password_confirmation" class="form-control p_input" placeholder="Konfirmasi kata sandi" name="password_confirmation" autocomplete="new-password" required>
                     @error('password')
                       <span class="text-danger" role="alert">
                         {{ $message }}

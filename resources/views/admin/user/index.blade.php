@@ -4,6 +4,17 @@
 <div class="page-header">
     <h3 class="page-title"> Daftar Pengguna </h3>
 </div>
+{{-- Alert Section --}}
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 <div class="grid-margin stretch-card">
     <div class="card">
         <div class="card-body">

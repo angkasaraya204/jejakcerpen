@@ -13,15 +13,15 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Romance',
+                'name' => 'Romantis',
                 'description' => 'Cerita dengan tema percintaan dan romansa',
             ],
             [
-                'name' => 'Horror',
+                'name' => 'Horor',
                 'description' => 'Cerita dengan tema seram dan menakutkan',
             ],
             [
-                'name' => 'Comedy',
+                'name' => 'Komedi',
                 'description' => 'Cerita dengan unsur humor dan komedi',
             ],
             [

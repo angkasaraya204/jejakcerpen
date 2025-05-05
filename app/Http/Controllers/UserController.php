@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->paginate(20);
+        $users = User::with('roles')->paginate(10);
         return view('admin.user.index', compact('users'));
     }
 

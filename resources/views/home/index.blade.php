@@ -195,7 +195,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="text-muted small">
-                                                        {{ $story->published_at->diffForHumans() }}</div>
+                                                        {{ $story->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
                                             <div class="dropdown">
@@ -209,9 +209,34 @@
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end">
+                                                    @guest
+                                                    <li>
+                                                        <button @disabled(true) class="dropdown-item">
+                                                            <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button @disabled(true) class="dropdown-item">
+                                                            <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                        </button>
+                                                    </li>
+                                                    @endguest
                                                     @auth
                                                         @role('user')
+                                                            <li>
+                                                                <button @disabled(true) class="dropdown-item">
+                                                                    <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <form action="" method="POST">
+                                                                    <button type="submit" class="dropdown-item">
+                                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                             @if(Auth::id() != $story->user_id && $story->user_id)
+
                                                                 @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
                                                                     <li>
                                                                         <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
@@ -251,7 +276,7 @@
                                                         {{ optional($story->user)->name ?? 'Anonim' }}
                                                     @endif
                                                 </span> •
-                                                <span>{{ $story->published_at->format('d M Y, H:i') }}</span>
+                                                <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
                                             </div>
                                             <div class="story-text">
                                                 <p>{{ Str::limit(strip_tags($story->content), 200) }}</p>
@@ -319,8 +344,7 @@
                             <div id="category-{{ $popularCategory->id }}-container">
                                 @php
                                     $categoryStories = App\Models\Story::where('category_id', $popularCategory->id)
-                                    ->where('status', 'approved')
-                                    ->latest('published_at')
+                                    ->latest('created_at')
                                     ->paginate(5);
                                 @endphp
 
@@ -338,7 +362,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="text-muted small">
-                                                        {{ $story->published_at->diffForHumans() }}</div>
+                                                        {{ $story->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
                                             <div class="dropdown">
@@ -354,6 +378,18 @@
                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                     @auth
                                                         @role('user')
+                                                            <li>
+                                                                <button @disabled(true) class="dropdown-item">
+                                                                    <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <form action="" method="POST">
+                                                                    <button type="submit" class="dropdown-item">
+                                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                             @if(Auth::id() != $story->user_id && $story->user_id)
                                                                 @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
                                                                     <li>
@@ -394,7 +430,7 @@
                                                         {{ optional($story->user)->name ?? 'Anonim' }}
                                                     @endif
                                                 </span> •
-                                                <span>{{ $story->published_at->format('d M Y, H:i') }}</span>
+                                                <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
                                             </div>
                                             <div class="story-text">
                                                 <p>{{ Str::limit(strip_tags($story->content), 200) }}</p>

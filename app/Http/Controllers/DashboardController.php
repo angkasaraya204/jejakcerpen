@@ -17,7 +17,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->hasAnyRole(['admin'])) {
+        if (Auth::user()->hasAnyRole(['admin','moderator'])) {
             $totalStories = Story::count();
 
             $totalComments = Comment::count();
@@ -105,9 +105,6 @@ class DashboardController extends Controller
             $voteMonthly = collect($monthlyData)->pluck('votes');
         }
 
-        $pendingStories = Story::where('status', 'pending')->count();
-        $approvedStories = Story::where('status', 'approved')->count();
-        $rejectedStories = Story::where('status', 'rejected')->count();
         $totalUsers = User::count();
 
         // Category distribution
@@ -132,9 +129,6 @@ class DashboardController extends Controller
         // Menyiapkan variabel untuk compact berdasarkan role
         $viewData = [
             'totalStories',
-            'pendingStories',
-            'approvedStories',
-            'rejectedStories',
             'totalUsers',
             'totalComments',
             'dates',

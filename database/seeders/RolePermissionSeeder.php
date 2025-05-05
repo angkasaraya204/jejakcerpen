@@ -24,8 +24,6 @@ class RolePermissionSeeder extends Seeder
             'create stories',
             'edit stories',
             'delete stories',
-            'approve stories',
-            'reject stories',
             'mark sensitive',
 
             // Comment permissions
@@ -53,22 +51,27 @@ class RolePermissionSeeder extends Seeder
         // Create roles and assign permissions
         $adminRole = Role::create(['name' => 'admin']);
         $adminRole->givePermissionTo([
-            'approve stories',
-            'reject stories',
             'access dashboard',
             'view statistics',
             'view users',
             'edit users',
             'delete users',
+            'view stories',
+            'edit stories',
+            'delete stories',
+            'edit comments',
+            'delete comments',
             'manage categories',
         ]);
 
         $moderatorRole = Role::create(['name' => 'moderator']);
         $moderatorRole->givePermissionTo([
-            'view stories',
             'mark sensitive',
+            'view stories',
             'delete comments',
+            'delete stories',
             'access dashboard',
+            'view statistics',
         ]);
 
         $userRole = Role::create(['name' => 'user']);

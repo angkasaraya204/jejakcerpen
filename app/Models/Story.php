@@ -15,15 +15,12 @@ class Story extends Model
         'user_id',
         'category_id',
         'anonymous',
-        'status', // 'pending', 'approved', 'rejected'
         'is_sensitive',
-        'published_at',
     ];
 
     protected $casts = [
         'anonymous' => 'boolean',
         'is_sensitive' => 'boolean',
-        'published_at' => 'datetime',
     ];
 
     public function user()

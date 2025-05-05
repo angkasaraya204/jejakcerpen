@@ -30,18 +30,22 @@
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
-      @endhasanyrole
-
-      @role('user')
-      <li class="nav-item menu-items {{ url()->current() == route('stories.index') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('stories.index') }}">
+      <li class="nav-item menu-items">
+        <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
           <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
+            <i class="mdi mdi-laptop"></i>
           </span>
-          <span class="menu-title">Cerita</span>
+          <span class="menu-title">Moderasi</span>
+          <i class="menu-arrow"></i>
         </a>
+        <div class="collapse" id="ui-basic">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{{ route('stories.index') }}">Cerita</a></li>
+            <li class="nav-item"> <a class="nav-link" href="{{ route('comments.index') }}">Komentar</a></li>
+          </ul>
+        </div>
       </li>
-      @endrole
+      @endhasanyrole
 
       @role('admin')
       <li class="nav-item menu-items {{ url()->current() == route('users.index') ? 'active' : '' }}">
@@ -62,15 +66,15 @@
       </li>
       @endrole
 
-      @hasanyrole(['admin','moderator'])
-      <li class="nav-item menu-items {{ url()->current() == route('stories.moderate') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('stories.moderate') }}">
+      @role('moderator')
+      <li class="nav-item menu-items {{ url()->current() == route('users.index') ? 'active' : '' }}">
+        <a class="nav-link" href="">
           <span class="menu-icon">
             <i class="mdi mdi-speedometer"></i>
           </span>
-          <span class="menu-title">Moderasi</span>
+          <span class="menu-title">Laporan Cerita</span>
         </a>
       </li>
-      @endhasanyrole
+      @endrole
     </ul>
   </nav>

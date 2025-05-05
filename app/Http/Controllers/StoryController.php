@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Story;
 use App\Models\Follow;
 use App\Models\Category;
@@ -13,23 +14,20 @@ class StoryController extends Controller
     private function getTrendingStories($limit = 5)
     {
         return Story::with(['user', 'category'])
-            ->where('status', 'approved')
             ->withCount(['votes' => function($query) {
                 $query->where('vote_type', 'upvote');
             }])
             ->withCount('comments')
             ->orderByDesc('votes_count')
             ->orderByDesc('comments_count')
-            ->orderByDesc('published_at')
+            ->orderByDesc('created_at')
             ->take($limit)
             ->get();
     }
 
     private function getPopularCategories($limit = 5)
     {
-        return Category::withCount(['stories' => function($query) {
-            $query->where('status', 'approved');
-        }])
+        return Category::withCount('stories')
         ->orderByDesc('stories_count')
         ->take($limit)
         ->get();
@@ -37,9 +35,7 @@ class StoryController extends Controller
 
     private function getPopularAuthors($limit = 5)
     {
-        return \App\Models\User::withCount(['stories' => function($query) {
-            $query->where('status', 'approved');
-        }])
+        return User::withCount('stories')
         ->withCount(['votes' => function($query) {
             $query->where('vote_type', 'upvote');
         }])
@@ -52,17 +48,26 @@ class StoryController extends Controller
 
     public function index(Request $request)
     {
-        $query = Story::with(['user', 'category'])->where('status', 'approved');
 
-        $stories = $query->where('user_id', Auth::id())->latest('published_at')->paginate(10);
-        $categories = Category::all();
 
-        return view('cerita.index', compact('stories'));
+        if (Auth::user()->hasRole('user')) {
+            $query = Story::with(['user', 'category']);
+
+            $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);
+            $categories = Category::all();
+        } elseif (Auth::user()->hasRole(['moderator', 'admin'])) {
+            $query = Story::with(['user', 'category']);
+
+            $stories = $query->latest('created_at')->paginate(10);
+            $categories = Category::all();
+        }
+
+        return view('moderasi.cerita.index', compact('stories'));
     }
 
     public function home(Request $request)
     {
-        $query = Story::with(['user', 'category'])->where('status', 'approved');
+        $query = Story::with(['user', 'category']);
 
         if ($request->has('category')) {
             $query->whereHas('category', function($q) use ($request) {
@@ -74,7 +79,7 @@ class StoryController extends Controller
 
         // Jika user login, cek status following untuk semua penulis cerita
         if (Auth::check()) {
-            $stories = $query->latest('published_at')->get();
+            $stories = $query->latest('created_at')->get();
             foreach ($stories as $story) {
                 if ($story->user_id) {
                     $isFollowing[$story->user_id] = Follow::where('follower_id', Auth::id())
@@ -84,7 +89,7 @@ class StoryController extends Controller
             }
         }
 
-        $stories = $query->latest('published_at')->paginate(10);
+        $stories = $query->latest('created_at')->paginate(10);
         $categories = Category::all();
 
         // Get trending stories, popular categories, and popular authors
@@ -94,7 +99,7 @@ class StoryController extends Controller
 
         $isFollowing = $isFollowing ?? false;
 
-        return view('cerita.home.index', compact(
+        return view('home.index', compact(
             'stories',
             'categories',
             'trendingStories',
@@ -106,21 +111,17 @@ class StoryController extends Controller
 
     public function show(Story $story)
     {
-        if ($story->status !== 'approved' && (Auth::guest() || !Auth::user()->hasRole('admin'))) {
-            abort(404);
-        }
-
         $story->load(['user', 'category', 'comments' => function($query) {
             $query->whereNull('parent_id')->with(['user', 'replies.user']);
         }]);
 
-        return view('cerita.home.detail', compact('story'));
+        return view('home.detail', compact('story'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('cerita.create', compact('categories'));
+        return view('moderasi.cerita.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -133,17 +134,16 @@ class StoryController extends Controller
         ]);
 
         $story = new Story($validated);
-        $story->status = 'pending';
         $story->user_id = Auth::id();
         $story->save();
 
-        return back()->with('success', 'Cerita telah dikirim dan menunggu persetujuan.');
+        return back()->route('stories.index')->with('success', 'Cerita telah dikirim dan menunggu persetujuan.');
     }
 
     public function edit(Story $story)
     {
         $categories = Category::all();
-        return view('cerita.edit', compact('story', 'categories'));
+        return view('moderasi.cerita.edit', compact('story', 'categories'));
     }
 
     public function update(Request $request, Story $story)
@@ -162,30 +162,7 @@ class StoryController extends Controller
             'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
-        return back()->with('success', 'Cerita telah diperbarui.');
-    }
-
-    public function moderate()
-    {
-        $pendingStories = Story::with(['user', 'category'])->where('status', 'pending')->latest()->paginate(10);
-        return view('moderasi.index', compact('pendingStories'));
-    }
-
-    public function approve(Story $story)
-    {
-        $story->status = 'approved';
-        $story->published_at = now();
-        $story->save();
-
-        return redirect()->route('stories.moderate')->with('success', 'Cerita berhasil disetujui dan dipublikasikan.');
-    }
-
-    public function reject(Story $story)
-    {
-        $story->status = 'rejected';
-        $story->save();
-
-        return redirect()->route('stories.moderate')->with('success', 'Cerita ditolak.');
+        return back()->route('stories.index')->with('success', 'Cerita telah diperbarui.');
     }
 
     public function markSensitive(Story $story)
