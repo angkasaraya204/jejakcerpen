@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label for="content">Isi Cerita</label>
                     <textarea id="content" name="content"
-                        class="form-control @error('content') border-red-500 @enderror">{{ old('content', $story->content) }} Masukkan Isi Cerita </textarea>
+                        class="form-control @error('content') border-red-500 @enderror">{{ old('content', $story->content) }}</textarea>
 
                     @error('content')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
