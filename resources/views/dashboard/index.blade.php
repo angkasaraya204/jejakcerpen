@@ -5,6 +5,7 @@
     <h3 class="page-title"> Statistik Platform </h3>
 </div>
 @role('admin')
+    <!-- Original card stats -->
     <div class="row">
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card">
@@ -51,6 +52,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Original charts row -->
     <div class="row">
         <div class="col-lg-6 grid-margin stretch-card">
             <div class="card">
@@ -64,7 +67,52 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Distribusi Kategori</h4>
-                    <canvas id="categoryChart" style="height:100px"></canvas>
+                    <canvas id="categoryChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Analytics for Global Reports -->
+    <div class="page-header mt-4">
+        <h3 class="page-title"> Laporan dan Analitik Global </h3>
+    </div>
+
+    <!-- NEW: Anonymous vs Non-Anonymous distribution -->
+    <div class="row">
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Distribusi Posting Anonim vs Teridentifikasi</h4>
+                    <canvas id="anonymityChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Pertumbuhan & Aktivitas Pengguna</h4>
+                    <canvas id="userGrowthChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Interaction Trend and Anonymous Feature Usage -->
+    <div class="row">
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tren Interaksi Pengguna (30 Hari Terakhir)</h4>
+                    <canvas id="interactionTrendChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tren Penggunaan Fitur Anonim (6 Bulan Terakhir)</h4>
+                    <canvas id="anonymousUsageTrendChart" style="height:250px"></canvas>
                 </div>
             </div>
         </div>
@@ -184,13 +232,20 @@
         </div>
     </div>
 
-    <!-- Chart Aktivitas -->
     <div class="row">
-        <div class="col-md-12 mb-4">
+        <div class="col-lg-6 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Pola Partisipasi Bulanan (6 bulan terakhir)</h4>
                     <canvas id="monthlyActivityChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tren Interaksi Pengguna (30 Hari Terakhir)</h4>
+                    <canvas id="interactionTrendChart" style="height:250px"></canvas>
                 </div>
             </div>
         </div>
@@ -247,7 +302,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             @role('admin')
-            // Activity Chart
             const activityCtx = document.getElementById('activityChartAdmin').getContext('2d');
             new Chart(activityCtx, {
                 type: 'line',
@@ -280,7 +334,6 @@
                 }
             });
 
-            // Category Chart
             const categoryData = @json($categoryStats);
             const categoryLabels = categoryData.map(item => item.name);
             const categoryValues = categoryData.map(item => item.total);
@@ -305,13 +358,169 @@
                     }]
                 }
             });
+
+            // NEW: Anonymous vs Non-Anonymous Posts Chart
+            const anonymityCtx = document.getElementById('anonymityChart').getContext('2d');
+            new Chart(anonymityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Konten Anonim', 'Konten Bukan Anonim'],
+                    datasets: [{
+                        data: @json($anonymousData),
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(54, 162, 235, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // NEW: User Interaction Trend Chart
+            const interactionCtx = document.getElementById('interactionTrendChart').getContext('2d');
+            new Chart(interactionCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($interactionDates),
+                    datasets: [{
+                        label: 'Cerita',
+                        data: @json($storyTrend),
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Komentar',
+                        data: @json($commentTrend),
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Suara',
+                        data: @json($voteTrend),
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Interaksi'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tanggal'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // NEW: Anonymous Feature Usage Trend Chart
+            const anonymousTrendCtx = document.getElementById('anonymousUsageTrendChart').getContext('2d');
+            new Chart(anonymousTrendCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($monthLabels),
+                    datasets: [{
+                        label: 'Cerita Anonim',
+                        data: @json($anonymousStoryMonthly),
+                        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Komentar Anonim',
+                        data: @json($anonymousCommentMonthly),
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // NEW: User Growth Chart
+            const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+            new Chart(userGrowthCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($growthMonths),
+                    datasets: [{
+                        label: 'Pengguna Baru',
+                        data: @json($newUserCounts),
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Pengguna Aktif',
+                        data: @json($activeUserCounts),
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Pengguna'
+                            }
+                        }
+                    }
+                }
+            });
             @endrole
 
             @role('user')
-            // Activity Chart
             const activityCtx = document.getElementById('activityChartUser').getContext('2d');
-
-            // Pastikan dataset yang dimasukkan sesuai dengan data yang tersedia
             const datasets = [
                 {
                     label: 'Cerita Baru',
@@ -334,7 +543,7 @@
             // Periksa ketersediaan variabel voteCounts sebelum menambahkannya ke dataset
             @if(isset($voteCounts) && count($voteCounts) > 0)
             datasets.push({
-                label: 'Vote',
+                label: 'Suara',
                 data: @json($voteCounts),
                 backgroundColor: 'rgba(255, 206, 86, 0.2)',
                 borderColor: 'rgba(255, 206, 86, 1)',
@@ -360,7 +569,6 @@
 
             // Monthly Activity Chart
             const monthlyCtx = document.getElementById('monthlyActivityChart').getContext('2d');
-
             // Persiapkan dataset untuk monthly chart
             const monthlyDatasets = [
                 {
@@ -382,7 +590,7 @@
             // Periksa ketersediaan variabel voteMonthly sebelum menambahkannya ke dataset
             @if(isset($voteMonthly) && count($voteMonthly) > 0)
             monthlyDatasets.push({
-                label: 'Vote',
+                label: 'Suara',
                 data: @json($voteMonthly),
                 backgroundColor: 'rgba(255, 206, 86, 0.7)',
                 borderColor: 'rgba(255, 206, 86, 1)',
@@ -400,6 +608,48 @@
                     scales: {
                         y: {
                             beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            const interactionCtx = document.getElementById('interactionTrendChart').getContext('2d');
+            new Chart(interactionCtx, {
+                type: 'line',
+                data: {
+                    labels: @json($interactionDates),
+                    datasets: [{
+                        label: 'Cerita',
+                        data: @json($storyTrend),
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Suara',
+                        data: @json($voteTrend),
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Interaksi'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tanggal'
+                            }
                         }
                     }
                 }

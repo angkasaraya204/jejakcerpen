@@ -20,8 +20,8 @@ class DashboardController extends Controller
     {
         if (Auth::user()->hasRole('admin')) {
             $totalStories = Story::count();
-
             $totalComments = Comment::count();
+            $totalUsers = User::count();
 
             // Stats for chart - last 7 days activity
             $dateStart = Carbon::now()->subDays(6)->startOfDay();
@@ -35,6 +35,87 @@ class DashboardController extends Controller
 
                 $storyCounts[] = Story::whereDate('created_at', $date->format('Y-m-d'))->count();
                 $commentCounts[] = Comment::whereDate('created_at', $date->format('Y-m-d'))->count();
+            }
+
+            // Category distribution
+            $categoryStats = DB::table('stories')
+                ->join('categories', 'stories.category_id', '=', 'categories.id')
+                ->select('categories.name', DB::raw('count(*) as total'))
+                ->groupBy('categories.name')
+                ->get();
+
+            // NEW: Anonymous vs. Non-Anonymous Posts distribution
+            $anonymousStories = Story::where('anonymous', true)->count();
+            $nonAnonymousStories = Story::where('anonymous', false)->count();
+            $anonymousData = [$anonymousStories, $nonAnonymousStories];
+
+            // NEW: User interaction trend (30 days)
+            $interactionStart = Carbon::now()->subDays(29)->startOfDay();
+            $interactionDates = [];
+            $storyTrend = [];
+            $commentTrend = [];
+            $voteTrend = [];
+
+            for ($i = 0; $i < 30; $i++) {
+                $date = $interactionStart->copy()->addDays($i);
+                $interactionDates[] = $date->format('d/m');
+
+                $storyTrend[] = Story::whereDate('created_at', $date->format('Y-m-d'))->count();
+                $commentTrend[] = Comment::whereDate('created_at', $date->format('Y-m-d'))->count();
+                $voteTrend[] = Vote::whereDate('created_at', $date->format('Y-m-d'))->count();
+            }
+
+            // NEW: Anonymous feature usage trend (6 months)
+            $monthStart = Carbon::now()->subMonths(5)->startOfMonth();
+            $monthLabels = [];
+            $anonymousStoryMonthly = [];
+            $anonymousCommentMonthly = [];
+
+            for ($i = 0; $i < 6; $i++) {
+                $month = $monthStart->copy()->addMonths($i);
+                $monthLabels[] = $month->format('M Y');
+
+                // Get anonymous stories for this month
+                $anonymousStoryMonthly[] = Story::where('anonymous', true)
+                    ->whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+
+                // Get anonymous comments for this month
+                $anonymousCommentMonthly[] = Comment::where('anonymous', true)
+                    ->whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+            }
+
+            // NEW: User growth chart (12 months)
+            $growthStart = Carbon::now()->subMonths(11)->startOfMonth();
+            $growthMonths = [];
+            $newUserCounts = [];
+            $activeUserCounts = [];
+
+            for ($i = 0; $i < 12; $i++) {
+                $month = $growthStart->copy()->addMonths($i);
+                $growthMonths[] = $month->format('M Y');
+
+                // New users registered this month
+                $newUserCounts[] = User::whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+
+                // Active users this month (users who created content)
+                $activeThisMonth = DB::table(DB::raw("
+                    (SELECT DISTINCT user_id FROM stories
+                    WHERE YEAR(created_at) = {$month->year} AND MONTH(created_at) = {$month->month}
+                    UNION
+                    SELECT DISTINCT user_id FROM comments
+                    WHERE YEAR(created_at) = {$month->year} AND MONTH(created_at) = {$month->month}
+                    UNION
+                    SELECT DISTINCT user_id FROM votes
+                    WHERE YEAR(created_at) = {$month->year} AND MONTH(created_at) = {$month->month}) AS active_users
+                "))->count();
+
+                $activeUserCounts[] = $activeThisMonth;
             }
         } elseif (Auth::user()->hasRole('user')) {
             $totalStories = Story::where('user_id', Auth::id())->count();
@@ -54,6 +135,19 @@ class DashboardController extends Controller
                 $storyCounts[] = Story::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
                 $commentCounts[] = Comment::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
                 $voteCounts[] = Vote::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
+            }
+
+            $interactionStart = Carbon::now()->subDays(29)->startOfDay();
+            $interactionDates = [];
+            $storyTrend = [];
+            $voteTrend = [];
+
+            for ($i = 0; $i < 30; $i++) {
+                $date = $interactionStart->copy()->addDays($i);
+                $interactionDates[] = $date->format('d/m');
+
+                $storyTrend[] = Story::whereDate('created_at', $date->format('Y-m-d'))->count();
+                $voteTrend[] = Vote::whereDate('created_at', $date->format('Y-m-d'))->count();
             }
 
             // Tambahan untuk fitur Follow/Teman
@@ -112,15 +206,6 @@ class DashboardController extends Controller
             $spamComments = Report::where('reportable_type', Comment::class)->where('status', 'pending')->count();
         }
 
-        $totalUsers = User::count();
-
-        // Category distribution
-        $categoryStats = DB::table('stories')
-            ->join('categories', 'stories.category_id', '=', 'categories.id')
-            ->select('categories.name', DB::raw('count(*) as total'))
-            ->groupBy('categories.name')
-            ->get();
-
         // Set data default untuk user
         $followingCount = $followingCount ?? 0;
         $followersCount = $followersCount ?? 0;
@@ -153,7 +238,10 @@ class DashboardController extends Controller
                 'monthlyLabels',
                 'storyMonthly',
                 'commentMonthly',
-                'voteMonthly'
+                'interactionDates',
+                'voteMonthly',
+                'storyTrend',
+                'voteTrend',
             ]);
         }
 
@@ -177,6 +265,17 @@ class DashboardController extends Controller
                 'categoryStats',
                 'dates',
                 'commentCounts',
+                'anonymousData',
+                'interactionDates',
+                'storyTrend',
+                'commentTrend',
+                'voteTrend',
+                'monthLabels',
+                'anonymousStoryMonthly',
+                'anonymousCommentMonthly',
+                'growthMonths',
+                'newUserCounts',
+                'activeUserCounts'
             ]);
         }
 
