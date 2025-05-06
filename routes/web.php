@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('categories', CategoryController::class);
     });

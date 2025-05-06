@@ -40,7 +40,7 @@ class VoteController extends Controller
                 'story_id' => $story->id,
                 'vote_type' => $validated['vote_type'],
             ]);
-            return redirect()->back()->with('success', 'Vote berhasil disimpan.');
+            return redirect()->back()->with('success', 'Anda telah memberikan suara.');
         }
     }
 }
