@@ -37,8 +37,12 @@
                                 <th> Judul Cerita </th>
                                 <th> Kategori </th>
                                 <th> Tanggal Dibuat </th>
+                                @role('admin')
                                 <th> Oleh </th>
+                                @endrole
                                 <th> Jumlah Komentar </th>
+                                <th> Jumlah Upvote </th>
+                                <th> Jumlah Downvote </th>
                                 <th> Deskripsi </th>
                                 <th> Aksi </th>
                             </tr>
@@ -50,6 +54,7 @@
                                     <td>{{ $story->title }}</td>
                                     <td>{{ $story->category->name }}</td>
                                     <td>{{ $story->created_at->format('d M Y, H:i') }}</td>
+                                    @role('admin')
                                     <td>
                                         @if($story->anonymous)
                                             Anonim
@@ -57,7 +62,10 @@
                                             {{ optional($story->user)->name ?? 'Anonim' }}
                                         @endif
                                     </td>
+                                    @endrole
                                     <td>{{ $story->comments->count() }} komentar</td>
+                                    <td>{{ $story->votes->where('vote_type', 'upvote')->count() }} Upvote</td>
+                                    <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
                                     <td>{{ Str::limit(strip_tags($story->content), 200) }}</td>
                                     @hasanyrole(['admin','user'])
                                     <td>

@@ -40,7 +40,15 @@ class CommentController extends Controller
             'anonymous' => 'boolean',
         ]);
 
-        $comment = new Comment($validated);
+        // Pastikan nilai anonymous selalu ada dengan nilai default false jika tidak ada
+        $anonymous = isset($validated['anonymous']) ? true : false;
+
+        $comment = new Comment([
+            'content' => $validated['content'],
+            'parent_id' => $validated['parent_id'] ?? null,
+            'anonymous' => $anonymous,
+        ]);
+
         $comment->story_id = $story->id;
         $comment->user_id = Auth::check() ? Auth::id() : null;
         $comment->save();
@@ -65,7 +73,14 @@ class CommentController extends Controller
             'anonymous' => 'boolean',
         ]);
 
-        $comment->update($validated);
+        // Pastikan nilai anonymous selalu ada dengan nilai default false jika tidak ada
+        $anonymous = isset($validated['anonymous']) ? true : false;
+
+        $comment->update([
+            'content' => $validated['content'],
+            'parent_id' => $validated['parent_id'] ?? $comment->parent_id,
+            'anonymous' => $anonymous,
+        ]);
 
         return redirect()->route('stories.show', $comment->story_id)->with('success', 'Komentar berhasil diperbarui.');
     }

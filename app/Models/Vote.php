@@ -12,7 +12,7 @@ class Vote extends Model
     protected $fillable = [
         'user_id',
         'story_id',
-        'vote_type', // 'like', 'dislike'
+        'vote_type',
     ];
 
     public function user()

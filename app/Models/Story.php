@@ -15,12 +15,10 @@ class Story extends Model
         'user_id',
         'category_id',
         'anonymous',
-        'is_sensitive',
     ];
 
     protected $casts = [
         'anonymous' => 'boolean',
-        'is_sensitive' => 'boolean',
     ];
 
     public function user()

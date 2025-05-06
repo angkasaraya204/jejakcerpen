@@ -180,9 +180,10 @@
                                             placeholder="Tulis komentar Anda di sini..."></textarea>
                                     </div>
                                     <div class="mb-3 form-check">
-                                        <input type="checkbox" name="anonymous" class="form-check-input">
-                                        <label class="form-check-label">Komentari sebagai
-                                            anonim</label>
+                                        <!-- Tambahkan hidden field -->
+                                        <input type="hidden" name="anonymous" value="0">
+                                        <input type="checkbox" name="anonymous" value="1" class="form-check-input">
+                                        <label class="form-check-label">Komentari sebagai anonim</label>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Kirim Komentar</button>
                                 </form>
@@ -243,9 +244,10 @@
                                                 <button class="btn btn-primary" type="submit">Balas</button>
                                             </div>
                                             <div class="form-check">
-                                                <input type="checkbox" name="anonymous" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
-                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai
-                                                    anonim</label>
+                                                <!-- Tambahkan hidden field -->
+                                                <input type="hidden" name="anonymous" value="0">
+                                                <input type="checkbox" name="anonymous" value="1" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
+                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai anonim</label>
                                             </div>
                                         </form>
                                     </div>

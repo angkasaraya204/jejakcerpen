@@ -47,27 +47,27 @@ class StoryController extends Controller
         ->get();
     }
 
-        public function index(Request $request, Report $report)
-        {
-            if (Auth::user()->hasRole('user')) {
-                $query = Story::with(['user', 'category']);
+    public function index(Request $request, Report $report)
+    {
+        if (Auth::user()->hasRole('user')) {
+            $query = Story::with(['user', 'category']);
 
-                $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);
-                $categories = Category::all();
-                return view('moderasi.cerita.index', compact('stories'));
-            } elseif (Auth::user()->hasRole('admin')) {
-                $query = Story::with(['user', 'category']);
+            $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);
+            $categories = Category::all();
+            return view('moderasi.cerita.index', compact('stories'));
+        } elseif (Auth::user()->hasRole('admin')) {
+            $query = Story::with(['user', 'category']);
 
-                $stories = $query->latest('created_at')->paginate(10);
-                $categories = Category::all();
+            $stories = $query->latest('created_at')->paginate(10);
+            $categories = Category::all();
 
-                return view('moderasi.cerita.index', compact('stories'));
-            } elseif (Auth::user()->hasRole('moderator')) {
-                // Eager load the polymorphic relation
-                $reports = Report::with('reportable')->orderBy('created_at', 'desc')->paginate(10);
-                return view('moderasi.cerita.index', compact('reports'));
-            }
+            return view('moderasi.cerita.index', compact('stories'));
+        } elseif (Auth::user()->hasRole('moderator')) {
+            // Eager load the polymorphic relation
+            $reports = Report::with('reportable')->orderBy('created_at', 'desc')->paginate(10);
+            return view('moderasi.cerita.index', compact('reports'));
         }
+    }
 
     public function home(Request $request)
     {
@@ -137,7 +137,16 @@ class StoryController extends Controller
             'anonymous' => 'boolean',
         ]);
 
-        $story = new Story($validated);
+        // Pastikan nilai anonymous selalu ada, dengan nilai default false jika tidak ada
+        $anonymous = isset($validated['anonymous']) ? true : false;
+
+        $story = new Story([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'category_id' => $validated['category_id'],
+            'anonymous' => $anonymous,
+        ]);
+
         $story->user_id = Auth::id();
         $story->save();
 
