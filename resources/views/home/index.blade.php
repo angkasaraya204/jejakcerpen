@@ -122,58 +122,53 @@
 
     <!-- Main Content -->
     <div class="container py-5" id="mainContent">
-        <!-- Categories Section (Tabs) -->
-        <h4 class="mb-3"><i class="fas fa-tags me-2 text-primary"></i>Kategori Populer</h4>
-        <div class="card mb-4 fade-in">
-            <div class="card-body">
-                <!-- Tabs navigation -->
-                <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="all-categories-tab" data-bs-toggle="tab"
-                            data-bs-target="#all-categories" type="button" role="tab" aria-controls="all-categories"
-                            aria-selected="true" onclick="loadStoriesByCategory('all')">
-                            Semua
-                        </button>
-                    </li>
-                    @foreach($popularCategories as $index => $popularCategory)
+        <h4 class="mb-3"><i class="fas fa-tags me-2 text-primary"></i>Cerita Terbaru</h4>
+        <div class="mb-4 fade-in">
+            <div class="mb-3">
+                <div class="overflow-auto">
+                    <ul class="nav nav-pills flex-nowrap" id="categoryTabs" role="tablist" style="white-space: nowrap;">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="category-{{ $popularCategory->id }}-tab" data-bs-toggle="tab"
-                                data-bs-target="#category-{{ $popularCategory->id }}" type="button" role="tab"
-                                aria-controls="category-{{ $popularCategory->id }}" aria-selected="false"
-                                onclick="loadStoriesByCategory('{{ $popularCategory->slug }}')">
-                                {{ $popularCategory->name }}
-                                <span
-                                    class="badge bg-primary rounded-pill ms-1">{{ $popularCategory->stories_count }}</span>
+                            <button class="nav-link active rounded-pill px-4 py-2 fw-bold me-2"
+                                    id="all-categories-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#all-categories"
+                                    type="button" role="tab"
+                                    aria-controls="all-categories"
+                                    aria-selected="true"
+                                    style="flex-shrink: 0;">
+                                Semua
                             </button>
                         </li>
-                    @endforeach
-                </ul>
-
-                <!-- Category Description (optional) -->
-                <div class="alert alert-light border mb-0">
-                    <div class="d-flex">
-                        <div class="me-3">
-                            <i class="fas fa-lightbulb text-warning fs-4"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0">Pilih kategori untuk melihat cerita berdasarkan topik yang Anda minati.</p>
-                        </div>
-                    </div>
+                        @foreach($allCategories as $category)
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-pill px-4 py-2 fw-bold me-2"
+                                        id="category-{{ $category->id }}-tab"
+                                        data-bs-toggle="pill"
+                                        data-bs-target="#category-{{ $category->id }}"
+                                        type="button" role="tab"
+                                        aria-controls="category-{{ $category->id }}"
+                                        aria-selected="false"
+                                        style="flex-shrink: 0;">
+                                    {{ $category->name }}
+                                    <span
+                                    class="badge bg-primary rounded-pill ms-1">{{ $category->stories_count }}</span>
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
         </div>
 
         <!-- Main Content Sections -->
         <div class="row">
-            <!-- Left Content - Stories -->
             <div class="col-lg-9">
                 <!-- Tab content -->
                 <div class="tab-content" id="categoryTabsContent">
                     <div class="tab-pane fade show active" id="all-categories" role="tabpanel"
                         aria-labelledby="all-categories-tab">
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="mb-0 fw-bold" id="storiesHeading">Cerita Terbaru</h4>
+                        <div class="d-flex justify-content-between align-items-center">
                             <div class="spinner-border text-primary d-none" role="status" id="storiesLoader">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
@@ -184,7 +179,6 @@
                                 @foreach($stories as $story)
                                     <div class="card story-card fade-in mb-4">
                                         <div class="story-header">
-
                                             <div class="user-info">
                                                 <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
                                                 <div>
@@ -405,20 +399,20 @@
                         </div>
                     </div>
 
-                    @foreach($popularCategories as $index => $popularCategory)
-                        <div class="tab-pane fade" id="category-{{ $popularCategory->id }}" role="tabpanel"
-                            aria-labelledby="category-{{ $popularCategory->id }}-tab">
+                    @foreach($allCategories as $category)
+                        <div class="tab-pane fade" id="category-{{ $category->id }}" role="tabpanel"
+                            aria-labelledby="category-{{ $category->id }}-tab">
 
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h4 class="mb-0 fw-bold">Cerita {{ $popularCategory->name }}</h4>
+                                <h4 class="mb-0 fw-bold">Cerita {{ $category->name }}</h4>
                                 <div class="spinner-border text-primary d-none" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                             </div>
 
-                            <div id="category-{{ $popularCategory->id }}-container">
+                            <div id="category-{{ $category->id }}-container">
                                 @php
-                                    $categoryStories = App\Models\Story::where('category_id', $popularCategory->id)
+                                    $categoryStories = App\Models\Story::where('category_id', $category->id)
                                     ->latest('created_at')
                                     ->paginate(5);
                                 @endphp
@@ -592,7 +586,8 @@
                                         <div class="modal-dialog">
                                             <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
                                                 @csrf
-                                                <input type="hidden" name="story_id" value="{{ $story->id }}">
+                                                <input type="hidden" name="reportable_id" value="{{ $story->id }}">
+                                                <input type="hidden" name="reportable_type" value="story">
 
                                                 <div class="modal-header">
                                                 <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
@@ -633,7 +628,7 @@
                                     </div>
                                 @empty
                                     <div class="alert alert-info">
-                                        <p class="mb-0">Belum ada cerita untuk kategori {{ $popularCategory->name }}.</p>
+                                        <p class="mb-0">Belum ada cerita untuk kategori {{ $category->name }}.</p>
                                     </div>
                                 @endforelse
 
@@ -645,7 +640,6 @@
                     @endforeach
                 </div>
             </div>
-
             <!-- Right Sidebar - Trending -->
             <div class="col-lg-3">
                 <h4 class="mb-3"><i class="fas fa-fire text-danger me-2"></i>Cerita Trending</h4>
@@ -659,7 +653,7 @@
                                         <a href="{{ route('stories.show', $trendingStory) }}"
                                             class="text-decoration-none">{{ $trendingStory->title }}</a>
                                     </div>
-                                    <span class="badge bg-light text-dark">{{ $trendingStory->votes_count }} <i
+                                    <span class="badge bg-light text-dark">{{ $trendingStory->votes()->where('vote_type', 'upvote')->count() }} <i
                                             class="fas fa-thumbs-up ms-1"></i></span>
                                 </li>
                             @empty
@@ -688,6 +682,322 @@
                                 </li>
                             @endforelse
                         </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3"><i class="fas fa-tags me-2 text-primary"></i>Cerita Populer</h4>
+        <div class="mb-4 fade-in">
+            <div class="mb-3">
+                <div class="overflow-auto">
+                    <ul class="nav nav-pills flex-nowrap" id="popularTabs" role="tablist" style="white-space: nowrap;">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill px-4 py-2 fw-bold me-2"
+                                    id="all-populer-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#all-populer"
+                                    type="button" role="tab"
+                                    aria-controls="all-populer"
+                                    aria-selected="true"
+                                    style="flex-shrink: 0;">
+                                Semua
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill px-4 py-2 fw-bold me-2"
+                                    id="harian-populer-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#harian-populer"
+                                    type="button" role="tab"
+                                    aria-controls="harian-populer"
+                                    aria-selected="false"
+                                    style="flex-shrink: 0;">
+                                Harian
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill px-4 py-2 fw-bold me-2"
+                                    id="mingguan-populer-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#mingguan-populer"
+                                    type="button" role="tab"
+                                    aria-controls="mingguan-populer"
+                                    aria-selected="false"
+                                    style="flex-shrink: 0;">
+                                Mingguan
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab content for Popular Stories -->
+        <div class="col-lg-9">
+            <div class="tab-content" id="popularTabsContent">
+                <div class="tab-pane fade show active" id="all-populer" role="tabpanel"
+                        aria-labelledby="all-populer-tab">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="spinner-border text-primary d-none" role="status" id="storiesLoader">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div id="popularAllContainer">
+                        @if($popularStoriesAll->count() > 0)
+                            @foreach($popularStoriesAll as $story)
+                                <div class="card story-card fade-in mb-4">
+                                    <div class="story-header">
+                                        <div class="user-info">
+                                            <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
+                                            <div>
+                                                <div class="fw-bold">
+                                                    @if($story->anonymous)
+                                                        Anonim
+                                                    @else
+                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                    @endif
+                                                </div>
+                                                <div class="text-muted small">
+                                                    {{ $story->created_at->diffForHumans() }}</div>
+                                            </div>
+                                        </div>
+                                        @if(Auth::id() != $story->user_id)
+                                            {{-- Alert Section --}}
+                                            @if(session('success'))
+                                            <div class="alert alert-success">
+                                                {{ session('success') }}
+                                            </div>
+                                            @endif
+                                            @if(session('error'))
+                                            <div class="alert alert-danger">
+                                                {{ session('error') }}
+                                            </div>
+                                            @endif
+                                        @endif
+                                        <div class="dropdown">
+                                            @if($story->votes()->where('vote_type', 'like')->count() > 10)
+                                                <span class="badge bg-danger rounded-pill me-2">
+                                                    <i class="fas fa-fire me-1"></i> Trending
+                                                </span>
+                                            @endif
+                                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                @guest
+                                                <li>
+                                                    <button @disabled(true) class="dropdown-item">
+                                                        <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button @disabled(true) class="dropdown-item">
+                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                    </button>
+                                                </li>
+                                                @endguest
+                                                @auth
+                                                    @role('user')
+                                                        @if(Auth::id() === $story->user_id)
+                                                            <li>
+                                                                <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        @endif
+                                                        @if(Auth::id() != $story->user_id && $story->user_id)
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
+                                                                    <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                </button>
+                                                            </li>
+                                                            @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
+                                                                <li>
+                                                                    <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        @endif
+                                                    @endrole
+                                                    @role('moderator')
+                                                        <li>
+                                                            <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @endrole
+                                                @endauth
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="story-content">
+                                        <span class="badge-category">{{ $story->category->name }}</span>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="text-decoration-none">
+                                            <h2 class="story-title">{{ $story->title }}</h2>
+                                        </a>
+                                        <div class="story-meta">
+                                            <span>Ditulis oleh:
+                                                @if($story->anonymous)
+                                                    Anonim
+                                                @else
+                                                    {{ optional($story->user)->name ?? 'Anonim' }}
+                                                @endif
+                                            </span> •
+                                            <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
+                                        </div>
+                                        <div class="story-text">
+                                            <p>{{ Str::limit(strip_tags($story->content), 200) }}</p>
+                                        </div>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="read-more">Baca selengkapnya <i
+                                                class="fas fa-arrow-right ms-1"></i></a>
+                                    </div>
+                                    <div class="story-footer">
+                                        <div class="vote-buttons">
+                                            <form
+                                                action="{{ route('stories.vote', $story) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="vote_type" value="upvote">
+                                                <button class="vote-btn upvote">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                    <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
+                                                </button>
+                                            </form>
+                                            <form
+                                                action="{{ route('stories.vote', $story) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="vote_type" value="downvote">
+                                                <button class="vote-btn downvote">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                    <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted">
+                                                <i class="fas fa-comment me-1"></i>
+                                                {{ $story->comments->count() }}
+                                                Komentar
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal for this story -->
+                                <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
+                                            @csrf
+                                            <input type="hidden" name="reportable_id" value="{{ $story->id }}">
+                                            <input type="hidden" name="reportable_type" value="story">
+
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
+                                                <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
+                                                <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa">
+                                                <label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
+                                                <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
+                                            </div>
+                                            <textarea
+                                                name="other_reason"
+                                                id="otherReasonText-{{ $story->id }}"
+                                                class="form-control mt-2 d-none"
+                                                placeholder="Jelaskan alasanmu..."
+                                            ></textarea>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                        <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="alert alert-info">
+                                <p class="mb-0">Belum ada cerita populer tersedia.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="harian-populer" role="tabpanel" aria-labelledby="harian-populer-tab">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Loader spinner -->
+                    </div>
+
+                    <div id="popularDailyContainer">
+                        @if($popularStoriesDaily->count() > 0)
+                            @foreach($popularStoriesDaily as $story)
+                                <!-- Kode story card -->
+                            @endforeach
+                        @else
+                            <div class="alert alert-info">
+                                <p class="mb-0">Belum ada cerita populer hari ini.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="mingguan-populer" role="tabpanel" aria-labelledby="mingguan-populer-tab">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Loader spinner -->
+                    </div>
+
+                    <div id="popularWeeklyContainer">
+                        @if($popularStoriesWeekly->count() > 0)
+                            @foreach($popularStoriesWeekly as $story)
+                                <!-- Kode story card -->
+                            @endforeach
+                        @else
+                            <div class="alert alert-info">
+                                <p class="mb-0">Belum ada cerita populer minggu ini.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

@@ -12,26 +12,69 @@ use Illuminate\Support\Facades\Auth;
 
 class StoryController extends Controller
 {
-    private function getTrendingStories($limit = 5)
+    // Method untuk trending stories (berdasarkan upvotes)
+    private function getTrendingStories($period = 'all', $limit = 5)
     {
-        return Story::with(['user', 'category'])
-            ->withCount(['votes' => function($query) {
+        $query = Story::with(['user', 'category']);
+
+        // Filter berdasarkan periode
+        switch ($period) {
+            case 'daily':
+                $query->where('created_at', '>=', now()->subDay());
+                break;
+            case 'weekly':
+                $query->where('created_at', '>=', now()->subWeek());
+                break;
+            case 'all':
+            default:
+                // Tidak ada filter waktu
+                break;
+        }
+
+        // Sorting berdasarkan jumlah upvotes
+        $trendingStories = $query->withCount(['votes as upvotes_count' => function($query) {
                 $query->where('vote_type', 'upvote');
             }])
-            ->withCount('comments')
-            ->orderByDesc('votes_count')
-            ->orderByDesc('comments_count')
-            ->orderByDesc('created_at')
-            ->take($limit)
+            ->orderByDesc('upvotes_count')
+            ->limit($limit)
             ->get();
+
+        return $trendingStories;
     }
 
-    private function getPopularCategories($limit = 5)
+    // Method untuk popular stories tanpa pagination
+    private function getPopularStories($period = 'all', $limit = 8)
     {
-        return Category::withCount('stories')
-        ->orderByDesc('stories_count')
-        ->take($limit)
-        ->get();
+        $query = Story::with(['user', 'category']);
+
+        switch ($period) {
+            case 'daily':
+                $query->where('created_at', '>=', now()->subDay());
+                break;
+            case 'weekly':
+                $query->where('created_at', '>=', now()->subWeek());
+                break;
+        }
+
+        return $query->withCount([
+                'votes as upvotes_count' => function($query) {
+                    $query->where('vote_type', 'upvote');
+                },
+                'votes as downvotes_count' => function($query) {
+                    $query->where('vote_type', 'downvote');
+                },
+                'comments as comments_count'
+            ])
+            ->get()
+            ->map(function ($story) {
+                $story->popularity_score =
+                    ($story->upvotes_count * 3) +
+                    ($story->comments_count * 2) -
+                    ($story->downvotes_count * 1);
+                return $story;
+            })
+            ->sortByDesc('popularity_score')
+            ->take($limit);
     }
 
     private function getPopularAuthors($limit = 5)
@@ -80,8 +123,10 @@ class StoryController extends Controller
         }
 
         $isFollowing = [];
+        $allCategories = Category::withCount('stories')
+        ->orderByDesc('stories_count')
+        ->get();
 
-        // Jika user login, cek status following untuk semua penulis cerita
         if (Auth::check()) {
             $stories = $query->latest('created_at')->get();
             foreach ($stories as $story) {
@@ -93,21 +138,23 @@ class StoryController extends Controller
             }
         }
 
-        $stories = $query->latest('created_at')->paginate(10);
-        $categories = Category::all();
+        $stories = $query->latest('created_at')->paginate(6);
 
-        // Get trending stories, popular categories, and popular authors
+        // Cerita populer tanpa pagination
+        $popularStoriesAll = $this->getPopularStories('all', 8);
+        $popularStoriesDaily = $this->getPopularStories('daily', 8);
+        $popularStoriesWeekly = $this->getPopularStories('weekly', 8);
+
         $trendingStories = $this->getTrendingStories();
-        $popularCategories = $this->getPopularCategories();
         $popularAuthors = $this->getPopularAuthors();
-
-        $isFollowing = $isFollowing ?? false;
 
         return view('home.index', compact(
             'stories',
-            'categories',
+            'allCategories',
             'trendingStories',
-            'popularCategories',
+            'popularStoriesAll',
+            'popularStoriesDaily',
+            'popularStoriesWeekly',
             'popularAuthors',
             'isFollowing'
         ));
