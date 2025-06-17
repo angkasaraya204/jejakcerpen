@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CeritaKita - Platform Berbagi Cerita</title>
+    <title>JejakCerita - Platform Berbagi Cerita</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -18,7 +18,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
                 <i class="fas fa-book-open me-2 text-primary"></i>
-                CeritaKita
+                JejakCerita
             </a>
             <div class="d-flex align-items-center">
                 <div class="dark-mode-toggle me-3" id="darkModeToggle">
@@ -204,6 +204,18 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
+                                                @guest
+                                                    <li>
+                                                        <button @disabled(true) class="dropdown-item">
+                                                            <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button @disabled(true) class="dropdown-item">
+                                                            <i class="fas fa-trash me-2"></i> Hapus
+                                                        </button>
+                                                    </li>
+                                                @endguest
                                                 @auth
                                                     @hasanyrole(['moderator', 'user'])
                                                         @if(Auth::id() != $comment->user_id && $comment->user_id)
@@ -265,6 +277,18 @@
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end">
+                                                    @guest
+                                                        <li>
+                                                            <button @disabled(true) class="dropdown-item">
+                                                                <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button @disabled(true) class="dropdown-item">
+                                                                <i class="fas fa-trash me-2"></i> Hapus
+                                                            </button>
+                                                        </li>
+                                                    @endguest
                                                     @auth
                                                         @hasanyrole(['moderator', 'user'])
                                                             @if(Auth::id() != $comment->user_id && $comment->user_id)
@@ -414,13 +438,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h5 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-primary"></i>CeritaKita</h5>
-                    <p class="text-muted">Platform berbagi cerita terpopuler di Indonesia. Temukan inspirasi dan bagikan
+                    <h5 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-primary"></i>JejakCerita</h5>
+                    <p class="text-muted">Platform berbagi cerita pendek terpopuler di Indonesia. Temukan inspirasi dan bagikan
                         kisahmu dengan ribuan pembaca di seluruh negeri.</p>
                 </div>
             </div>
             <div class="border-top mt-4 pt-4 text-center">
-                <p class="text-muted small mb-0">Copyright &copy; 2025 JejakCerpen | Angkasa Raya (10122184).</p>
+                <p class="text-muted small mb-0">Copyright &copy; 2025 JejakCerita | Angkasa Raya (10122184).</p>
             </div>
         </div>
     </footer>

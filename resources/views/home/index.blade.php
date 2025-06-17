@@ -1010,7 +1010,7 @@
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h5 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-primary"></i>JejakCerita</h5>
-                    <p class="text-muted">Platform berbagi cerita terpopuler di Indonesia. Temukan inspirasi dan bagikan
+                    <p class="text-muted">Platform berbagi cerita pendek terpopuler di Indonesia. Temukan inspirasi dan bagikan
                         kisahmu dengan ribuan pembaca di seluruh negeri.</p>
                 </div>
             </div>
