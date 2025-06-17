@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CeritaKita - Platform Berbagi Cerita</title>
+    <title>JejakCerita - Platform Berbagi Cerita</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -122,7 +122,7 @@
 
     <!-- Main Content -->
     <div class="container py-5" id="mainContent">
-        <h4 class="mb-3"><i class="fas fa-tags me-2 text-primary"></i>Cerita Terbaru</h4>
+        <h4 class="mb-3"><i class="fas fa-clock me-2 text-primary"></i>Cerita Terbaru</h4>
         <div class="mb-4 fade-in">
             <div class="mb-3">
                 <div class="overflow-auto">
@@ -687,7 +687,7 @@
             </div>
         </div>
 
-        <h4 class="mb-3"><i class="fas fa-tags me-2 text-primary"></i>Cerita Populer</h4>
+        <h4 class="mb-3"><i class="fas fa-chart-line me-2 text-success"></i>Cerita Populer</h4>
         <div class="mb-4 fade-in">
             <div class="mb-3">
                 <div class="overflow-auto">
