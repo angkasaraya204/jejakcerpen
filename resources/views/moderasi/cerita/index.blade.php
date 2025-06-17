@@ -129,9 +129,19 @@
                                             <span class="badge bg-secondary">Komentar</span>
                                         @endif
                                     </td>
-                                    <td>{{ $report->reportable->story->title ?? '—' }}</td>
-                                    <td>{{ $report->reason }}</td>
-                                    <td>{{ $report->status }}</td>
+                                    <td>
+                                        @if($report->reportable_type === 'App\Models\Story')
+                                            {{ $report->reportable->title ?? '—' }}
+                                        @elseif($report->reportable_type === 'App\Models\Comment')
+                                            {{ $report->reportable->story->title ?? '—' }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger text-white">{{ $report->reason }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-white">{{ $report->status }}</span>
+                                    </td>
                                     <td>
                                         <form action="{{ route('reports.update', $report) }}" method="POST">
                                             @csrf

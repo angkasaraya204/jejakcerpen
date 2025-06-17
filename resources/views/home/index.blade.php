@@ -746,8 +746,8 @@
                     </div>
 
                     <div id="popularAllContainer">
-                        @if($popularStoriesAll->count() > 0)
-                            @foreach($popularStoriesAll as $story)
+                        @if($popularStoriesAllTime->count() > 0)
+                            @foreach($popularStoriesAllTime as $story)
                                 <div class="card story-card fade-in mb-4">
                                     <div class="story-header">
                                         <div class="user-info">

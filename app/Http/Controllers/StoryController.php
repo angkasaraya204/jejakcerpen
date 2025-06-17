@@ -141,7 +141,7 @@ class StoryController extends Controller
         $stories = $query->latest('created_at')->paginate(6);
 
         // Cerita populer tanpa pagination
-        $popularStoriesAll = $this->getPopularStories('all', 8);
+        $popularStoriesAllTime = $this->getPopularStories('all', 8);
         $popularStoriesDaily = $this->getPopularStories('daily', 8);
         $popularStoriesWeekly = $this->getPopularStories('weekly', 8);
 
@@ -152,7 +152,7 @@ class StoryController extends Controller
             'stories',
             'allCategories',
             'trendingStories',
-            'popularStoriesAll',
+            'popularStoriesAllTime',
             'popularStoriesDaily',
             'popularStoriesWeekly',
             'popularAuthors',
