@@ -182,7 +182,7 @@
                                     <div class="mb-3 form-check">
                                         <!-- Tambahkan hidden field -->
                                         <input type="hidden" name="anonymous" value="0">
-                                        <input type="checkbox" name="anonymous" value="1" class="form-check-input">
+                                        <input type="checkbox" name="anonymous" value="0" class="form-check-input">
                                         <label class="form-check-label">Komentari sebagai anonim</label>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Kirim Komentar</button>
@@ -258,7 +258,7 @@
                                             <div class="form-check">
                                                 <!-- Tambahkan hidden field -->
                                                 <input type="hidden" name="anonymous" value="0">
-                                                <input type="checkbox" name="anonymous" value="1" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
+                                                <input type="checkbox" name="anonymous" value="0" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
                                                 <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai anonim</label>
                                             </div>
                                         </form>
