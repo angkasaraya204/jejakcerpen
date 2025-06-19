@@ -1,0 +1,54 @@
+@extends('layouts.master')
+@section('title', 'Melaporkan Cerita')
+@section('content')
+<div class="page-header">
+    <h3 class="page-title"> Melaporkan Cerita </h3>
+</div>
+<div class="grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            @if($melaporkan->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Judul Cerita</th>
+                                <th>Alasan Pelaporan</th>
+                                <th>Tanggal Laporan</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($melaporkan as $melaporkanItem)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $melaporkanItem->reportable->content ?? '-' }}</td>
+                                    <td>
+                                        <span class="badge badge-danger">{{ $melaporkanItem->reason }}</span>
+                                    </td>
+                                    <td>{{ $melaporkanItem->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        @if($melaporkanItem->status == 'valid')
+                                            <span class="badge badge-success">Disetujui</span>
+                                        @elseif($melaporkanItem->status == 'tidak-valid')
+                                            <span class="badge badge-danger">Ditolak</span>
+                                        @else
+                                            <span class="badge badge-warning">Pending</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6">
+                    {{ $melaporkan->links() }}
+                </div>
+            @else
+                <p class="text-gray-600">Belum ada laporan komentar yang Anda kirim.</p>
+            @endif
+        </div>
+    </div>
+</div>
+@endsection

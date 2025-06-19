@@ -61,4 +61,64 @@ class ReportController extends Controller
 
         return back()->with('success', 'Konten berhasil dilaporkan!');
     }
+
+    public function storiesmelaporkan(Story $story)
+    {
+        // Ambil laporan cerita yang dibuat oleh user yang sedang login
+        $melaporkan = Report::with(['reportable' => function($query) {
+                // Pastikan reportable adalah Story dan eager load data yang diperlukan
+                $query->with('user'); // jika ingin menampilkan data user pembuat cerita
+            }])
+            ->where('user_id', auth()->id())
+            ->where('reportable_type', Story::class)
+            ->orderBy('created_at', 'desc')
+            ->paginate(8);
+
+        return view('user.melaporkan.cerita.index', compact('melaporkan'));
+    }
+    public function commentmelaporkan(Comment $comment)
+    {
+        // Ambil laporan cerita yang dibuat oleh user yang sedang login
+        $melaporkan = Report::with(['reportable' => function($query) {
+                // Pastikan reportable adalah Story dan eager load data yang diperlukan
+                $query->with('user'); // jika ingin menampilkan data user pembuat cerita
+            }])
+            ->where('user_id', auth()->id())
+            ->where('reportable_type', Comment::class)
+            ->orderBy('created_at', 'desc')
+            ->paginate(8);
+
+        return view('user.melaporkan.komentar.index', compact('melaporkan'));
+    }
+
+    public function storiesdilaporkan(Story $story)
+    {
+        // Ambil laporan cerita yang dibuat oleh user yang sedang login dan statusnya 'valid' (disetujui)
+        $dilaporkan = Report::with(['reportable' => function($query) {
+                // Pastikan reportable adalah Story dan eager load data yang diperlukan
+                $query->with('user'); // jika ingin menampilkan data user pembuat cerita
+            }])
+            ->where('user_id', auth()->id())
+            ->where('reportable_type', Story::class)
+            ->where('status', 'valid')
+            ->orderBy('updated_at', 'desc') // diurutkan berdasarkan kapan status diupdate
+            ->paginate(8);
+
+        return view('user.dilaporkan.cerita.index', compact('dilaporkan'));
+    }
+    public function commentdilaporkan(Comment $comment)
+    {
+        // Ambil laporan cerita yang dibuat oleh user yang sedang login dan statusnya 'valid' (disetujui)
+        $dilaporkan = Report::with(['reportable' => function($query) {
+                // Pastikan reportable adalah Story dan eager load data yang diperlukan
+                $query->with('user'); // jika ingin menampilkan data user pembuat cerita
+            }])
+            ->where('user_id', auth()->id())
+            ->where('reportable_type', Comment::class)
+            ->where('status', 'valid')
+            ->orderBy('updated_at', 'desc') // diurutkan berdasarkan kapan status diupdate
+            ->paginate(8);
+
+        return view('user.dilaporkan.komentar.index', compact('dilaporkan'));
+    }
 }

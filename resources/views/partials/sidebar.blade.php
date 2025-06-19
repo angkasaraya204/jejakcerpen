@@ -30,15 +30,15 @@
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
-      <li class="nav-item menu-items">
-        <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+      <li class="nav-item menu-items {{ request()->routeIs('stories.*', 'comments.*') ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#moderasi" aria-expanded="false" aria-controls="moderasi">
           <span class="menu-icon">
             <i class="mdi mdi-laptop"></i>
           </span>
           <span class="menu-title">Moderasi</span>
           <i class="menu-arrow"></i>
         </a>
-        <div class="collapse" id="ui-basic">
+        <div class="collapse" id="moderasi">
           <ul class="nav flex-column sub-menu">
             <li class="nav-item"> <a class="nav-link" href="{{ route('stories.index') }}">Cerita</a></li>
             <li class="nav-item"> <a class="nav-link" href="{{ route('comments.index') }}">Komentar</a></li>
@@ -82,6 +82,47 @@
           </span>
           <span class="menu-title">Kategori</span>
         </a>
+      </li>
+      @endrole
+
+      @role('user')
+      <li class="nav-item menu-items {{ url()->current() == route('stories.trending') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('stories.trending') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Trending</span>
+        </a>
+      </li>
+      <li class="nav-item menu-items {{ request()->routeIs('storie.*', 'comment.*') ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#melaporkan" aria-expanded="false" aria-controls="melaporkan">
+          <span class="menu-icon">
+            <i class="mdi mdi-laptop"></i>
+          </span>
+          <span class="menu-title">Melaporkan</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="melaporkan">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{{ route('storie.melaporkan') }}">Cerita</a></li>
+            <li class="nav-item"> <a class="nav-link" href="{{ route('comment.melaporkan') }}">Komentar</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item menu-items {{ request()->routeIs('storie.*', 'comment.*') ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#dilaporkan" aria-expanded="false" aria-controls="dilaporkan">
+          <span class="menu-icon">
+            <i class="mdi mdi-laptop"></i>
+          </span>
+          <span class="menu-title">Dilaporkan</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="dilaporkan">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{{ route('storie.dilaporkan') }}">Cerita</a></li>
+            <li class="nav-item"> <a class="nav-link" href="{{ route('comment.dilaporkan') }}">Komentar</a></li>
+          </ul>
+        </div>
       </li>
       @endrole
     </ul>

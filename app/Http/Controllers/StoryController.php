@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class StoryController extends Controller
 {
-    // Method untuk trending stories (berdasarkan upvotes)
     private function getTrendingStories($period = 'all', $limit = 5)
     {
         $query = Story::with(['user', 'category']);
@@ -25,19 +24,44 @@ class StoryController extends Controller
             case 'weekly':
                 $query->where('created_at', '>=', now()->subWeek());
                 break;
+            case 'monthly':
+                $query->where('created_at', '>=', now()->subMonth());
+                break;
             case 'all':
             default:
                 // Tidak ada filter waktu
                 break;
         }
 
-        // Sorting berdasarkan jumlah upvotes
-        $trendingStories = $query->withCount(['votes as upvotes_count' => function($query) {
-                $query->where('vote_type', 'upvote');
-            }])
-            ->orderByDesc('upvotes_count')
-            ->limit($limit)
+        // Ambil semua stories dengan count, lalu filter dan sort di PHP
+        $stories = $query->withCount([
+                'votes as upvotes_count' => function($query) {
+                    $query->where('vote_type', 'upvote');
+                },
+                'votes as downvotes_count' => function($query) {
+                    $query->where('vote_type', 'downvote');
+                },
+                'comments as comments_count'
+            ])
             ->get();
+
+        // Filter dan sort di collection
+        $trendingStories = $stories
+            ->filter(function($story) {
+                return $story->upvotes_count > 0; // Minimal 1 upvote
+            })
+            ->map(function($story) {
+                // Hitung trending score
+                $story->trending_score = $story->upvotes_count - $story->downvotes_count + ($story->comments_count * 0.5);
+                return $story;
+            })
+            ->filter(function($story) {
+                return $story->trending_score > 0; // Trending score harus positif
+            })
+            ->sortByDesc('trending_score')
+            ->sortByDesc('created_at') // Secondary sort untuk score yang sama
+            ->take($limit)
+            ->values(); // Reset keys
 
         return $trendingStories;
     }
@@ -185,7 +209,7 @@ class StoryController extends Controller
         ]);
 
         // Pastikan nilai anonymous selalu ada, dengan nilai default false jika tidak ada
-        $anonymous = isset($validated['anonymous']) ? true : false;
+        $anonymous = (bool) $validated['anonymous'];
 
         $story = new Story([
             'title' => $validated['title'],

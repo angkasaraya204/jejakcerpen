@@ -295,7 +295,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'Anonim' }}
+                                                        {{ optional($story->user)->name ?? 'User' }}
                                                     @endif
                                                 </span> •
                                                 <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
@@ -536,7 +536,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'Anonim' }}
+                                                        {{ optional($story->user)->name ?? 'User' }}
                                                     @endif
                                                 </span> •
                                                 <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
@@ -866,7 +866,7 @@
                                                 @if($story->anonymous)
                                                     Anonim
                                                 @else
-                                                    {{ optional($story->user)->name ?? 'Anonim' }}
+                                                    {{ optional($story->user)->name ?? 'User' }}
                                                 @endif
                                             </span> •
                                             <span>{{ $story->created_at->format('d M Y, H:i') }}</span>

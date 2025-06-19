@@ -32,6 +32,17 @@ Route::middleware('auth')->group(function () {
 
         // Vote routes
         Route::post('/stories/{story}/vote', [VoteController::class, 'vote'])->name('stories.vote');
+
+        // Trending
+        Route::get('/trending/stories', [UserController::class, 'getTrendingbyUser'])->name('stories.trending');
+
+        // Melaporkan
+        Route::get('/melaporkan/stories', [ReportController::class, 'storiesmelaporkan'])->name('storie.melaporkan');
+        Route::get('/melaporkan/comment', [ReportController::class, 'commentmelaporkan'])->name('comment.melaporkan');
+
+        // Dilaporkan
+        Route::get('/dilaporkan/stories', [ReportController::class, 'storiesdilaporkan'])->name('storie.dilaporkan');
+        Route::get('/dilaporkan/comment', [ReportController::class, 'commentdilaporkan'])->name('comment.dilaporkan');
     });
 
     Route::middleware(['role:admin|user'])->group(function () {

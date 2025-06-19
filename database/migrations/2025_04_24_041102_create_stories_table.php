@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('anonymous')->default(false);
             $table->timestamps();
         });

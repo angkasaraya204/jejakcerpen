@@ -39,10 +39,13 @@
                                 <th> Tanggal Dibuat </th>
                                 @role('admin')
                                 <th> Oleh </th>
-                                @endrole
                                 <th> Jumlah Komentar </th>
                                 <th> Jumlah Upvote </th>
                                 <th> Jumlah Downvote </th>
+                                @endrole
+                                @role('user')
+                                <th> Jumlah Downvote </th>
+                                @endrole
                                 <th> Deskripsi </th>
                                 <th> Aksi </th>
                             </tr>
@@ -59,13 +62,16 @@
                                         @if($story->anonymous)
                                             Anonim
                                         @else
-                                            {{ optional($story->user)->name ?? 'Anonim' }}
+                                            {{ optional($story->user)->name ?? 'User' }}
                                         @endif
                                     </td>
-                                    @endrole
                                     <td>{{ $story->comments->count() }} komentar</td>
                                     <td>{{ $story->votes->where('vote_type', 'upvote')->count() }} Upvote</td>
                                     <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
+                                    @endrole
+                                    @role('user')
+                                    <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
+                                    @endrole
                                     <td>{{ Str::limit(strip_tags($story->content), 200) }}</td>
                                     @hasanyrole(['admin','user'])
                                     <td>
@@ -99,6 +105,11 @@
 @role('moderator')
 <div class="page-header">
     <h3 class="page-title"> Daftar Laporan </h3>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+        </ol>
+    </nav>
 </div>
 <div class="grid-margin stretch-card">
     <div class="card">

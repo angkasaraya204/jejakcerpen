@@ -11,8 +11,7 @@
     </nav>
 </div>
 
-<div class="row">
-    <div class="col-lg-12 grid-margin stretch-card">
+<div class="grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -21,7 +20,7 @@
 
                 @if($following->count() > 0)
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>No.</th>
@@ -39,7 +38,7 @@
                                         <td>{{ $follow->followed->email }}</td>
                                         <td>{{ $follow->created_at->format('d M Y, H:i') }}</td>
                                         <td>
-                                            <a href="{{ route('dashboard.unfollow', $follow->followed->id) }}" class="btn btn-sm btn-danger">
+                                            <a href="{{ route('dashboard.unfollow', $follow->followed->id) }}" class="btn btn-danger">
                                                 <i class="mdi mdi-account-minus"></i> Berhenti Ikuti
                                             </a>
                                         </td>
@@ -60,5 +59,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection
