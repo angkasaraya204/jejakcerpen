@@ -77,6 +77,17 @@
         </div>
     </nav>
 
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="p-4">
@@ -193,19 +204,6 @@
                                                         {{ $story->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
-                                            @if(Auth::id() != $story->user_id)
-                                                {{-- Alert Section --}}
-                                                @if(session('success'))
-                                                <div class="alert alert-success">
-                                                    {{ session('success') }}
-                                                </div>
-                                                @endif
-                                                @if(session('error'))
-                                                <div class="alert alert-danger">
-                                                    {{ session('error') }}
-                                                </div>
-                                                @endif
-                                            @endif
                                             <div class="dropdown">
                                                 @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                     <span class="badge bg-danger rounded-pill me-2">
@@ -434,19 +432,6 @@
                                                         {{ $story->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
-                                            @if(Auth::id() != $story->user_id)
-                                                {{-- Alert Section --}}
-                                                @if(session('success'))
-                                                <div class="alert alert-success">
-                                                    {{ session('success') }}
-                                                </div>
-                                                @endif
-                                                @if(session('error'))
-                                                <div class="alert alert-danger">
-                                                    {{ session('error') }}
-                                                </div>
-                                                @endif
-                                            @endif
                                             <div class="dropdown">
                                                 @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                     <span class="badge bg-danger rounded-pill me-2">
@@ -764,19 +749,6 @@
                                                     {{ $story->created_at->diffForHumans() }}</div>
                                             </div>
                                         </div>
-                                        @if(Auth::id() != $story->user_id)
-                                            {{-- Alert Section --}}
-                                            @if(session('success'))
-                                            <div class="alert alert-success">
-                                                {{ session('success') }}
-                                            </div>
-                                            @endif
-                                            @if(session('error'))
-                                            <div class="alert alert-danger">
-                                                {{ session('error') }}
-                                            </div>
-                                            @endif
-                                        @endif
                                         <div class="dropdown">
                                             @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                 <span class="badge bg-danger rounded-pill me-2">

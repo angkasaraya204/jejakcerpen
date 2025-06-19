@@ -3,6 +3,12 @@
 @section('content')
 <div class="page-header">
     <h3 class="page-title"> Melaporkan Cerita </h3>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Melaporkan</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Komentar</li>
+        </ol>
+    </nav>
 </div>
 <div class="grid-margin stretch-card">
     <div class="card">
@@ -46,7 +52,7 @@
                     {{ $melaporkan->links() }}
                 </div>
             @else
-                <p class="text-gray-600">Belum ada laporan cerita yang Anda kirim.</p>
+                <div class="alert alert-info">Belum ada laporan cerita yang Anda kirim.</div>
             @endif
         </div>
     </div>

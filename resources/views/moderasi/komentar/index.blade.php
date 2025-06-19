@@ -4,6 +4,12 @@
 
 <div class="page-header">
     <h3 class="page-title"> Daftar Komentar </h3>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Moderasi</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Komentar</li>
+        </ol>
+    </nav>
 </div>
 
 {{-- Alert Section --}}
@@ -74,7 +80,7 @@
                     {{ $comments->links() }}
                 </div>
             @else
-                <p class="text-gray-600">Belum ada komentar tersedia.</p>
+                <div class="alert alert-info">Belum ada komentar tersedia.</div>
             @endif
         </div>
     </div>

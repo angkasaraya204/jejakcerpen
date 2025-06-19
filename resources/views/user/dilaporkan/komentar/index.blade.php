@@ -6,7 +6,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Cerita Dilaporkan</li>
+            <li class="breadcrumb-item active" aria-current="page">Komentar Dilaporkan</li>
         </ol>
     </nav>
 </div>
@@ -59,7 +59,7 @@
                     {{ $dilaporkan->links() }}
                 </div>
             @else
-                <p class="text-gray-600">Komentarmu belum pernah dilaporkan.</p>
+                <div class="alert alert-info">Komentarmu belum pernah dilaporkan.</div>
             @endif
         </div>
     </div>

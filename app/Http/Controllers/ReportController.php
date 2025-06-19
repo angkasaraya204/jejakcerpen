@@ -47,7 +47,7 @@ class ReportController extends Controller
             ->exists();
 
         if ($already) {
-            return back()->with('error', 'Anda sudah melaporkan konten ini sebelumnya.');
+            return back()->with('error', 'Anda sudah melaporkan cerita ini sebelumnya.');
         }
 
         // Jika belum, buat laporan
@@ -59,7 +59,7 @@ class ReportController extends Controller
             'status'           => 'pending',
         ]);
 
-        return back()->with('success', 'Konten berhasil dilaporkan!');
+        return back()->with('success', 'Cerita berhasil dilaporkan!');
     }
 
     public function storiesmelaporkan(Story $story)

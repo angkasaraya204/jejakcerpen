@@ -3,6 +3,12 @@
 @section('content')
 <div class="page-header">
     <h3 class="page-title"> Ceritaku Trending </h3>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Trending</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cerita</li>
+        </ol>
+    </nav>
 </div>
 <div class="grid-margin stretch-card">
     <div class="card">
@@ -33,7 +39,7 @@
                     </table>
                 </div>
             @else
-                <p class="text-gray-600">Belum ada ceritamu yang trending.</p>
+                <div class="alert alert-info">Belum ada ceritamu yang trending.</div>
             @endif
         </div>
     </div>

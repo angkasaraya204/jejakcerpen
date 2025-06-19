@@ -17,6 +17,12 @@
 @hasanyrole(['admin','user'])
 <div class="page-header">
     <h3 class="page-title"> Daftar Cerita </h3>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Moderasi</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cerita</li>
+        </ol>
+    </nav>
 </div>
 <div class="grid-margin stretch-card">
     <div class="card">
@@ -95,7 +101,7 @@
                     {{ $stories->links() }}
                 </div>
             @else
-                <p class="text-gray-600">Belum ada cerita tersedia.</p>
+                <div class="alert alert-info">Belum ada cerita tersedia.</div>
             @endif
         </div>
     </div>

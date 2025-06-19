@@ -59,7 +59,7 @@
                     {{ $dilaporkan->links() }}
                 </div>
             @else
-                <p class="text-gray-600">Ceritamu belum pernah dilaporkan.</p>
+                <div class="alert alert-info">Ceritamu belum pernah dilaporkan.</div>
             @endif
         </div>
     </div>
