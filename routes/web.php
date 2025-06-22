@@ -70,23 +70,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
         Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
+
+        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
     });
 
-    // Admin & Moderator routes
     Route::middleware(['role:moderator'])->group(function () {
         Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
         Route::patch('/stories/{story}/sensitive', [StoryController::class, 'markSensitive'])->name('stories.sensitive');
     });
 
-    Route::middleware(['role:user|moderator'])->group(function () {
-        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
-    });
-
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
-        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('categories', CategoryController::class);
     });

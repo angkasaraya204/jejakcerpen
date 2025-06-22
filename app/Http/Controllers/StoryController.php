@@ -208,14 +208,11 @@ class StoryController extends Controller
             'anonymous' => 'boolean',
         ]);
 
-        // Pastikan nilai anonymous selalu ada, dengan nilai default false jika tidak ada
-        $anonymous = (bool) $validated['anonymous'];
-
         $story = new Story([
             'title' => $validated['title'],
             'content' => $validated['content'],
             'category_id' => $validated['category_id'],
-            'anonymous' => $anonymous,
+            'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
         $story->user_id = Auth::id();
@@ -252,6 +249,6 @@ class StoryController extends Controller
     public function destroy(Story $story)
     {
         $story->delete();
-        return redirect()->route('stories.index')->with('success', 'Cerita berhasil dihapus.');
+        return back()->with('success', 'Cerita berhasil dihapus.');
     }
 }

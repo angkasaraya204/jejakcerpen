@@ -197,7 +197,7 @@
                                                         @if($story->anonymous)
                                                             Anonim
                                                         @else
-                                                            {{ optional($story->user)->name ?? 'User' }}
+                                                            {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                         @endif
                                                     </div>
                                                     <div class="text-muted small">
@@ -293,7 +293,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </span> •
                                                 <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
@@ -425,7 +425,7 @@
                                                         @if($story->anonymous)
                                                             Anonim
                                                         @else
-                                                            {{ optional($story->user)->name ?? 'User' }}
+                                                            {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                         @endif
                                                     </div>
                                                     <div class="text-muted small">
@@ -521,7 +521,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </span> •
                                                 <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
@@ -742,7 +742,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </div>
                                                 <div class="text-muted small">
@@ -838,7 +838,7 @@
                                                 @if($story->anonymous)
                                                     Anonim
                                                 @else
-                                                    {{ optional($story->user)->name ?? 'User' }}
+                                                    {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                 @endif
                                             </span> •
                                             <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
@@ -956,7 +956,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </div>
                                                 <div class="text-muted small">
@@ -1052,7 +1052,7 @@
                                                 @if($story->anonymous)
                                                     Anonim
                                                 @else
-                                                    {{ optional($story->user)->name ?? 'User' }}
+                                                    {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                 @endif
                                             </span> •
                                             <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
@@ -1170,7 +1170,7 @@
                                                     @if($story->anonymous)
                                                         Anonim
                                                     @else
-                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </div>
                                                 <div class="text-muted small">
@@ -1266,7 +1266,7 @@
                                                 @if($story->anonymous)
                                                     Anonim
                                                 @else
-                                                    {{ optional($story->user)->name ?? 'User' }}
+                                                    {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                 @endif
                                             </span> •
                                             <span>{{ $story->created_at->format('d M Y, H:i') }}</span>

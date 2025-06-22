@@ -55,7 +55,7 @@
                     <div class="form-check">
                         <input type="hidden" name="anonymous" value="0">
                         <label class="form-check-label">
-                            <input type="checkbox" name="anonymous" value="0" class="form-check-input" {{ old('anonymous') ? 'checked' : '' }}> Kirim sebagai anonim
+                            <input type="checkbox" name="anonymous" value="1" class="form-check-input" {{ old('anonymous') ? 'checked' : '' }}> Kirim sebagai anonim
                         </label>
                     </div>
                 </div>

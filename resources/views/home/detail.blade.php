@@ -75,6 +75,17 @@
         </div>
     </nav>
 
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="p-4">
@@ -143,7 +154,7 @@
                                     @if($story->anonymous)
                                         Anonim
                                     @else
-                                        {{ optional($story->user)->name ?? 'Anonim' }}
+                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
                                     @endif
                                 </div>
                                 <div class="text-muted small">{{ $story->published_at ? $story->published_at->format('d M Y, H:i') : $story->created_at->format('d M Y, H:i') }}</div>
@@ -182,8 +193,9 @@
                                     <div class="mb-3 form-check">
                                         <!-- Tambahkan hidden field -->
                                         <input type="hidden" name="anonymous" value="0">
-                                        <input type="checkbox" name="anonymous" value="0" class="form-check-input">
-                                        <label class="form-check-label">Komentari sebagai anonim</label>
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="anonymous" value="1" class="form-check-input" {{ old('anonymous') ? 'checked' : '' }}>Komentari sebagai anonim
+                                        </label>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Kirim Komentar</button>
                                 </form>
@@ -196,7 +208,13 @@
                             <div class="card mb-3">
                                 <div class="card-body comment">
                                     <div class="comment-header">
-                                        <div class="comment-user">{{ $comment->anonymous ? 'Anonim' : $comment->user->name ?? 'Pengunjung' }}</div>
+                                        <div class="comment-user">
+                                            @if($comment->anonymous)
+                                                Anonim
+                                            @else
+                                                {{ optional($comment->user)->name ?? 'Pengunjung' }}
+                                            @endif
+                                        </div>
                                         <div class="dropdown">
                                             {{ $comment->created_at->diffForHumans() }}
                                             <button class="btn btn-sm" type="button"
@@ -225,12 +243,17 @@
                                                                 </button>
                                                             </li>
                                                         @endif
-                                                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2">
+                                                        @if(Auth::id() == $comment->user_id && $comment->user_id)
+                                                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <li><a class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')"><i class="fas fa-trash me-2"></i> Hapus</a>
+                                                            <li>
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash me-2"></i> Hapus
+                                                                </button>
                                                             </li>
                                                         </form>
+                                                        @endif
                                                     @endhasanyrole
                                                 @endauth
                                             </ul>
@@ -258,8 +281,9 @@
                                             <div class="form-check">
                                                 <!-- Tambahkan hidden field -->
                                                 <input type="hidden" name="anonymous" value="0">
-                                                <input type="checkbox" name="anonymous" value="0" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
-                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai anonim</label>
+                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">
+                                                    <input type="checkbox" name="anonymous" value="1" class="form-check-input" {{ old('anonymous') ? 'checked' : '' }}  id="anonymousReply-{{ $comment->id }}">Balas sebagai anonim
+                                                </label>
                                             </div>
                                         </form>
                                     </div>
@@ -269,7 +293,13 @@
                                     <div class="comment-reply mt-3">
                                         @foreach($comment->replies as $reply)
                                         <div class="comment-header">
-                                            <div class="comment-user">{{ $reply->anonymous ? 'Anonim' : $reply->user->name ?? 'Pengunjung' }} <span class="badge bg-info text-white ms-1">Penulis</span></div>
+                                            <div class="comment-user">
+                                                @if($reply->anonymous)
+                                                    Anonim
+                                                @else
+                                                    {{ optional($reply->user)->name ?? 'Pengunjung' }}
+                                                @endif
+                                            </div>
                                             <div class="dropdown">
                                                 {{ $reply->created_at->diffForHumans() }}
                                                 <button class="btn btn-sm" type="button"
@@ -298,12 +328,17 @@
                                                                     </button>
                                                                 </li>
                                                             @endif
-                                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2">
+                                                            @if(Auth::id() == $comment->user_id && $comment->user_id)
+                                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <li><a class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')"><i class="fas fa-trash me-2"></i> Hapus</a>
+                                                                <li>
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash me-2"></i> Hapus
+                                                                    </button>
                                                                 </li>
                                                             </form>
+                                                            @endif
                                                         @endhasanyrole
                                                     @endauth
                                                 </ul>

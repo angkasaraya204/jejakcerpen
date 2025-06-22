@@ -40,13 +40,10 @@ class CommentController extends Controller
             'anonymous' => 'boolean',
         ]);
 
-        // Pastikan nilai anonymous selalu ada dengan nilai default false jika tidak ada
-        $anonymous = isset($validated['anonymous']) ? true : false;
-
         $comment = new Comment([
             'content' => $validated['content'],
             'parent_id' => $validated['parent_id'] ?? null,
-            'anonymous' => $anonymous,
+            'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
         $comment->story_id = $story->id;
@@ -73,13 +70,10 @@ class CommentController extends Controller
             'anonymous' => 'boolean',
         ]);
 
-        // Pastikan nilai anonymous selalu ada dengan nilai default false jika tidak ada
-        $anonymous = isset($validated['anonymous']) ? true : false;
-
         $comment->update([
             'content' => $validated['content'],
             'parent_id' => $validated['parent_id'] ?? $comment->parent_id,
-            'anonymous' => $anonymous,
+            'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
         return redirect()->route('stories.show', $comment->story_id)->with('success', 'Komentar berhasil diperbarui.');
@@ -99,7 +93,7 @@ class CommentController extends Controller
         $story_id = $comment->story_id;
         $comment->delete();
 
-        return redirect()->route('stories.show', $story_id)->with('success', 'Komentar berhasil dihapus.');
+        return back()->with('success', 'Komentar berhasil dihapus.');
     }
 
     public function markSensitive(Comment $comment)
