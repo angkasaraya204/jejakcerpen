@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 06, 2025 at 02:25 PM
+-- Generation Time: Jun 22, 2025 at 01:28 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.2.1
 
@@ -65,12 +65,12 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'Romantis', 'romantis', 'Cerita dengan tema percintaan dan romansa', '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(2, 'Horor', 'horor', 'Cerita dengan tema seram dan menakutkan', '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(3, 'Komedi', 'komedi', 'Cerita dengan unsur humor dan komedi', '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(4, 'Drama', 'drama', 'Cerita dengan konflik kehidupan sehari-hari', '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(5, 'Fantasi', 'fantasi', 'Cerita dengan elemen fantasi dan imajinasi', '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(6, 'Inspiratif', 'inspiratif', 'Cerita yang memberikan inspirasi dan motivasi', '2025-05-06 05:53:00', '2025-05-06 05:53:00');
+(1, 'Romantis', 'romantis', 'Cerita dengan tema percintaan dan romansa', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(2, 'Horor', 'horor', 'Cerita dengan tema seram dan menakutkan', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(3, 'Komedi', 'komedi', 'Cerita dengan unsur humor dan komedi', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(4, 'Drama', 'drama', 'Cerita dengan konflik kehidupan sehari-hari', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(5, 'Fantasi', 'fantasi', 'Cerita dengan elemen fantasi dan imajinasi', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(6, 'Inspiratif', 'inspiratif', 'Cerita yang memberikan inspirasi dan motivasi', '2025-06-21 21:58:57', '2025-06-21 21:58:57');
 
 -- --------------------------------------------------------
 
@@ -94,7 +94,7 @@ CREATE TABLE `comments` (
 --
 
 INSERT INTO `comments` (`id`, `content`, `user_id`, `story_id`, `parent_id`, `anonymous`, `created_at`, `updated_at`) VALUES
-(1, 'adfdsfdf', 4, 1, NULL, 1, '2025-05-06 06:11:50', '2025-05-06 06:11:50');
+(8, 'dsfdfsfs', 3, 4, NULL, 0, '2025-06-22 12:12:26', '2025-06-22 12:12:26');
 
 -- --------------------------------------------------------
 
@@ -254,20 +254,20 @@ CREATE TABLE `permissions` (
 --
 
 INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'view stories', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(2, 'create stories', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(3, 'edit stories', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(4, 'delete stories', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(5, 'mark sensitive', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(6, 'create comments', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(7, 'edit comments', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(8, 'delete comments', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(9, 'view users', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(10, 'edit users', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(11, 'delete users', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(12, 'access dashboard', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(13, 'view statistics', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(14, 'manage categories', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59');
+(1, 'view stories', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(2, 'create stories', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(3, 'edit stories', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(4, 'delete stories', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(5, 'mark sensitive', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(6, 'create comments', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(7, 'edit comments', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(8, 'delete comments', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(9, 'view users', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(10, 'edit users', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(11, 'delete users', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(12, 'access dashboard', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(13, 'view statistics', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(14, 'manage categories', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57');
 
 -- --------------------------------------------------------
 
@@ -285,6 +285,15 @@ CREATE TABLE `reports` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reports`
+--
+
+INSERT INTO `reports` (`id`, `user_id`, `reportable_type`, `reportable_id`, `reason`, `status`, `created_at`, `updated_at`) VALUES
+(10, 3, 'App\\Models\\Story', 3, 'Spam', 'valid', '2025-06-22 06:48:19', '2025-06-22 06:48:44'),
+(11, 4, 'App\\Models\\Comment', 7, 'Spam', 'valid', '2025-06-22 11:24:32', '2025-06-22 11:25:26'),
+(12, 4, 'App\\Models\\Comment', 8, 'Informasi Palsu', 'tidak-valid', '2025-06-22 12:12:48', '2025-06-22 12:13:09');
 
 -- --------------------------------------------------------
 
@@ -305,9 +314,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(2, 'moderator', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59'),
-(3, 'user', 'web', '2025-05-06 05:52:59', '2025-05-06 05:52:59');
+(1, 'admin', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(2, 'moderator', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(3, 'user', 'web', '2025-06-21 21:58:57', '2025-06-21 21:58:57');
 
 -- --------------------------------------------------------
 
@@ -372,7 +381,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('oaDPsZz7vfdZgFL6qTaGDTUzOi0p1Bmxss5lzxzc', 4, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiaHl5dTlTUUN2SGJvcGk3aWpFakc5UnNvZDhlMUdnVk4zeWlFbEVnWCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9zdG9yaWVzIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NDt9', 1746541289);
+('LwKpnPbGfeOS00IBaQ2FG2jeQx64d19r4kRjrf0u', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVlBwc0VGeHQ4RXloZFExSkZWdWRPSW9VbGFSZDhEODRuc0dOYzF3SyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1750597736),
+('UGJ46k8cPDB230Zm1xELVvAcPhYXmePkYmHvfzEX', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiZ0pMOHI4anM2cWlCSEdhbTZOQ3VUVnBEV3p0TUhGNFlFNTZ4RDRCWiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fX0=', 1750598164),
+('yVv92MI5XAO3wnRM3c7qa0cGwfCvmiG6DVbM9072', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOXNpcHI1SjlvMVRsaWVTZURqc2dtSUt5a2FNamoyOGdKcHQxSGtycCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1750597751);
 
 -- --------------------------------------------------------
 
@@ -396,8 +407,7 @@ CREATE TABLE `stories` (
 --
 
 INSERT INTO `stories` (`id`, `title`, `content`, `user_id`, `category_id`, `anonymous`, `created_at`, `updated_at`) VALUES
-(1, 'dgdfg', 'dfgdgasdasf', 3, 2, 0, '2025-05-06 05:54:21', '2025-05-06 06:40:10'),
-(2, 'dsggfg', 'dfgfdgd', 4, 3, 0, '2025-05-06 06:04:00', '2025-05-06 06:04:00');
+(4, 'User', 'User', 3, 2, 0, '2025-06-22 11:15:59', '2025-06-22 11:15:59');
 
 -- --------------------------------------------------------
 
@@ -421,10 +431,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin@example.com', NULL, '$2y$12$AOq16F8n3cGa.98BKfMAa.FU9iZ1qLXQe8qslW/Ho0OGHk2WS9O/6', NULL, '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(2, 'Moderator', 'moderator@example.com', NULL, '$2y$12$NNT3Gv7PQpwuKd7evWbnAuPHN.EkWEsUEMcDarMIzHQqNWL9M6t2m', NULL, '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(3, 'User', 'user@example.com', NULL, '$2y$12$0bxbWm1CQ.w2liEWNXWr.evckomIgnvwp33GTZybJQsQLUOyoWBv.', NULL, '2025-05-06 05:53:00', '2025-05-06 05:53:00'),
-(4, 'anon', 'anon@example.com', NULL, '$2y$12$c71vKRzCJbHvrV9JCYSNsOBbcoxEVDq.kPUAzX2VOQyiCNJ8cq7Qu', NULL, '2025-05-06 06:01:53', '2025-05-06 06:01:53');
+(1, 'Admin', 'admin@example.com', NULL, '$2y$12$CT4AQINR2YQbmwkh6Tl2WOoVqmUsyI2/VeZ4h2S5VRwNSWL1beeBe', NULL, '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(2, 'Moderator', 'moderator@example.com', NULL, '$2y$12$5jN7KSIrlV.d.CXHmVht7OfS41fmEtWcHkOHVrKD.RgrCd1y3SM2.', NULL, '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(3, 'User', 'user@example.com', NULL, '$2y$12$S0ZC8hgJNEjvMsiAbMSHX.8KfVYvjclt.t3aO/nVvCjUCI7tYM7vy', NULL, '2025-06-21 21:58:57', '2025-06-21 21:58:57'),
+(4, 'kiwil', 'kiwil@example.com', NULL, '$2y$12$colMcIuyuuHDpKEX4nQTAeRWutDfjeyNR5N0SGkfksjjl7NV/CC3K', NULL, '2025-06-21 21:59:56', '2025-06-21 21:59:56');
 
 -- --------------------------------------------------------
 
@@ -446,7 +456,7 @@ CREATE TABLE `votes` (
 --
 
 INSERT INTO `votes` (`id`, `user_id`, `story_id`, `vote_type`, `created_at`, `updated_at`) VALUES
-(2, 4, 1, 'upvote', '2025-05-06 06:38:01', '2025-05-06 06:38:01');
+(2, 4, 4, 'upvote', '2025-06-22 11:50:50', '2025-06-22 11:50:50');
 
 --
 -- Indexes for dumped tables
@@ -608,7 +618,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -644,7 +654,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -656,7 +666,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `stories`
 --
 ALTER TABLE `stories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -678,16 +688,16 @@ ALTER TABLE `votes`
 -- Constraints for table `comments`
 --
 ALTER TABLE `comments`
-  ADD CONSTRAINT `comments_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `comments_story_id_foreign` FOREIGN KEY (`story_id`) REFERENCES `stories` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `comments_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `comments_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `comments_story_id_foreign` FOREIGN KEY (`story_id`) REFERENCES `stories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `comments_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `follows`
 --
 ALTER TABLE `follows`
-  ADD CONSTRAINT `follows_followed_id_foreign` FOREIGN KEY (`followed_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `follows_follower_id_foreign` FOREIGN KEY (`follower_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `follows_followed_id_foreign` FOREIGN KEY (`followed_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `follows_follower_id_foreign` FOREIGN KEY (`follower_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `model_has_permissions`
@@ -718,15 +728,15 @@ ALTER TABLE `role_has_permissions`
 -- Constraints for table `stories`
 --
 ALTER TABLE `stories`
-  ADD CONSTRAINT `stories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
-  ADD CONSTRAINT `stories_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `stories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `stories_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `votes`
 --
 ALTER TABLE `votes`
-  ADD CONSTRAINT `votes_story_id_foreign` FOREIGN KEY (`story_id`) REFERENCES `stories` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `votes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `votes_story_id_foreign` FOREIGN KEY (`story_id`) REFERENCES `stories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `votes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

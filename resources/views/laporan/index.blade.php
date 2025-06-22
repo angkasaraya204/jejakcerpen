@@ -29,7 +29,7 @@
                                 <th> # </th>
                                 <th> Nama </th>
                                 <th> Tipe </th>
-                                <th> Judul Cerita </th>
+                                <th> Judul </th>
                                 <th> Alasan </th>
                                 <th> Status </th>
                                 <th> Aksi </th>
