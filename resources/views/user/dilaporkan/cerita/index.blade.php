@@ -21,34 +21,31 @@
                                 <th>No</th>
                                 <th>Judul Cerita</th>
                                 <th>Alasan Pelaporan</th>
+                                <th>Oleh: </th>
                                 <th>Tanggal Laporan</th>
                                 <th>Tanggal Disetujui</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($dilaporkan as $dilaporkanItem)
+                            @forelse($dilaporkan as $dilaporkanItem)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="font-weight-bold">{{ $dilaporkanItem->reportable->title ?? 'Cerita telah dihapus' }}</span>
-                                            @if($dilaporkanItem->reportable && $dilaporkanItem->reportable->user)
-                                                <small class="text-muted">oleh: {{ $dilaporkanItem->reportable->user->name }}</small>
-                                            @endif
-                                        </div>
+                                        {{ $dilaporkanItem->reportable->title ?? 'Cerita telah dihapus' }}
                                     </td>
                                     <td>
-                                        <div class="text-wrap" style="max-width: 200px;">
-                                            {{ $dilaporkanItem->reason }}
-                                        </div>
+                                        <span class="badge badge-danger">{{ $dilaporkanItem->reason }}</span>
+                                    </td>
+                                    <td>
+                                        @if($dilaporkanItem->reportable && $dilaporkanItem->reportable->user)
+                                            {{ $dilaporkanItem->reportable->user->name }}
+                                        @endif
                                     </td>
                                     <td>{{ $dilaporkanItem->created_at->format('d/m/Y H:i') }}</td>
                                     <td>{{ $dilaporkanItem->updated_at->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        <span class="badge badge-success">
-                                            <i class="mdi mdi-check-circle"></i> Disetujui
-                                        </span>
+                                        <span>Maaf Ceritamu Tidak Sesuai Dengan Aturan Kami</span>
                                     </td>
                                 </tr>
                             @endforeach

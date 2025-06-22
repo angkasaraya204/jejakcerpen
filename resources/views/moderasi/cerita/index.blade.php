@@ -157,7 +157,13 @@
                                         <span class="badge bg-danger text-white">{{ $report->reason }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-warning text-white">{{ $report->status }}</span>
+                                        @if ($report->status === 'valid')
+                                            <span class="badge bg-danger text-white">Valid</span>
+                                        @elseif ($report->status === 'tidak-valid')
+                                            <span class="badge bg-success text-white">Tidak Valid</span>
+                                        @else
+                                            <span class="badge bg-warning text-white">Pending</span>
+                                        @endif
                                     </td>
                                     <td>
                                         <form action="{{ route('reports.update', $report) }}" method="POST">

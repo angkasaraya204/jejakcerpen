@@ -29,7 +29,7 @@
                             @foreach($melaporkan as $melaporkanItem)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $melaporkanItem->reportable->title ?? '-' }}</td>
+                                    <td>{{ $melaporkanItem->reportable->title ?? 'Cerita telah dihapus' }}</td>
                                     <td>
                                         <span class="badge badge-danger">{{ $melaporkanItem->reason }}</span>
                                     </td>
