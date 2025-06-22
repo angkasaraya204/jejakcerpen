@@ -76,8 +76,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:moderator'])->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
-        Route::patch('/stories/{story}/sensitive', [StoryController::class, 'markSensitive'])->name('stories.sensitive');
     });
 
     // Admin only routes

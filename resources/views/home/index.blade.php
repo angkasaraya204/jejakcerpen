@@ -347,41 +347,48 @@
                                                 <input type="hidden" name="reportable_type" value="story">
 
                                                 <div class="modal-header">
-                                                <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
 
                                                 <div class="modal-body">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
-                                                    <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
+                                                        <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
+                                                        <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="reason" id="reasonKebencian-{{ $story->id }}" value="Ujaran Kebencian">
+                                                        <label class="form-check-label" for="reasonKebencian-{{ $story->id }}">Ujaran Kebencian</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="reason" id="reasonPalsu-{{ $story->id }}" value="Informasi Palsu">
+                                                        <label class="form-check-label" for="reasonPalsu-{{ $story->id }}">Informasi Palsu</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="reason" id="reasonKekerasan-{{ $story->id }}" value="Kekerasan">
+                                                        <label class="form-check-label" for="reasonKekerasan-{{ $story->id }}">Kekerasan</label>
+                                                    </div>
+                                                    {{-- <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
+                                                        <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
+                                                    </div>
+                                                    <textarea
+                                                        name="other_reason"
+                                                        id="otherReasonText-{{ $story->id }}"
+                                                        class="form-control mt-2 d-none"
+                                                        placeholder="Jelaskan alasanmu..."
+                                                    ></textarea> --}}
                                                 </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
-                                                    <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa">
-                                                    <label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
-                                                    <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
-                                                </div>
-                                                <!-- Jika mau teks bebas saat 'Lainnya', bisa ditambahkan textarea yang muncul via JS -->
-                                                <textarea
-                                                    name="other_reason"
-                                                    id="otherReasonText-{{ $story->id }}"
-                                                    class="form-control mt-2 d-none"
-                                                    placeholder="Jelaskan alasanmu..."
-                                                ></textarea>
-                                            </div>
 
-                                            <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-danger">Kirim Laporan</button>
-                                            </div>
-                                        </form>
+                                                <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 @endforeach

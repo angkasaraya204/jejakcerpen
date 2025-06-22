@@ -5,8 +5,8 @@
     <h3 class="page-title"> Cerita yang Dilaporkan </h3>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Cerita Dilaporkan</li>
+            <li class="breadcrumb-item"><a href="#">Dilaporkan</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cerita</li>
         </ol>
     </nav>
 </div>
@@ -14,6 +14,9 @@
     <div class="card">
         <div class="card-body">
             @if($dilaporkan->count() > 0)
+                <div class="alert alert-warning mb-4">
+                    <strong>Informasi:</strong> Berikut adalah ceritamu yang telah dilaporkan oleh pengguna lain dan telah disetujui oleh moderator.
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -21,42 +24,53 @@
                                 <th>No</th>
                                 <th>Judul Cerita</th>
                                 <th>Alasan Pelaporan</th>
-                                <th>Oleh: </th>
+                                <th>Dilaporkan Oleh</th>
                                 <th>Tanggal Laporan</th>
                                 <th>Tanggal Disetujui</th>
-                                <th>Status</th>
+                                <th>Keterangan</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($dilaporkan as $dilaporkanItem)
+                            @foreach($dilaporkan as $dilaporkanCerita)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        {{ $dilaporkanItem->reportable->title ?? 'Cerita telah dihapus' }}
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-danger">{{ $dilaporkanItem->reason }}</span>
-                                    </td>
-                                    <td>
-                                        @if($dilaporkanItem->reportable && $dilaporkanItem->reportable->user)
-                                            {{ $dilaporkanItem->reportable->user->name }}
+                                        @if($dilaporkanCerita->reportable)
+                                            {{ $dilaporkanCerita->reportable->title }}
+                                        @else
+                                            <span class="text-muted">Cerita telah dihapus</span>
                                         @endif
                                     </td>
-                                    <td>{{ $dilaporkanItem->created_at->format('d/m/Y H:i') }}</td>
-                                    <td>{{ $dilaporkanItem->updated_at->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        <span>Maaf Ceritamu Tidak Sesuai Dengan Aturan Kami</span>
+                                        <span class="badge badge-danger">{{ $dilaporkanCerita->reason }}</span>
+                                    </td>
+                                    <td>
+                                        @if($dilaporkanCerita->user)
+                                            {{ $dilaporkanCerita->user->name }}
+                                            <small class="text-muted d-block">Pelapor</small>
+                                        @else
+                                            <span class="text-muted">Pengguna tidak ditemukan</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $dilaporkanCerita->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $dilaporkanCerita->updated_at->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <small class="text-danger d-block mt-1">
+                                            Cerita tidak sesuai dengan aturan komunitas
+                                        </small>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-6">
+                <div class="mt-4">
                     {{ $dilaporkan->links() }}
                 </div>
             @else
-                <div class="alert alert-info">Ceritamu belum pernah dilaporkan.</div>
+                <div class="alert alert-info">
+                    Cerita Anda belum pernah dilaporkan atau belum ada laporan yang disetujui.
+                </div>
             @endif
         </div>
     </div>

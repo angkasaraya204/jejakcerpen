@@ -129,10 +129,6 @@ class StoryController extends Controller
             $categories = Category::all();
 
             return view('moderasi.cerita.index', compact('stories'));
-        } elseif (Auth::user()->hasRole('moderator')) {
-            // Eager load the polymorphic relation
-            $reports = Report::with('reportable')->orderBy('created_at', 'desc')->paginate(10);
-            return view('moderasi.cerita.index', compact('reports'));
         }
     }
 

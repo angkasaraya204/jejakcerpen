@@ -6,7 +6,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Melaporkan</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Komentar</li>
+            <li class="breadcrumb-item active" aria-current="page">Cerita</li>
         </ol>
     </nav>
 </div>
@@ -14,6 +14,9 @@
     <div class="card">
         <div class="card-body">
             @if($melaporkan->count() > 0)
+                <div class="alert alert-warning mb-4">
+                    <strong>Informasi:</strong> Berikut adalah laporanmu terhadap cerita pengguna lain dan telah disetujui oleh moderator.
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -21,6 +24,7 @@
                                 <th>No</th>
                                 <th>Judul Cerita</th>
                                 <th>Alasan Pelaporan</th>
+                                {{-- <th>Melaporkan</th> --}}
                                 <th>Tanggal Laporan</th>
                                 <th>Status</th>
                             </tr>
@@ -33,6 +37,13 @@
                                     <td>
                                         <span class="badge badge-danger">{{ $melaporkanItem->reason }}</span>
                                     </td>
+                                    {{-- <td>
+                                        @if($melaporkanItem->user)
+                                            {{ $melaporkanItem->user->name }}
+                                        @else
+                                            <span class="text-muted">Pengguna tidak ditemukan</span>
+                                        @endif
+                                    </td> --}}
                                     <td>{{ $melaporkanItem->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
                                         @if($melaporkanItem->status == 'valid')

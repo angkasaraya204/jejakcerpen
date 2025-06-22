@@ -398,10 +398,16 @@
                             <input class="form-check-input" type="radio" name="reason" id="reasonViolenceComment-{{ $comment->id }}" value="Kekerasan">
                             <label class="form-check-label" for="reasonViolenceComment-{{ $comment->id }}">Kekerasan</label>
                         </div>
-                        <div class="form-check">
+                        {{-- <div class="form-check">
                             <input class="form-check-input" type="radio" name="reason" id="reasonOtherComment-{{ $comment->id }}" value="Lainnya">
                             <label class="form-check-label" for="reasonOtherComment-{{ $comment->id }}">Lainnya</label>
                         </div>
+                        <textarea
+                            name="other_reason"
+                            id="otherReasonText-{{ $story->id }}"
+                            class="form-control mt-2 d-none"
+                            placeholder="Jelaskan alasanmu..."
+                        ></textarea> --}}
                     </div>
 
                     <div class="modal-footer">

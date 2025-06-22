@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
+    public function index(Request $request, Report $report)
+    {
+        $reports = Report::with('reportable')->orderBy('created_at', 'desc')->paginate(10);
+        return view('laporan.index', compact('reports'));
+    }
+
     public function update(Request $request, Report $report)
     {
         $request->validate(['status' => 'required|in:valid,tidak-valid']);
@@ -17,10 +23,7 @@ class ReportController extends Controller
         $report->update(['status' => $request->status]);
 
         if ($request->status === 'valid') {
-            // Delete the reported content (either story or comment)
             $report->reportable->delete();
-
-            // Then delete the report itself
             // $report->delete();
         }
 
@@ -62,7 +65,7 @@ class ReportController extends Controller
         return back()->with('success', 'Cerita berhasil dilaporkan!');
     }
 
-    public function storiesmelaporkan(Story $story)
+    public function storiesmelaporkan()
     {
         // Ambil laporan cerita yang dibuat oleh user yang sedang login
         $melaporkan = Report::with('reportable.user')
@@ -73,7 +76,7 @@ class ReportController extends Controller
 
         return view('user.melaporkan.cerita.index', compact('melaporkan'));
     }
-    public function commentmelaporkan(Comment $comment)
+    public function commentmelaporkan()
     {
         // Ambil laporan cerita yang dibuat oleh user yang sedang login
         $melaporkan = Report::with('reportable.user')
@@ -87,25 +90,25 @@ class ReportController extends Controller
 
     public function storiesdilaporkan()
     {
-        $dilaporkan = Report::with('reportable.user')
-            ->where('reportable_type', Story::class)
-            ->where('status', 'valid')
+        $dilaporkan = Report::with(['reportable', 'user'])
             ->whereHas('reportable', function($q) {
                 $q->where('user_id', auth()->id());
             })
+            ->where('reportable_type', Story::class)
+            ->where('status', 'tidak-valid')
             ->orderBy('updated_at', 'desc')
             ->paginate(8);
 
         return view('user.dilaporkan.cerita.index', compact('dilaporkan'));
     }
-    public function commentdilaporkan(Comment $comment)
+    public function commentdilaporkan()
     {
-        $dilaporkan = Report::with('reportable.user')
-            ->where('reportable_type', Comment::class)
-            ->where('status', 'valid')
+        $dilaporkan = Report::with(['reportable', 'user'])
             ->whereHas('reportable', function($q) {
                 $q->where('user_id', auth()->id());
             })
+            ->where('reportable_type', Comment::class)
+            ->where('status', 'tidak-valid')
             ->orderBy('updated_at', 'desc')
             ->paginate(8);
 

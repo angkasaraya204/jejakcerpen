@@ -260,11 +260,11 @@
                 <div class="row">
                     <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $pendingReports }}</h3>
+                            <h3 class="mb-0">{{ $storyReportsPending }}</h3>
                         </div>
                     </div>
                 </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Pending</h6>
+                <h6 class="text-muted font-weight-normal">Total Laporan Cerita Pending</h6>
             </div>
         </div>
     </div>
@@ -274,23 +274,87 @@
                 <div class="row">
                     <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $spamComments }}</h3>
+                            <h3 class="mb-0">{{ $commentReportsPending }}</h3>
                         </div>
                     </div>
                 </div>
-                <h6 class="text-muted font-weight-normal">Total Komentar Spam</h6>
+                <h6 class="text-muted font-weight-normal">Total Laporan Komentar Pending</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $storyReportsValid }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Total Laporan Cerita Valid</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $commentReportsValid }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Total Laporan Komentar Valid</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $storyReportsInvalid }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Total Laporan Cerita Tidak Valid</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $commentReportsInvalid }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Total Laporan Komentar Tidak Valid</h6>
             </div>
         </div>
     </div>
 </div>
 
-  {{-- Grafik Laporan Harian --}}
-  <div class="row">
-    <div class="col-md-12 mb-4">
+{{-- Grafik Laporan dan Analitik --}}
+<div class="row">
+    <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Grafik Laporan Harian</h4>
+                <h4 class="card-title">Grafik Laporan Harian (30 Hari Terakhir)</h4>
                 <canvas id="reportsChart" style="height:250px"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Distribusi Status Laporan</h4>
+                <canvas id="reportStatusChart" style="height:250px"></canvas>
             </div>
         </div>
     </div>
@@ -657,25 +721,84 @@
             @endrole
 
             @role('moderator')
+                // Chart Laporan Harian
                 const ctx = document.getElementById('reportsChart').getContext('2d');
                 const reportsData = @json($reportsPerDay);
+
+                // Siapkan data untuk chart
+                const dates = reportsData.map(r => {
+                    const date = new Date(r.date);
+                    return date.toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: 'short'
+                    });
+                });
+
+                const totals = reportsData.map(r => r.total);
+
+                // Buat chart laporan harian
                 new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: reportsData.map(r => r.date),
-                    datasets: [{
-                    label: 'Laporan per Hari',
-                    data: reportsData.map(r => r.total),
-                    fill: false,
-                    borderWidth: 2
-                    }]
-                },
-                options: {
-                    scales: {
-                    x: { display: true },
-                    y: { beginAtZero: true }
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Total Laporan per Hari',
+                            data: totals,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Tanggal'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah Laporan'
+                                }
+                            }
+                        }
                     }
-                }
+                });
+
+                // Chart Distribusi Status Laporan
+                const statusCtx = document.getElementById('reportStatusChart').getContext('2d');
+                new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'Valid', 'Tidak Valid'],
+                        datasets: [{
+                            data: [
+                                {{ $storyReportsPending + $commentReportsPending }},
+                                {{ $storyReportsValid + $commentReportsValid }},
+                                {{ $storyReportsInvalid + $commentReportsInvalid }}
+                            ],
+                            backgroundColor: [
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(255, 99, 132, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
                 });
             @endrole
         });

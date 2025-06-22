@@ -199,11 +199,38 @@ class DashboardController extends Controller
             $commentMonthly = collect($monthlyData)->pluck('comments');
             $voteMonthly = collect($monthlyData)->pluck('votes');
         } elseif (Auth::user()->hasRole('moderator')) {
-            $pendingReports = Report::where('status', 'pending')->count();
-            $reportsPerDay  = Report::selectRaw('DATE(created_at) as date, count(*) as total')->groupBy('date')->orderBy('date')->get();
+            // Statistik Laporan Cerita
+            $storyReportsPending = Report::where('reportable_type', Story::class)
+                ->where('status', 'pending')
+                ->count();
 
-            // Opsi 2: hitung spam comments via reports
-            $spamComments = Report::where('reportable_type', Comment::class)->where('status', 'pending')->count();
+            $storyReportsValid = Report::where('reportable_type', Story::class)
+                ->where('status', 'valid')
+                ->count();
+
+            $storyReportsInvalid = Report::where('reportable_type', Story::class)
+                ->where('status', 'tidak-valid')
+                ->count();
+
+            // Statistik Laporan Komentar
+            $commentReportsPending = Report::where('reportable_type', Comment::class)
+                ->where('status', 'pending')
+                ->count();
+
+            $commentReportsValid = Report::where('reportable_type', Comment::class)
+                ->where('status', 'valid')
+                ->count();
+
+            $commentReportsInvalid = Report::where('reportable_type', Comment::class)
+                ->where('status', 'tidak-valid')
+                ->count();
+
+            // Data untuk grafik laporan harian (30 hari terakhir)
+            $reportsPerDay = Report::selectRaw('DATE(created_at) as date, count(*) as total')
+                ->where('created_at', '>=', Carbon::now()->subDays(29)->startOfDay())
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
         }
 
         // Set data default untuk user
@@ -248,9 +275,13 @@ class DashboardController extends Controller
         // Tambahkan variabel khusus moderator jika role-nya moderator
         if (Auth::user()->hasRole('moderator')) {
             $viewData = array_merge($viewData, [
-                'pendingReports',
-                'reportsPerDay',
-                'spamComments'
+                'storyReportsPending',
+                'storyReportsValid',
+                'storyReportsInvalid',
+                'commentReportsPending',
+                'commentReportsValid',
+                'commentReportsInvalid',
+                'reportsPerDay'
             ]);
         }
 
