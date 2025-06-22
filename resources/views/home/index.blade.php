@@ -883,7 +883,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Modal for this story -->
+                                <!-- Modal untuk laporan -->
                                 <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
@@ -939,13 +939,209 @@
 
                 <div class="tab-pane fade" id="harian-populer" role="tabpanel" aria-labelledby="harian-populer-tab">
                     <div class="d-flex justify-content-between align-items-center">
-                        <!-- Loader spinner -->
+                         <div class="spinner-border text-primary d-none" role="status" id="storiesLoader">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
 
                     <div id="popularDailyContainer">
                         @if($popularStoriesDaily->count() > 0)
                             @foreach($popularStoriesDaily as $story)
-                                <!-- Kode story card -->
+                                <div class="card story-card fade-in mb-4">
+                                    <div class="story-header">
+                                        <div class="user-info">
+                                            <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
+                                            <div>
+                                                <div class="fw-bold">
+                                                    @if($story->anonymous)
+                                                        Anonim
+                                                    @else
+                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                    @endif
+                                                </div>
+                                                <div class="text-muted small">
+                                                    {{ $story->created_at->diffForHumans() }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown">
+                                            @if($story->votes()->where('vote_type', 'like')->count() > 10)
+                                                <span class="badge bg-danger rounded-pill me-2">
+                                                    <i class="fas fa-fire me-1"></i> Trending
+                                                </span>
+                                            @endif
+                                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                @guest
+                                                <li>
+                                                    <button @disabled(true) class="dropdown-item">
+                                                        <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button @disabled(true) class="dropdown-item">
+                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                    </button>
+                                                </li>
+                                                @endguest
+                                                @auth
+                                                    @role('user')
+                                                        @if(Auth::id() === $story->user_id)
+                                                            <li>
+                                                                <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        @endif
+                                                        @if(Auth::id() != $story->user_id && $story->user_id)
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
+                                                                    <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                </button>
+                                                            </li>
+                                                            @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
+                                                                <li>
+                                                                    <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        @endif
+                                                    @endrole
+                                                    @role('moderator')
+                                                        <li>
+                                                            <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @endrole
+                                                @endauth
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="story-content">
+                                        <span class="badge-category">{{ $story->category->name }}</span>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="text-decoration-none">
+                                            <h2 class="story-title">{{ $story->title }}</h2>
+                                        </a>
+                                        <div class="story-meta">
+                                            <span>Ditulis oleh:
+                                                @if($story->anonymous)
+                                                    Anonim
+                                                @else
+                                                    {{ optional($story->user)->name ?? 'User' }}
+                                                @endif
+                                            </span> •
+                                            <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
+                                        </div>
+                                        <div class="story-text">
+                                            <p>{{ Str::limit(strip_tags($story->content), 200) }}</p>
+                                        </div>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="read-more">Baca selengkapnya <i
+                                                class="fas fa-arrow-right ms-1"></i></a>
+                                    </div>
+                                    <div class="story-footer">
+                                        <div class="vote-buttons">
+                                            <form
+                                                action="{{ route('stories.vote', $story) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="vote_type" value="upvote">
+                                                <button class="vote-btn upvote">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                    <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
+                                                </button>
+                                            </form>
+                                            <form
+                                                action="{{ route('stories.vote', $story) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="vote_type" value="downvote">
+                                                <button class="vote-btn downvote">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                    <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted">
+                                                <i class="fas fa-comment me-1"></i>
+                                                {{ $story->comments->count() }}
+                                                Komentar
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal untuk laporan -->
+                                <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
+                                            @csrf
+                                            <input type="hidden" name="reportable_id" value="{{ $story->id }}">
+                                            <input type="hidden" name="reportable_type" value="story">
+
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
+                                                <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
+                                                <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa">
+                                                <label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
+                                                <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
+                                            </div>
+                                            <textarea
+                                                name="other_reason"
+                                                id="otherReasonText-{{ $story->id }}"
+                                                class="form-control mt-2 d-none"
+                                                placeholder="Jelaskan alasanmu..."
+                                            ></textarea>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                        <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
                             @endforeach
                         @else
                             <div class="alert alert-info">
@@ -957,13 +1153,209 @@
 
                 <div class="tab-pane fade" id="mingguan-populer" role="tabpanel" aria-labelledby="mingguan-populer-tab">
                     <div class="d-flex justify-content-between align-items-center">
-                        <!-- Loader spinner -->
+                         <div class="spinner-border text-primary d-none" role="status" id="storiesLoader">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
 
                     <div id="popularWeeklyContainer">
                         @if($popularStoriesWeekly->count() > 0)
                             @foreach($popularStoriesWeekly as $story)
-                                <!-- Kode story card -->
+                                <div class="card story-card fade-in mb-4">
+                                    <div class="story-header">
+                                        <div class="user-info">
+                                            <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar">
+                                            <div>
+                                                <div class="fw-bold">
+                                                    @if($story->anonymous)
+                                                        Anonim
+                                                    @else
+                                                        {{ optional($story->user)->name ?? 'User' }}
+                                                    @endif
+                                                </div>
+                                                <div class="text-muted small">
+                                                    {{ $story->created_at->diffForHumans() }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown">
+                                            @if($story->votes()->where('vote_type', 'like')->count() > 10)
+                                                <span class="badge bg-danger rounded-pill me-2">
+                                                    <i class="fas fa-fire me-1"></i> Trending
+                                                </span>
+                                            @endif
+                                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                @guest
+                                                <li>
+                                                    <button @disabled(true) class="dropdown-item">
+                                                        <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button @disabled(true) class="dropdown-item">
+                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                    </button>
+                                                </li>
+                                                @endguest
+                                                @auth
+                                                    @role('user')
+                                                        @if(Auth::id() === $story->user_id)
+                                                            <li>
+                                                                <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        @endif
+                                                        @if(Auth::id() != $story->user_id && $story->user_id)
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
+                                                                    <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                                                </button>
+                                                            </li>
+                                                            @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
+                                                                <li>
+                                                                    <form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="fas fa-user-plus me-2"></i> Ikuti
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                        @endif
+                                                    @endrole
+                                                    @role('moderator')
+                                                        <li>
+                                                            <form action="{{ route('stories.destroy', $story) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash-alt me-2"></i> Hapus
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @endrole
+                                                @endauth
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="story-content">
+                                        <span class="badge-category">{{ $story->category->name }}</span>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="text-decoration-none">
+                                            <h2 class="story-title">{{ $story->title }}</h2>
+                                        </a>
+                                        <div class="story-meta">
+                                            <span>Ditulis oleh:
+                                                @if($story->anonymous)
+                                                    Anonim
+                                                @else
+                                                    {{ optional($story->user)->name ?? 'User' }}
+                                                @endif
+                                            </span> •
+                                            <span>{{ $story->created_at->format('d M Y, H:i') }}</span>
+                                        </div>
+                                        <div class="story-text">
+                                            <p>{{ Str::limit(strip_tags($story->content), 200) }}</p>
+                                        </div>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="read-more">Baca selengkapnya <i
+                                                class="fas fa-arrow-right ms-1"></i></a>
+                                    </div>
+                                    <div class="story-footer">
+                                        <div class="vote-buttons">
+                                            <form
+                                                action="{{ route('stories.vote', $story) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="vote_type" value="upvote">
+                                                <button class="vote-btn upvote">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                    <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
+                                                </button>
+                                            </form>
+                                            <form
+                                                action="{{ route('stories.vote', $story) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="vote_type" value="downvote">
+                                                <button class="vote-btn downvote">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                    <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted">
+                                                <i class="fas fa-comment me-1"></i>
+                                                {{ $story->comments->count() }}
+                                                Komentar
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal untuk laporan -->
+                                <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
+                                            @csrf
+                                            <input type="hidden" name="reportable_id" value="{{ $story->id }}">
+                                            <input type="hidden" name="reportable_type" value="story">
+
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked>
+                                                <label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying">
+                                                <label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa">
+                                                <label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya">
+                                                <label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label>
+                                            </div>
+                                            <textarea
+                                                name="other_reason"
+                                                id="otherReasonText-{{ $story->id }}"
+                                                class="form-control mt-2 d-none"
+                                                placeholder="Jelaskan alasanmu..."
+                                            ></textarea>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                        <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
                             @endforeach
                         @else
                             <div class="alert alert-info">
