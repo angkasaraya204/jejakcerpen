@@ -200,8 +200,13 @@
                                                             {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                         @endif
                                                     </div>
-                                                    <div class="text-muted small">
-                                                        {{ $story->created_at->diffForHumans() }}</div>
+                                                    <div class="text-muted small d-flex align-items-center">
+                                                        <span>{{ $story->created_at->diffForHumans() }}</span>
+                                                        <span class="ms-3">
+                                                            <i class="fas fa-eye me-1"></i>
+                                                            {{ $story->views_count ?? 0 }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="dropdown">
@@ -229,7 +234,7 @@
                                                     @endguest
                                                     @auth
                                                         @role('user')
-                                                            @if(Auth::id() === $story->user_id)
+                                                            {{-- @if(Auth::id() === $story->user_id)
                                                                 <li>
                                                                     <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                         @csrf
@@ -239,7 +244,7 @@
                                                                         </button>
                                                                     </form>
                                                                 </li>
-                                                            @endif
+                                                            @endif --}}
                                                             @if(Auth::id() != $story->user_id && $story->user_id)
                                                                 <li>
                                                                     <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
@@ -267,7 +272,7 @@
                                                                 @endif
                                                             @endif
                                                         @endrole
-                                                        @role('moderator')
+                                                        {{-- @role('moderator')
                                                             <li>
                                                                 <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                     @csrf
@@ -277,7 +282,7 @@
                                                                     </button>
                                                                 </form>
                                                             </li>
-                                                        @endrole
+                                                        @endrole --}}
                                                     @endauth
                                                 </ul>
                                             </div>
@@ -316,6 +321,7 @@
                                                         <i class="fas fa-arrow-up"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                     </button>
+                                                    <span class="text-muted">Upvote</span>
                                                 </form>
                                                 <form
                                                     action="{{ route('stories.vote', $story) }}"
@@ -326,6 +332,7 @@
                                                         <i class="fas fa-arrow-down"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                     </button>
+                                                    <span class="text-muted">Downvote</span>
                                                 </form>
                                             </div>
                                             <div>
@@ -418,6 +425,7 @@
                             <div id="category-{{ $category->id }}-container">
                                 @php
                                     $categoryStories = App\Models\Story::where('category_id', $category->id)
+                                    ->withCount('views')
                                     ->latest('created_at')
                                     ->paginate(5);
                                 @endphp
@@ -435,8 +443,13 @@
                                                             {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                         @endif
                                                     </div>
-                                                    <div class="text-muted small">
-                                                        {{ $story->created_at->diffForHumans() }}</div>
+                                                    <div class="text-muted small d-flex align-items-center">
+                                                        <span>{{ $story->created_at->diffForHumans() }}</span>
+                                                        <span class="ms-3">
+                                                            <i class="fas fa-eye me-1"></i>
+                                                            {{ $story->views_count ?? 0 }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="dropdown">
@@ -464,7 +477,7 @@
                                                     @endguest
                                                     @auth
                                                         @role('user')
-                                                            @if(Auth::id() === $story->user_id)
+                                                            {{-- @if(Auth::id() === $story->user_id)
                                                                 <li>
                                                                     <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                         @csrf
@@ -474,7 +487,7 @@
                                                                         </button>
                                                                     </form>
                                                                 </li>
-                                                            @endif
+                                                            @endif --}}
                                                             @if(Auth::id() != $story->user_id && $story->user_id)
                                                                 <li>
                                                                     <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
@@ -502,7 +515,7 @@
                                                                 @endif
                                                             @endif
                                                         @endrole
-                                                        @role('moderator')
+                                                        {{-- @role('moderator')
                                                             <li>
                                                                 <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                     @csrf
@@ -512,7 +525,7 @@
                                                                     </button>
                                                                 </form>
                                                             </li>
-                                                        @endrole
+                                                        @endrole --}}
                                                     @endauth
                                                 </ul>
                                             </div>
@@ -551,6 +564,7 @@
                                                         <i class="fas fa-arrow-up"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                     </button>
+                                                    <span class="text-muted">Upvote</span>
                                                 </form>
                                                 <form
                                                     action="{{ route('stories.vote', $story) }}"
@@ -561,6 +575,7 @@
                                                         <i class="fas fa-arrow-down"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                     </button>
+                                                    <span class="text-muted">Downvote</span>
                                                 </form>
                                             </div>
                                             <div>
@@ -676,6 +691,15 @@
                         </ul>
                     </div>
                 </div>
+
+                <h4 class="mb-3"><i class="fas fa-users me-2 text-success"></i>Kategori Populer</h4>
+                <div class="card mb-4 fade-in">
+                    <div class="card-body p-0">
+                        <ul class="list-group">
+
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -738,8 +762,13 @@
                                                         {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </div>
-                                                <div class="text-muted small">
-                                                    {{ $story->created_at->diffForHumans() }}</div>
+                                                <div class="text-muted small d-flex align-items-center">
+                                                    <span>{{ $story->created_at->diffForHumans() }}</span>
+                                                    <span class="ms-3">
+                                                        <i class="fas fa-eye me-1"></i>
+                                                        {{ $story->views_count ?? 0 }}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="dropdown">
@@ -767,7 +796,7 @@
                                                 @endguest
                                                 @auth
                                                     @role('user')
-                                                        @if(Auth::id() === $story->user_id)
+                                                        {{-- @if(Auth::id() === $story->user_id)
                                                             <li>
                                                                 <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                     @csrf
@@ -777,7 +806,7 @@
                                                                     </button>
                                                                 </form>
                                                             </li>
-                                                        @endif
+                                                        @endif --}}
                                                         @if(Auth::id() != $story->user_id && $story->user_id)
                                                             <li>
                                                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
@@ -805,7 +834,7 @@
                                                             @endif
                                                         @endif
                                                     @endrole
-                                                    @role('moderator')
+                                                    {{-- @role('moderator')
                                                         <li>
                                                             <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                 @csrf
@@ -815,7 +844,7 @@
                                                                 </button>
                                                             </form>
                                                         </li>
-                                                    @endrole
+                                                    @endrole --}}
                                                 @endauth
                                             </ul>
                                         </div>
@@ -854,6 +883,7 @@
                                                     <i class="fas fa-arrow-up"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                 </button>
+                                                <span class="text-muted">Upvote</span>
                                             </form>
                                             <form
                                                 action="{{ route('stories.vote', $story) }}"
@@ -864,15 +894,14 @@
                                                     <i class="fas fa-arrow-down"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                 </button>
+                                                <span class="text-muted">Downvote</span>
                                             </form>
                                         </div>
-                                        <div>
-                                            <span class="text-muted">
-                                                <i class="fas fa-comment me-1"></i>
-                                                {{ $story->comments->count() }}
-                                                Komentar
-                                            </span>
-                                        </div>
+                                        <span class="text-muted">
+                                            <i class="fas fa-comment me-1"></i>
+                                            {{ $story->comments->count() }}
+                                            Komentar
+                                        </span>
                                     </div>
                                 </div>
 
@@ -952,8 +981,13 @@
                                                         {{ optional($story->user)->name ?? 'Pengunjung' }}
                                                     @endif
                                                 </div>
-                                                <div class="text-muted small">
-                                                    {{ $story->created_at->diffForHumans() }}</div>
+                                                <div class="text-muted small d-flex align-items-center">
+                                                    <span>{{ $story->created_at->diffForHumans() }}</span>
+                                                    <span class="ms-3">
+                                                        <i class="fas fa-eye me-1"></i>
+                                                        {{ $story->views_count ?? 0 }}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="dropdown">
@@ -981,7 +1015,7 @@
                                                 @endguest
                                                 @auth
                                                     @role('user')
-                                                        @if(Auth::id() === $story->user_id)
+                                                        {{-- @if(Auth::id() === $story->user_id)
                                                             <li>
                                                                 <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                     @csrf
@@ -991,7 +1025,7 @@
                                                                     </button>
                                                                 </form>
                                                             </li>
-                                                        @endif
+                                                        @endif --}}
                                                         @if(Auth::id() != $story->user_id && $story->user_id)
                                                             <li>
                                                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
@@ -1019,7 +1053,7 @@
                                                             @endif
                                                         @endif
                                                     @endrole
-                                                    @role('moderator')
+                                                    {{-- @role('moderator')
                                                         <li>
                                                             <form action="{{ route('stories.destroy', $story) }}" method="POST">
                                                                 @csrf
@@ -1029,7 +1063,7 @@
                                                                 </button>
                                                             </form>
                                                         </li>
-                                                    @endrole
+                                                    @endrole --}}
                                                 @endauth
                                             </ul>
                                         </div>
@@ -1068,6 +1102,7 @@
                                                     <i class="fas fa-arrow-up"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                 </button>
+                                                <span class="text-muted">Upvote</span>
                                             </form>
                                             <form
                                                 action="{{ route('stories.vote', $story) }}"
@@ -1078,6 +1113,7 @@
                                                     <i class="fas fa-arrow-down"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                 </button>
+                                                <span class="text-muted">Downvote</span>
                                             </form>
                                         </div>
                                         <div>

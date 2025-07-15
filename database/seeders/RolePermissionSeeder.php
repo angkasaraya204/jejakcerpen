@@ -64,16 +64,6 @@ class RolePermissionSeeder extends Seeder
             'manage categories',
         ]);
 
-        $moderatorRole = Role::create(['name' => 'moderator']);
-        $moderatorRole->givePermissionTo([
-            'mark sensitive',
-            'view stories',
-            'delete comments',
-            'delete stories',
-            'access dashboard',
-            'view statistics',
-        ]);
-
         $userRole = Role::create(['name' => 'user']);
         $userRole->givePermissionTo([
             'view stories',
@@ -94,14 +84,6 @@ class RolePermissionSeeder extends Seeder
             'password' => Hash::make('password123'),
         ]);
         $admin->assignRole('admin');
-
-        // Create moderator user
-        $moderator = User::create([
-            'name' => 'Moderator',
-            'email' => 'moderator@example.com',
-            'password' => Hash::make('password123'),
-        ]);
-        $moderator->assignRole('moderator');
 
         // Create normal user
         $user = User::create([

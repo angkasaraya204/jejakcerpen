@@ -100,25 +100,6 @@
       </li>
       @endrole
 
-      @role('moderator')
-      <li class="nav-item menu-items {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('dashboard') }}">
-          <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
-          </span>
-          <span class="menu-title">Dashboard</span>
-        </a>
-      </li>
-      <li class="nav-item menu-items {{ request()->routeIs('reports.index') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('reports.index') }}">
-          <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
-          </span>
-          <span class="menu-title">Laporan</span>
-        </a>
-      </li>
-      @endrole
-
       @role('admin')
       <li class="nav-item menu-items {{ request()->routeIs('users.index') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('users.index') }}">
@@ -134,6 +115,14 @@
             <i class="mdi mdi-speedometer"></i>
           </span>
           <span class="menu-title">Kategori</span>
+        </a>
+      </li>
+      <li class="nav-item menu-items {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('reports.index') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Laporan</span>
         </a>
       </li>
       @endrole

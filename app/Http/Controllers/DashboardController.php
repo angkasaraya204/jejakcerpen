@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Vote;
 use App\Models\Story;
+use App\Models\Views;
 use App\Models\Follow;
 use App\Models\Report;
 use App\Models\Comment;
@@ -23,70 +24,10 @@ class DashboardController extends Controller
             $totalComments = Comment::count();
             $totalUsers = User::count();
 
-            // Stats for chart - last 7 days activity
-            $dateStart = Carbon::now()->subDays(6)->startOfDay();
-            $dates = [];
-            $storyCounts = [];
-            $commentCounts = [];
-
-            for ($i = 0; $i < 7; $i++) {
-                $date = $dateStart->copy()->addDays($i);
-                $dates[] = $date->format('Y-m-d');
-
-                $storyCounts[] = Story::whereDate('created_at', $date->format('Y-m-d'))->count();
-                $commentCounts[] = Comment::whereDate('created_at', $date->format('Y-m-d'))->count();
-            }
-
-            // Category distribution
-            $categoryStats = DB::table('stories')
-                ->join('categories', 'stories.category_id', '=', 'categories.id')
-                ->select('categories.name', DB::raw('count(*) as total'))
-                ->groupBy('categories.name')
-                ->get();
-
             // NEW: Anonymous vs. Non-Anonymous Posts distribution
             $anonymousStories = Story::where('anonymous', true)->count();
             $nonAnonymousStories = Story::where('anonymous', false)->count();
             $anonymousData = [$anonymousStories, $nonAnonymousStories];
-
-            // NEW: User interaction trend (30 days)
-            $interactionStart = Carbon::now()->subDays(29)->startOfDay();
-            $interactionDates = [];
-            $storyTrend = [];
-            $commentTrend = [];
-            $voteTrend = [];
-
-            for ($i = 0; $i < 30; $i++) {
-                $date = $interactionStart->copy()->addDays($i);
-                $interactionDates[] = $date->format('d/m');
-
-                $storyTrend[] = Story::whereDate('created_at', $date->format('Y-m-d'))->count();
-                $commentTrend[] = Comment::whereDate('created_at', $date->format('Y-m-d'))->count();
-                $voteTrend[] = Vote::whereDate('created_at', $date->format('Y-m-d'))->count();
-            }
-
-            // NEW: Anonymous feature usage trend (6 months)
-            $monthStart = Carbon::now()->subMonths(5)->startOfMonth();
-            $monthLabels = [];
-            $anonymousStoryMonthly = [];
-            $anonymousCommentMonthly = [];
-
-            for ($i = 0; $i < 6; $i++) {
-                $month = $monthStart->copy()->addMonths($i);
-                $monthLabels[] = $month->format('M Y');
-
-                // Get anonymous stories for this month
-                $anonymousStoryMonthly[] = Story::where('anonymous', true)
-                    ->whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->count();
-
-                // Get anonymous comments for this month
-                $anonymousCommentMonthly[] = Comment::where('anonymous', true)
-                    ->whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->count();
-            }
 
             // NEW: User growth chart (12 months)
             $growthStart = Carbon::now()->subMonths(11)->startOfMonth();
@@ -117,88 +58,84 @@ class DashboardController extends Controller
 
                 $activeUserCounts[] = $activeThisMonth;
             }
-        } elseif (Auth::user()->hasRole('user')) {
-            $totalStories = Story::where('user_id', Auth::id())->count();
-            $totalComments = Comment::where('user_id', Auth::id())->count();
 
-            // Stats for chart - last 7 days activity
-            $dateStart = Carbon::now()->subDays(6)->startOfDay();
-            $dates = [];
-            $storyCounts = [];
-            $commentCounts = [];
-            $voteCounts = [];
+            // Data cerita yang dibaca per kategori untuk SEMUA PENGGUNA
+            $readStoriesPerCategory = Views::join('stories', 'stories_views.story_id', '=', 'stories.id')
+                ->join('categories', 'stories.category_id', '=', 'categories.id')
+                ->select('categories.name as category_name', DB::raw('COUNT(*) as total_reads'))
+                ->groupBy('categories.id', 'categories.name')
+                ->orderBy('total_reads', 'desc')
+                ->get();
+
+            // Pastikan data tidak kosong sebelum di-pass ke view
+            $categoryReadLabels = $readStoriesPerCategory->pluck('category_name')->toArray();
+            $categoryReadCounts = $readStoriesPerCategory->pluck('total_reads')->toArray();
+
+            // Data Minggu (7 hari terakhir)
+            $weekStart = Carbon::now()->subDays(6)->startOfDay();
+            $weekLabels = [];
+            $weekStories = [];
+            $weekComments = [];
+            $weekVotes = [];
 
             for ($i = 0; $i < 7; $i++) {
-                $date = $dateStart->copy()->addDays($i);
-                $dates[] = $date->format('Y-m-d');
+                $date = $weekStart->copy()->addDays($i);
+                $weekLabels[] = $date->format('d/m');
 
-                $storyCounts[] = Story::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
-                $commentCounts[] = Comment::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
-                $voteCounts[] = Vote::where('user_id', Auth::id())->whereDate('created_at', $date->format('Y-m-d'))->count();
+                $weekStories[] = Story::whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $weekComments[] = Comment::whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $weekVotes[] = Vote::whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
             }
 
-            $interactionStart = Carbon::now()->subDays(29)->startOfDay();
-            $interactionDates = [];
-            $storyTrend = [];
-            $voteTrend = [];
+            // Data Bulan (30 hari terakhir)
+            $monthStart = Carbon::now()->subDays(29)->startOfDay();
+            $monthLabels = [];
+            $monthStories = [];
+            $monthComments = [];
+            $monthVotes = [];
 
             for ($i = 0; $i < 30; $i++) {
-                $date = $interactionStart->copy()->addDays($i);
-                $interactionDates[] = $date->format('d/m');
+                $date = $monthStart->copy()->addDays($i);
+                $monthLabels[] = $date->format('d/m');
 
-                $storyTrend[] = Story::whereDate('created_at', $date->format('Y-m-d'))->count();
-                $voteTrend[] = Vote::whereDate('created_at', $date->format('Y-m-d'))->count();
+                $monthStories[] = Story::whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $monthComments[] = Comment::whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $monthVotes[] = Vote::whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
             }
 
-            // Tambahan untuk fitur Follow/Teman
-            $followingCount = Follow::where('follower_id', Auth::id())->count();
-            $followersCount = Follow::where('followed_id', Auth::id())->count();
+            // Data Tahun (12 bulan terakhir)
+            $yearLabels = [];
+            $yearStories = [];
+            $yearComments = [];
+            $yearVotes = [];
 
-            // Data untuk profil dan aktivitas pribadi
-            $upvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
-                ->where('stories.user_id', Auth::id())
-                ->where('votes.vote_type', 'upvote')
-                ->count();
+            for ($i = 11; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $yearLabels[] = $date->format('M Y');
 
-            $downvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
-                ->where('stories.user_id', Auth::id())
-                ->where('votes.vote_type', 'downvote')
-                ->count();
+                $yearStories[] = Story::whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
 
-            $commentReceived = Comment::join('stories', 'comments.story_id', '=', 'stories.id')
-                ->where('stories.user_id', Auth::id())
-                ->where('comments.parent_id', null)
-                ->count();
+                $yearComments[] = Comment::whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
 
-            // Data untuk chart aktivitas bulanan
-            $monthlyData = [];
-            $monthlyLabels = [];
-
-            for ($i = 5; $i >= 0; $i--) {
-                $month = Carbon::now()->subMonths($i);
-                $monthlyLabels[] = $month->format('M Y');
-
-                $monthlyData[] = [
-                    'stories' => Story::where('user_id', Auth::id())
-                        ->whereYear('created_at', $month->year)
-                        ->whereMonth('created_at', $month->month)
-                        ->count(),
-                    'comments' => Comment::where('user_id', Auth::id())
-                        ->whereYear('created_at', $month->year)
-                        ->whereMonth('created_at', $month->month)
-                        ->count(),
-                    'votes' => Vote::where('user_id', Auth::id())
-                        ->whereYear('created_at', $month->year)
-                        ->whereMonth('created_at', $month->month)
-                        ->count()
-                ];
+                $yearVotes[] = Vote::whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
             }
 
-            // Mengumpulkan data untuk chart aktivitas
-            $storyMonthly = collect($monthlyData)->pluck('stories');
-            $commentMonthly = collect($monthlyData)->pluck('comments');
-            $voteMonthly = collect($monthlyData)->pluck('votes');
-        } elseif (Auth::user()->hasRole('moderator')) {
             // Statistik Laporan Cerita
             $storyReportsPending = Report::where('reportable_type', Story::class)
                 ->where('status', 'pending')
@@ -231,6 +168,126 @@ class DashboardController extends Controller
                 ->groupBy('date')
                 ->orderBy('date')
                 ->get();
+        } elseif (Auth::user()->hasRole('user')) {
+            $userId = Auth::id();
+
+            $totalStories = Story::where('user_id', $userId)->count();
+            $totalComments = Comment::where('user_id', $userId)->count();
+
+            // Data cerita yang dibaca user per kategori
+            $readStoriesPerCategory = Views::join('stories', 'stories_views.story_id', '=', 'stories.id')
+                ->join('categories', 'stories.category_id', '=', 'categories.id')
+                ->where('stories_views.user_id', $userId)
+                ->select('categories.name as category_name', DB::raw('COUNT(*) as total_reads'))
+                ->groupBy('categories.id', 'categories.name')
+                ->orderBy('total_reads', 'desc')
+                ->get();
+
+            // Data pengunjung per kategori (untuk perbandingan)
+            $visitorStoriesPerCategory = Views::join('stories', 'stories_views.story_id', '=', 'stories.id')
+                ->join('categories', 'stories.category_id', '=', 'categories.id')
+                ->select('categories.name as category_name', DB::raw('COUNT(*) as total_views'))
+                ->groupBy('categories.id', 'categories.name')
+                ->orderBy('total_views', 'desc')
+                ->get();
+
+            // Pastikan data tidak kosong sebelum di-pass ke view
+            $categoryReadLabels = $readStoriesPerCategory->pluck('category_name')->toArray();
+            $categoryReadCounts = $readStoriesPerCategory->pluck('total_reads')->toArray();
+
+            // Tambahan untuk fitur Follow/Teman
+            $followingCount = Follow::where('follower_id', $userId)->count();
+            $followersCount = Follow::where('followed_id', $userId)->count();
+
+            // Statistik Interaksi
+            $upvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
+                ->where('stories.user_id', $userId)
+                ->where('votes.vote_type', 'upvote')
+                ->count();
+
+            $downvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
+                ->where('stories.user_id', $userId)
+                ->where('votes.vote_type', 'downvote')
+                ->count();
+
+            $commentReceived = Comment::join('stories', 'comments.story_id', '=', 'stories.id')
+                ->where('stories.user_id', $userId)
+                ->where('comments.parent_id', null)
+                ->count();
+
+            // Data Minggu (7 hari terakhir)
+            $weekStart = Carbon::now()->subDays(6)->startOfDay();
+            $weekLabels = [];
+            $weekStories = [];
+            $weekComments = [];
+            $weekVotes = [];
+
+            for ($i = 0; $i < 7; $i++) {
+                $date = $weekStart->copy()->addDays($i);
+                $weekLabels[] = $date->format('d/m');
+
+                $weekStories[] = Story::where('user_id', $userId)
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $weekComments[] = Comment::where('user_id', $userId)
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $weekVotes[] = Vote::where('user_id', $userId)
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+            }
+
+            // Data Bulan (30 hari terakhir)
+            $monthStart = Carbon::now()->subDays(29)->startOfDay();
+            $monthLabels = [];
+            $monthStories = [];
+            $monthComments = [];
+            $monthVotes = [];
+
+            for ($i = 0; $i < 30; $i++) {
+                $date = $monthStart->copy()->addDays($i);
+                $monthLabels[] = $date->format('d/m');
+
+                $monthStories[] = Story::where('user_id', $userId)
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $monthComments[] = Comment::where('user_id', $userId)
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+
+                $monthVotes[] = Vote::where('user_id', $userId)
+                    ->whereDate('created_at', $date->format('Y-m-d'))
+                    ->count();
+            }
+
+            // Data Tahun (12 bulan terakhir)
+            $yearLabels = [];
+            $yearStories = [];
+            $yearComments = [];
+            $yearVotes = [];
+
+            for ($i = 11; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $yearLabels[] = $date->format('M Y');
+
+                $yearStories[] = Story::where('user_id', $userId)
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
+
+                $yearComments[] = Comment::where('user_id', $userId)
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
+
+                $yearVotes[] = Vote::where('user_id', $userId)
+                    ->whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count();
+            }
         }
 
         // Set data default untuk user
@@ -239,11 +296,6 @@ class DashboardController extends Controller
         $upvotesReceived = $upvotesReceived ?? 0;
         $downvotesReceived = $downvotesReceived ?? 0;
         $commentReceived = $commentReceived ?? 0;
-        $monthlyLabels = $monthlyLabels ?? [];
-        $storyMonthly = $storyMonthly ?? [];
-        $commentMonthly = $commentMonthly ?? [];
-        $voteMonthly = $voteMonthly ?? [];
-        $voteCounts = $voteCounts ?? [];
 
         // Menyiapkan variabel untuk compact berdasarkan role
         $viewData = [];
@@ -253,28 +305,53 @@ class DashboardController extends Controller
             $viewData = array_merge($viewData, [
                 'totalStories',
                 'totalComments',
-                'storyCounts',
-                'commentCounts',
-                'dates',
-                'voteCounts',
                 'followingCount',
                 'followersCount',
                 'upvotesReceived',
                 'downvotesReceived',
                 'commentReceived',
-                'monthlyLabels',
-                'storyMonthly',
-                'commentMonthly',
-                'interactionDates',
-                'voteMonthly',
-                'storyTrend',
-                'voteTrend',
+                'weekLabels',
+                'weekStories',
+                'weekComments',
+                'weekVotes',
+                'monthLabels',
+                'monthStories',
+                'monthComments',
+                'monthVotes',
+                'yearLabels',
+                'yearStories',
+                'yearComments',
+                'yearVotes',
+                'categoryReadLabels',
+                'categoryReadCounts',
+                'visitorStoriesPerCategory'
             ]);
         }
 
-        // Tambahkan variabel khusus moderator jika role-nya moderator
-        if (Auth::user()->hasRole('moderator')) {
+        // Tambahkan variabel khusus admin jika role-nya admin
+        if (Auth::user()->hasRole('admin')) {
             $viewData = array_merge($viewData, [
+                'totalStories',
+                'totalComments',
+                'totalUsers',
+                'anonymousData',
+                'growthMonths',
+                'newUserCounts',
+                'activeUserCounts',
+                'categoryReadLabels',
+                'categoryReadCounts',
+                'weekLabels',
+                'weekStories',
+                'weekComments',
+                'weekVotes',
+                'monthLabels',
+                'monthStories',
+                'monthComments',
+                'monthVotes',
+                'yearLabels',
+                'yearStories',
+                'yearComments',
+                'yearVotes',
                 'storyReportsPending',
                 'storyReportsValid',
                 'storyReportsInvalid',
@@ -282,31 +359,6 @@ class DashboardController extends Controller
                 'commentReportsValid',
                 'commentReportsInvalid',
                 'reportsPerDay'
-            ]);
-        }
-
-        // Tambahkan variabel khusus admin jika role-nya admin
-        if (Auth::user()->hasRole('admin')) {
-            $viewData = array_merge($viewData, [
-                'storyCounts',
-                'commentCounts',
-                'totalStories',
-                'totalComments',
-                'totalUsers',
-                'categoryStats',
-                'dates',
-                'commentCounts',
-                'anonymousData',
-                'interactionDates',
-                'storyTrend',
-                'commentTrend',
-                'voteTrend',
-                'monthLabels',
-                'anonymousStoryMonthly',
-                'anonymousCommentMonthly',
-                'growthMonths',
-                'newUserCounts',
-                'activeUserCounts'
             ]);
         }
 

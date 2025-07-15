@@ -14,7 +14,7 @@
     </div>
 @endif
 
-@role('moderator')
+@role('admin')
 <div class="page-header">
     <h3 class="page-title"> Daftar Laporan </h3>
 </div>

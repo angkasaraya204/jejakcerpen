@@ -45,4 +45,9 @@ class Story extends Model
     {
         return $this->morphMany(Report::class, 'reportable');
     }
+
+    public function views()
+    {
+        return $this->hasMany(Views::class);
+    }
 }

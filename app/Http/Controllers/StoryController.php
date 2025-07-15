@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Story;
+use App\Models\Views;
 use App\Models\Follow;
 use App\Models\Report;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class StoryController extends Controller
 {
@@ -81,6 +83,7 @@ class StoryController extends Controller
         }
 
         return $query->withCount([
+                'views',
                 'votes as upvotes_count' => function($query) {
                     $query->where('vote_type', 'upvote');
                 },
@@ -134,7 +137,7 @@ class StoryController extends Controller
 
     public function home(Request $request)
     {
-        $query = Story::with(['user', 'category']);
+        $query = Story::with(['user', 'category'])->withCount('views');
 
         if ($request->has('category')) {
             $query->whereHas('category', function($q) use ($request) {
@@ -182,10 +185,37 @@ class StoryController extends Controller
 
     public function show(Story $story)
     {
+       if (Auth::check()) {
+            // LOGIKA UNTUK PENGGUNA YANG LOGIN
+            // Mencari view berdasarkan story_id dan user_id.
+            // Jika belum ada, akan dibuat. Jika sudah ada, tidak terjadi apa-apa.
+            Views::updateOrCreate(
+                ['story_id' => $story->id, 'user_id' => Auth::id()]
+            );
+        } else {
+            // LOGIKA UNTUK PENGUNJUNG/GUEST
+            // 1. Ambil daftar cerita yang sudah dilihat dari session
+            $viewedStories = Session::get('viewed_stories', []);
+
+            // 2. Cek apakah ID cerita ini belum ada di dalam daftar session
+            if (!in_array($story->id, $viewedStories)) {
+                // 3. Jika belum ada, catat kunjungan di database
+                Views::create([
+                    'story_id' => $story->id,
+                    'user_id' => null // user_id dikosongkan untuk guest
+                ]);
+
+                // 4. Tambahkan ID cerita ini ke dalam session agar tidak dihitung lagi
+                Session::push('viewed_stories', $story->id);
+            }
+        }
+
+        // Memuat data relasi untuk ditampilkan (tidak ada perubahan di sini)
         $story->load(['user', 'category', 'comments' => function($query) {
             $query->whereNull('parent_id')->with(['user', 'replies.user']);
         }]);
 
+        // Mengembalikan view 'home.detail'
         return view('home.detail', compact('story'));
     }
 

@@ -46,15 +46,21 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:admin|user'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
         // Story submission
+        Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
         Route::get('/stories/create/new', [StoryController::class, 'create'])->name('stories.create');
         Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
         Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
         Route::patch('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
+        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
 
         // Comments
+        Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
         Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->name('comments.edit');
         Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -66,24 +72,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/follow/{user}', [DashboardController::class, 'follow'])->name('dashboard.follow');
     Route::post('/unfollow/{user}', [DashboardController::class, 'unfollow'])->name('dashboard.unfollow');
 
-    Route::middleware(['role:admin|moderator|user'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
-        Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
-
-        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
-    });
-
-    Route::middleware(['role:moderator'])->group(function () {
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
-    });
-
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('categories', CategoryController::class);
+
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
     });
 });
 
