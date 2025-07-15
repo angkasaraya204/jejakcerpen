@@ -230,6 +230,16 @@ body {
     background-color: rgba(244, 67, 54, 0.1);
 }
 
+.voted-up {
+    color: #4CAF50 !important;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.voted-down {
+    color: #F44336 !important;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);

@@ -137,7 +137,7 @@ class StoryController extends Controller
 
     public function home(Request $request)
     {
-        $query = Story::with(['user', 'category'])->withCount('views');
+        $query = Story::with(['user', 'category', 'userVote', 'votes'])->withCount('views');
 
         if ($request->has('category')) {
             $query->whereHas('category', function($q) use ($request) {

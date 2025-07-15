@@ -41,6 +41,11 @@ class Story extends Model
         return $this->hasMany(Vote::class);
     }
 
+    public function userVote()
+    {
+        return $this->hasOne(Vote::class)->where('user_id', auth()->id());
+    }
+
     public function reports()
     {
         return $this->morphMany(Report::class, 'reportable');

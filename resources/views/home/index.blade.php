@@ -317,7 +317,7 @@
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="vote_type" value="upvote">
-                                                    <button class="vote-btn upvote">
+                                                    <button class="vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
                                                         <i class="fas fa-arrow-up"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                     </button>
@@ -328,7 +328,7 @@
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="vote_type" value="downvote">
-                                                    <button class="vote-btn downvote">
+                                                    <button class="vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
                                                         <i class="fas fa-arrow-down"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                     </button>
@@ -415,8 +415,7 @@
                         <div class="tab-pane fade" id="category-{{ $category->id }}" role="tabpanel"
                             aria-labelledby="category-{{ $category->id }}-tab">
 
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h4 class="mb-0 fw-bold">Cerita {{ $category->name }}</h4>
+                            <div class="d-flex justify-content-between align-items-center">
                                 <div class="spinner-border text-primary d-none" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
@@ -531,7 +530,7 @@
                                             </div>
                                         </div>
                                         <div class="story-content">
-                                            <span class="badge-category">{{ $story->category->name }}</span>
+                                            {{-- <span class="badge-category">{{ $story->category->name }}</span> --}}
                                             <a href="{{ route('stories.show', $story) }}"
                                                 class="text-decoration-none">
                                                 <h2 class="story-title">{{ $story->title }}</h2>
@@ -560,7 +559,7 @@
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="vote_type" value="upvote">
-                                                    <button class="vote-btn upvote">
+                                                    <button class="vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
                                                         <i class="fas fa-arrow-up"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                     </button>
@@ -571,7 +570,7 @@
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="vote_type" value="downvote">
-                                                    <button class="vote-btn downvote">
+                                                    <button class="vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
                                                         <i class="fas fa-arrow-down"></i>
                                                         <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                     </button>
@@ -879,7 +878,7 @@
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 <input type="hidden" name="vote_type" value="upvote">
-                                                <button class="vote-btn upvote">
+                                                <button class="vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
                                                     <i class="fas fa-arrow-up"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                 </button>
@@ -890,7 +889,7 @@
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 <input type="hidden" name="vote_type" value="downvote">
-                                                <button class="vote-btn downvote">
+                                                <button class="vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
                                                     <i class="fas fa-arrow-down"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                 </button>
@@ -1098,7 +1097,7 @@
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 <input type="hidden" name="vote_type" value="upvote">
-                                                <button class="vote-btn upvote">
+                                                <button class="vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
                                                     <i class="fas fa-arrow-up"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                                                 </button>
@@ -1109,7 +1108,7 @@
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 <input type="hidden" name="vote_type" value="downvote">
-                                                <button class="vote-btn downvote">
+                                                <button class="vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
                                                     <i class="fas fa-arrow-down"></i>
                                                     <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                                                 </button>
