@@ -22,6 +22,6 @@ class StorySelectionController extends Controller
     public function reject(Story $story)
     {
         $story->update(['status' => 'rejected']);
-        return back()->with('danger', 'Cerita telah ditolak.');
+        return back()->with('error', 'Cerita telah ditolak.');
     }
 }
