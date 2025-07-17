@@ -262,7 +262,7 @@
                                                 <span>Ditulis sejak: {{ $story->created_at->format('d M Y') }}</span>
                                             </div>
                                             <div class="mb-3" style="line-height: 1.6;">
-                                                <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content)), 200) }}</p>
+                                                <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</p>
                                             </div>
                                             <a href="{{ route('stories.show', $story) }}" class="text-primary fw-semibold text-decoration-none">Baca selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
                                         </div>
@@ -328,7 +328,7 @@
                             <div class="d-flex justify-content-between align-items-center"><div class="spinner-border text-primary d-none" role="status"><span class="visually-hidden">Loading...</span></div></div>
                             <div id="category-{{ $category->id }}-container">
                                 @php
-                                    $categoryStories = App\Models\Story::where('category_id', $category->id)->withCount('views')->latest('created_at')->paginate(5);
+                                    $categoryStories = App\Models\Story::where('category_id', $category->id)->withCount('views')->where('status', 'approved')->latest('created_at')->paginate(5);
                                 @endphp
                                 @forelse($categoryStories as $story)
                                     <div class="card fade-in mb-4 border-0 shadow-sm bg-body-tertiary" style="border-radius: 12px; transition: all 0.3s ease;">
@@ -378,7 +378,7 @@
                                                 <span>Ditulis sejak: {{ $story->created_at->format('d M Y') }}</span>
                                             </div>
                                             <div class="mb-3" style="line-height: 1.6;">
-                                                <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content)), 200) }}</p>
+                                                <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</p>
                                             </div>
                                             <a href="{{ route('stories.show', $story) }}" class="text-primary fw-semibold text-decoration-none">Baca selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
                                         </div>
@@ -565,7 +565,7 @@
                                             <span>Ditulis sejak: {{ $story->created_at->format('d M Y') }}</span>
                                         </div>
                                         <div class="mb-3" style="line-height: 1.6;">
-                                            <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content)), 200) }}</p>
+                                            <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</p>
                                         </div>
                                         <a href="{{ route('stories.show', $story) }}" class="text-primary fw-semibold text-decoration-none">Baca selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
                                     </div>
@@ -674,7 +674,7 @@
                                             <span>Ditulis sejak: {{ $story->created_at->format('d M Y') }}</span>
                                         </div>
                                         <div class="mb-3" style="line-height: 1.6;">
-                                            <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content)), 200) }}</p>
+                                            <p>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</p>
                                         </div>
                                         <a href="{{ route('stories.show', $story) }}" class="text-primary fw-semibold text-decoration-none">Baca selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
                                     </div>

@@ -23,6 +23,7 @@ class DashboardController extends Controller
             $totalStories = Story::count();
             $totalComments = Comment::count();
             $totalUsers = User::count();
+            $totalCategory = Category::count();
 
             // NEW: Anonymous vs. Non-Anonymous Posts distribution
             $anonymousStories = Story::where('anonymous', true)->count();
@@ -334,6 +335,7 @@ class DashboardController extends Controller
                 'totalStories',
                 'totalComments',
                 'totalUsers',
+                'totalCategory',
                 'anonymousData',
                 'growthMonths',
                 'newUserCounts',

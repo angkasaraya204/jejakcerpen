@@ -7,7 +7,7 @@
 @role('admin')
     <!-- Original card stats -->
     <div class="row">
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -36,8 +36,9 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-4 col-md-6 mb-4">
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -48,6 +49,20 @@
                         </div>
                     </div>
                     <h6 class="text-muted font-weight-normal">Total Komentar</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $totalCategory }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Total Kategori</h6>
                 </div>
             </div>
         </div>
@@ -260,95 +275,6 @@
         </div>
     </div>
 @endrole
-
-{{-- @role('moderator')
-  <div class="row">
-    <div class="col-lg-6 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $storyReportsPending }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Cerita Pending</h6>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $commentReportsPending }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Komentar Pending</h6>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $storyReportsValid }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Cerita Valid</h6>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $commentReportsValid }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Komentar Valid</h6>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $storyReportsInvalid }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Cerita Tidak Valid</h6>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">{{ $commentReportsInvalid }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <h6 class="text-muted font-weight-normal">Total Laporan Komentar Tidak Valid</h6>
-            </div>
-        </div>
-    </div>
-</div>
-@endrole --}}
 
 @endsection
 

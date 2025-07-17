@@ -62,7 +62,7 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $story->title }}</td>
                                     <td>{{ $story->category->name }}</td>
-                                    <td>{{ $story->created_at->format('d M Y, H:i') }}</td>
+                                    <td>{{ $story->created_at->format('d M Y') }}</td>
                                     @role('admin')
                                     <td>
                                         @if($story->anonymous)
@@ -78,7 +78,7 @@
                                     @role('user')
                                     <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
                                     @endrole
-                                    <td>{{ Str::limit(strip_tags($story->content), 200) }}</td>
+                                    <td>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</td>
                                     @hasanyrole(['admin','user'])
                                     <td>
                                         <a href="{{ route('stories.edit', $story) }}"

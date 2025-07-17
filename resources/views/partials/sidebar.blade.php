@@ -109,10 +109,10 @@
           <span class="menu-title">Pengguna</span>
         </a>
       </li>
-      <li class="nav-item menu-items">
-        <a class="nav-link" href="">
+      <li class="nav-item menu-items {{ request()->routeIs('story-selections.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('story-selections.index') }}">
           <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
+            <i class="mdi mdi-star-circle"></i>
           </span>
           <span class="menu-title">Seleksi Cerita</span>
         </a>

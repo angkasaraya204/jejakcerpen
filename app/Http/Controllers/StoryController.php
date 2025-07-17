@@ -36,16 +36,17 @@ class StoryController extends Controller
 
         // Urutkan berdasarkan jumlah upvote terbanyak, lalu berdasarkan yang terbaru.
         // Ambil data sesuai limit. Semua proses ini dilakukan di database.
-        return $query->orderByDesc('upvotes_count')
-                     ->orderByDesc('created_at')
-                     ->take($limit)
-                     ->get();
+        return $query->having('upvotes_count', '>', 0) // <-- Tambahkan baris ini
+                 ->orderByDesc('upvotes_count')
+                 ->orderByDesc('created_at')
+                 ->take($limit)
+                 ->get();
     }
 
     private function getPopularStories($period = 'all', $limit = 8)
     {
         $query = Story::with(['user', 'category'])
-                      ->withCount('views');
+                      ->withCount('views')->where('status', 'approved');
 
         switch ($period) {
             case 'daily':
@@ -91,13 +92,13 @@ class StoryController extends Controller
     public function index(Request $request, Report $report)
     {
         if (Auth::user()->hasRole('user')) {
-            $query = Story::with(['user', 'category']);
+            $query = Story::with(['user', 'category'])->where('status', 'approved');
 
             $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);
             $categories = Category::all();
             return view('moderasi.cerita.index', compact('stories'));
         } elseif (Auth::user()->hasRole('admin')) {
-            $query = Story::with(['user', 'category']);
+            $query = Story::with(['user', 'category'])->where('status', 'approved');
 
             $stories = $query->latest('created_at')->paginate(10);
             $categories = Category::all();
@@ -108,7 +109,7 @@ class StoryController extends Controller
 
     public function home(Request $request)
     {
-        $query = Story::with(['user', 'category', 'userVote', 'votes'])->withCount('views');
+        $query = Story::with(['user', 'category', 'userVote', 'votes'])->withCount('views')->where('status', 'approved');
 
         if ($request->has('category')) {
             $query->whereHas('category', function($q) use ($request) {
@@ -117,9 +118,9 @@ class StoryController extends Controller
         }
 
         $isFollowing = [];
-        $allCategories = Category::withCount('stories')
-        ->orderByDesc('stories_count')
-        ->get();
+        $allCategories = Category::withCount(['stories' => function ($query) {
+            $query->where('status', 'approved');
+        }])->orderByDesc('stories_count')->get();
 
         if (Auth::check()) {
             $stories = $query->latest('created_at')->get();
@@ -213,12 +214,13 @@ class StoryController extends Controller
             'content' => $validated['content'],
             'category_id' => $validated['category_id'],
             'anonymous' => $validated['anonymous'] ?? false,
+            'status' => 'pending',
         ]);
 
         $story->user_id = Auth::id();
         $story->save();
 
-        return redirect()->route('stories.index')->with('success', 'Cerita telah dikirim.');
+        return redirect()->route('stories.index')->with('success', 'Cerita menunggu persetujuan admin.');
     }
 
     public function edit(Story $story)

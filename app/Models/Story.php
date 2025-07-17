@@ -15,6 +15,7 @@ class Story extends Model
         'user_id',
         'category_id',
         'anonymous',
+        'status',
     ];
 
     protected $casts = [

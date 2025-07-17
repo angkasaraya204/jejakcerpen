@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StorySelectionController;
 
 // Public routes (with or without authentication)
 Route::get('/', [StoryController::class, 'home'])->name('home');
@@ -75,6 +76,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
+
+        Route::get('/story-selections', [StorySelectionController::class, 'index'])->name('story-selections.index');
+        Route::patch('/story-selections/{story}/approve', [StorySelectionController::class, 'approve'])->name('story-selections.approve');
+        Route::patch('/story-selections/{story}/reject', [StorySelectionController::class, 'reject'])->name('story-selections.reject');
     });
 });
 
