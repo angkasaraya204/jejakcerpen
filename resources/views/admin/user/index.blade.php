@@ -43,16 +43,13 @@
                                 </td>
                                 <td>{{ $user->created_at->format('d M Y') }}</td>
                                 <td>
-                                    <a href="{{ route('users.edit', $user) }}" class="text-blue-600 hover:underline mr-3">Edit</a>
+                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-primary mr-3">Edit</a>
                                     @if($user->id !== auth()->id())
                                         <form action="{{ route('users.destroy', $user) }}"
                                             method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:underline"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
-                                                Hapus
-                                            </button>
+                                            <button type="submit" class="btn btn-danger mt-2 mb-2" onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">Hapus</button>
                                         </form>
                                     @endif
                                 </td>

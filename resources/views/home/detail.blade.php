@@ -1,30 +1,85 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JejakCerita - Platform Berbagi Cerita</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+    <style>
+        /*
+         * Blok style ini penting untuk mendukung fungsionalitas yang digerakkan oleh script.js
+         * dan beberapa gaya kustom yang tidak bisa digantikan oleh class Bootstrap.
+         */
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Sidebar & Overlay */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: -280px; /* Posisi awal di luar layar */
+            z-index: 1050;
+            transition: left 0.4s ease;
+            overflow-y: auto;
+        }
+        .sidebar.active {
+            left: 0; /* Posisi aktif di dalam layar */
+        }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            display: none; /* Diatur oleh JS */
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle .toggle-circle { transition: left 0.3s ease; }
+        .dark-mode-toggle.active .toggle-circle { left: 30px !important; }
+        [data-bs-theme="light"] .dark-mode-toggle { background-color: #ddd; }
+        [data-bs-theme="light"] .dark-mode-toggle.active { background-color: #5271ff !important; }
+        [data-bs-theme="dark"] .dark-mode-toggle { background-color: #3e3e3e; }
+        [data-bs-theme="dark"] .dark-mode-toggle.active { background-color: #6e86ff !important; }
+
+        /* Parsedown Content Styling */
+        .story-content-parsed h1, .story-content-parsed h2, .story-content-parsed h3 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
+        .story-content-parsed p { margin-bottom: 1rem; line-height: 1.7; }
+        .story-content-parsed ul, .story-content-parsed ol { padding-left: 2rem; margin-bottom: 1rem; }
+        .story-content-parsed blockquote { border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #6c757d; }
+        .story-content-parsed a { color: var(--bs-link-color); text-decoration: underline; }
+
+        /* Animations */
+        .slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top">
+<body class="bg-body text-body">
+    <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
                 <i class="fas fa-book-open me-2 text-primary"></i>
                 JejakCerita
             </a>
             <div class="d-flex align-items-center">
-                <div class="dark-mode-toggle me-3" id="darkModeToggle">
-                    <i class="fas fa-sun toggle-icons"></i>
-                    <i class="fas fa-moon toggle-icons moon"></i>
-                    <div class="toggle-circle"></div>
+                <div class="dark-mode-toggle me-3" id="darkModeToggle" style="width: 56px; height: 28px; border-radius: 14px; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 6px;">
+                    <i class="fas fa-sun toggle-icons" style="color: #333;"></i>
+                    <i class="fas fa-moon toggle-icons moon" style="color: white;"></i>
+                    <div class="toggle-circle" style="position: absolute; width: 22px; height: 22px; border-radius: 50%; background-color: white; left: 3px;"></div>
                 </div>
                 <button class="navbar-toggler border-0" type="button" id="sidebarToggle">
                     <i class="fas fa-bars"></i>
@@ -38,33 +93,18 @@
                         </li>
                     @else
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('stories.create') }}">
-                                        <i class="fas fa-plus me-2"></i> Buat Cerita
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                        <i class="fas fa-cog me-2"></i> Pengaturan
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
+                                <li><a class="dropdown-item" href="{{ route('stories.create') }}"><i class="fas fa-plus me-2"></i> Buat Cerita</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-cog me-2"></i> Pengaturan</a></li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt me-2"></i> Keluar
-                                        </button>
+                                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i> Keluar</button>
                                     </form>
                                 </li>
                             </ul>
@@ -76,284 +116,169 @@
     </nav>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success m-3">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
+        <div class="alert alert-danger m-3">{{ session('error') }}</div>
     @endif
 
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar bg-body-tertiary shadow-lg" id="sidebar">
         <div class="p-4">
             <h5 class="mb-4 fw-bold">Menu</h5>
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="{{ route('home') }}">
-                        <i class="fas fa-home"></i>
-                        Beranda
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('stories.create') }}">
-                        <i class="fas fa-plus-circle"></i>
-                        Tulis Cerita
-                    </a>
-                </li>
+            <ul class="list-group list-group-flush">
+                <a href="{{ route('home') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-home me-2"></i> Beranda</a>
+                <a href="{{ route('stories.create') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-plus-circle me-2"></i> Tulis Cerita</a>
             </ul>
             <h5 class="mb-3 fw-bold mt-4">Akun</h5>
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="{{ route('profile.edit') }}">
-                        <i class="fas fa-cog"></i>
-                        Pengaturan
-                    </a>
-                </li>
+            <ul class="list-group list-group-flush">
+                <a href="{{ route('profile.edit') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-cog me-2"></i> Pengaturan</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <li>
-                        <a href="{{ route('logout') }}" class="text-danger"
-                            onclick="event.preventDefault(); this.closest('form').submit();">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Keluar
-                        </a>
-                    </li>
+                    <a href="{{ route('logout') }}" class="list-group-item list-group-item-action bg-transparent text-danger" onclick="event.preventDefault(); this.closest('form').submit();">
+                        <i class="fas fa-sign-out-alt me-2"></i> Keluar
+                    </a>
                 </form>
             </ul>
         </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Detail View (Hidden by Default) -->
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-9 mx-auto">
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}" onclick="hideDetail()" class="text-decoration-none">Beranda</a></li>
-                        <li class="breadcrumb-item">{{ $story->category->name }}</li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ $story->title }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Beranda</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('categories.show', $story->category->slug) }}" class="text-decoration-none">{{ $story->category->name }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($story->title, 30) }}</li>
                     </ol>
                 </nav>
 
-                <div class="story-detail slide-up">
-                    <div class="story-detail-header">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="badge-category">{{ $story->category->name }}</span>
-                        </div>
-
-                        <h1 class="mb-3">{{ $story->title }}</h1>
-
-                        <div class="d-flex align-items-center mb-4">
-                            <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="avatar me-3">
-                            <div>
-                                <div class="fw-bold">
-                                    @if($story->anonymous)
-                                        Anonim
-                                    @else
-                                        {{ optional($story->user)->name ?? 'Pengunjung' }}
-                                    @endif
-                                </div>
-                                <div class="text-muted small">{{ $story->published_at ? $story->published_at->format('d M Y, H:i') : $story->created_at->format('d M Y, H:i') }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="story-content">
-                        <p>{{ $story->content }}</p>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-5 py-3 border-top border-bottom">
-                        <div class="vote-buttons">
-                        </div>
+                <div class="bg-body-tertiary p-4 p-md-5 mb-4 shadow-sm slide-up" style="border-radius: 12px;">
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="{{ asset('assets/images/faces/face23.jpg') }}" alt="User Avatar" class="rounded-circle me-3" style="width:48px; height:48px; object-fit:cover;">
                         <div>
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-share me-1"></i> Bagikan
-                            </button>
+                            <div class="fw-bold">
+                                @if($story->anonymous) Anonim @else {{ optional($story->user)->name ?? 'Pengunjung' }} @endif
+                            </div>
+                            <div class="text-muted small">Ditulis sejak: {{ $story->published_at ? $story->published_at->format('d M Y') : $story->created_at->format('d M Y') }}</div>
                         </div>
                     </div>
+                    <h1 class="mb-4 h2">{{ $story->title }}</h1>
+                    <div class="story-content-parsed py-3 border-top border-bottom">
+                        {!! (new \Parsedown())->text($story->content) !!}
+                    </div>
 
-                    <!-- Comments Section -->
-                    <div class="comment-section">
-                        <h3 class="mb-4">Komentar ({{ $story->comments->count() }})</h3>
+                    <div class="mt-5">
+                        <h4 class="mb-4">Komentar ({{ $story->comments->count() }})</h4>
 
-                        <!-- Comment Form -->
-                        <div class="comment-form card mb-4">
+                        <div class="card mb-4 border-0">
                             <div class="card-body">
                                 <form action="{{ route('comments.store', $story) }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
-                                        <label for="content" class="form-label">Tambahkan Komentar:</label>
-                                        <textarea id="content" name="content" class="form-control" rows="3"
-                                            placeholder="Tulis komentar Anda di sini..."></textarea>
+                                        <label for="content" class="form-label visually-hidden">Tambahkan Komentar:</label>
+                                        <textarea id="content" name="content" class="form-control" rows="3" placeholder="Tulis komentar Anda di sini..." required></textarea>
                                     </div>
                                     <div class="mb-3 form-check">
-                                        <!-- Tambahkan hidden field -->
                                         <input type="hidden" name="anonymous" value="0">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" name="anonymous" value="1" class="form-check-input" {{ old('anonymous') ? 'checked' : '' }}>Komentari sebagai anonim
-                                        </label>
+                                        <input type="checkbox" name="anonymous" value="1" class="form-check-input" id="anonymous-comment" {{ old('anonymous') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="anonymous-comment">Komentari sebagai anonim</label>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Kirim Komentar</button>
                                 </form>
                             </div>
                         </div>
 
-                        <!-- Comments List -->
-                        <div class="comment-list">
+                        <div>
                             @forelse($story->comments->where('parent_id', null) as $comment)
-                            <div class="card mb-3">
-                                <div class="card-body comment">
-                                    <div class="comment-header">
-                                        <div class="comment-user">
-                                            @if($comment->anonymous)
-                                                Anonim
-                                            @else
-                                                {{ optional($comment->user)->name ?? 'Pengunjung' }}
-                                            @endif
+                            <div class="card mb-3 border-0 bg-body">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="fw-bold">
+                                            @if($comment->anonymous) Anonim @else {{ optional($comment->user)->name ?? 'Pengunjung' }} @endif
                                         </div>
-                                        <div class="dropdown">
+                                        <div class="d-flex align-items-center text-muted small">
                                             {{ $comment->created_at->diffForHumans() }}
-                                            <button class="btn btn-sm" type="button"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                @guest
-                                                    <li>
-                                                        <button @disabled(true) class="dropdown-item">
-                                                            <i class="fas fa-exclamation-circle me-2"></i> Laporkan
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button @disabled(true) class="dropdown-item">
-                                                            <i class="fas fa-trash me-2"></i> Hapus
-                                                        </button>
-                                                    </li>
-                                                @endguest
-                                                @auth
-                                                    @hasanyrole(['moderator', 'user'])
-                                                        @if(Auth::id() != $comment->user_id && $comment->user_id)
-                                                            <li>
-                                                                <button type="button" class="dropdown-item report-button" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}">
-                                                                    <i class="fas fa-exclamation-circle me-2"></i> Laporkan
-                                                                </button>
-                                                            </li>
+                                            <div class="dropdown ms-2">
+                                                <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    @auth
+                                                        @if(Auth::id() != $comment->user_id)
+                                                            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
                                                         @endif
-                                                        @if(Auth::id() == $comment->user_id && $comment->user_id)
-                                                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <li>
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="fas fa-trash me-2"></i> Hapus
-                                                                </button>
-                                                            </li>
-                                                        </form>
+                                                        @if(Auth::id() == $comment->user_id || Auth::user()->hasRole('moderator'))
+                                                            <li><form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i> Hapus</button></form></li>
                                                         @endif
-                                                    @endhasanyrole
-                                                @endauth
-                                            </ul>
+                                                    @endauth
+                                                    @guest
+                                                        <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
+                                                    @endguest
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="comment-body">
-                                        <p>{{ $comment->content }}</p>
+                                    <div class="mb-2">
+                                        <p class="mb-0">{{ $comment->content }}</p>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <button class="btn btn-sm btn-light" onclick="toggleReplyForm('reply-form-{{ $comment->id }}')">
-                                            <i class="fas fa-reply me-1"></i> Balas
-                                        </button>
+                                        <button class="btn btn-sm btn-light" onclick="toggleReplyForm('reply-form-{{ $comment->id }}')"><i class="fas fa-reply me-1"></i> Balas</button>
                                     </div>
 
-                                    <!-- Reply Form (Hidden by Default) -->
-                                    <div id="reply-form-{{ $comment->id }}" class="reply-form mt-3" style="display: none;">
+                                    <div id="reply-form-{{ $comment->id }}" class="mt-3" style="display: none;">
                                         <form action="{{ route('comments.store', $story) }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                             <div class="input-group mb-2">
-                                                <input type="text" name="content" class="form-control"
-                                                    placeholder="Balas komentar ini...">
+                                                <input type="text" name="content" class="form-control" placeholder="Balas komentar ini..." required>
                                                 <button class="btn btn-primary" type="submit">Balas</button>
                                             </div>
                                             <div class="form-check">
-                                                <!-- Tambahkan hidden field -->
                                                 <input type="hidden" name="anonymous" value="0">
-                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">
-                                                    <input type="checkbox" name="anonymous" value="1" class="form-check-input" {{ old('anonymous') ? 'checked' : '' }}  id="anonymousReply-{{ $comment->id }}">Balas sebagai anonim
-                                                </label>
+                                                <input type="checkbox" name="anonymous" value="1" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
+                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai anonim</label>
                                             </div>
                                         </form>
                                     </div>
 
-                                    <!-- Replies -->
                                     @if($comment->replies->count() > 0)
-                                    <div class="comment-reply mt-3">
+                                    <div class="mt-3 ps-3 border-start border-primary border-2" style="background-color: rgba(82, 113, 255, 0.05); border-radius: 0 8px 8px 0;">
                                         @foreach($comment->replies as $reply)
-                                        <div class="comment-header">
-                                            <div class="comment-user">
-                                                @if($reply->anonymous)
-                                                    Anonim
-                                                @else
-                                                    {{ optional($reply->user)->name ?? 'Pengunjung' }}
-                                                @endif
+                                        <div class="pt-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="fw-bold">
+                                                    @if($reply->anonymous) Anonim @else {{ optional($reply->user)->name ?? 'Pengunjung' }} @endif
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    {{ $reply->created_at->diffForHumans() }}
+                                                    <div class="dropdown ms-2">
+                                                         <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            @auth
+                                                                @if(Auth::id() != $reply->user_id)
+                                                                    <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportReplyModal-{{ $reply->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
+                                                                @endif
+                                                                @if(Auth::id() == $reply->user_id || Auth::user()->hasRole('moderator'))
+                                                                    <li><form action="{{ route('comments.destroy', $reply) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i> Hapus</button></form></li>
+                                                                @endif
+                                                            @endauth
+                                                            @guest
+                                                                <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
+                                                            @endguest
+                                                        </ul>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="dropdown">
-                                                {{ $reply->created_at->diffForHumans() }}
-                                                <button class="btn btn-sm" type="button"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    @guest
-                                                        <li>
-                                                            <button @disabled(true) class="dropdown-item">
-                                                                <i class="fas fa-exclamation-circle me-2"></i> Laporkan
-                                                            </button>
-                                                        </li>
-                                                        <li>
-                                                            <button @disabled(true) class="dropdown-item">
-                                                                <i class="fas fa-trash me-2"></i> Hapus
-                                                            </button>
-                                                        </li>
-                                                    @endguest
-                                                    @auth
-                                                        @hasanyrole(['moderator', 'user'])
-                                                            @if(Auth::id() != $comment->user_id && $comment->user_id)
-                                                                <li>
-                                                                    <button type="button" class="dropdown-item report-button" data-bs-toggle="modal" data-bs-target="#reportReplyModal-{{ $reply->id }}">
-                                                                        <i class="fas fa-exclamation-circle me-2"></i> Laporkan
-                                                                    </button>
-                                                                </li>
-                                                            @endif
-                                                            @if(Auth::id() == $comment->user_id && $comment->user_id)
-                                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <li>
-                                                                    <button type="submit" class="dropdown-item text-danger">
-                                                                        <i class="fas fa-trash me-2"></i> Hapus
-                                                                    </button>
-                                                                </li>
-                                                            </form>
-                                                            @endif
-                                                        @endhasanyrole
-                                                    @endauth
-                                                </ul>
-                                            </div>
+                                            <p class="mb-3">{{ $reply->content }}</p>
                                         </div>
-                                        <div class="comment-body mb-4">
-                                            <p>{{ $reply->content }}</p>
-                                        </div>
+                                        @if(!$loop->last) <hr class="my-0"> @endif
                                         @endforeach
                                     </div>
                                     @endif
                                 </div>
                             </div>
                             @empty
-                                <p class="text-gray-500 italic">Belum ada komentar. Jadilah yang pertama untuk berkomentar!</p>
+                                <p class="text-muted fst-italic">Belum ada komentar. Jadilah yang pertama untuk berkomentar!</p>
                             @endforelse
                         </div>
                     </div>
@@ -362,126 +287,95 @@
         </div>
     </div>
 
-    <!-- Report Comment Modal -->
-    @foreach($story->comments->where('parent_id', null) as $comment)
-    <div class="modal fade" id="reportCommentModal-{{ $comment->id }}" tabindex="-1" aria-labelledby="reportCommentModalLabel-{{ $comment->id }}" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form action="{{ route('reports.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
-                    <input type="hidden" name="reportable_type" value="comment">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reportCommentModalLabel-{{ $comment->id }}">Laporkan Komentar</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="reason" id="reasonSpamComment-{{ $comment->id }}" value="Spam" checked>
-                            <label class="form-check-label" for="reasonSpamComment-{{ $comment->id }}">Spam</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="reason" id="reasonHarassmentComment-{{ $comment->id }}" value="Pelecehan">
-                            <label class="form-check-label" for="reasonHarassmentComment-{{ $comment->id }}">Pelecehan</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="reason" id="reasonHateSpeechComment-{{ $comment->id }}" value="Ujaran Kebencian">
-                            <label class="form-check-label" for="reasonHateSpeechComment-{{ $comment->id }}">Ujaran Kebencian</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="reason" id="reasonMisinfoComment-{{ $comment->id }}" value="Informasi Palsu">
-                            <label class="form-check-label" for="reasonMisinfoComment-{{ $comment->id }}">Informasi Palsu</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="reason" id="reasonViolenceComment-{{ $comment->id }}" value="Kekerasan">
-                            <label class="form-check-label" for="reasonViolenceComment-{{ $comment->id }}">Kekerasan</label>
-                        </div>
-                        {{-- <div class="form-check">
-                            <input class="form-check-input" type="radio" name="reason" id="reasonOtherComment-{{ $comment->id }}" value="Lainnya">
-                            <label class="form-check-label" for="reasonOtherComment-{{ $comment->id }}">Lainnya</label>
-                        </div>
-                        <textarea
-                            name="other_reason"
-                            id="otherReasonText-{{ $story->id }}"
-                            class="form-control mt-2 d-none"
-                            placeholder="Jelaskan alasanmu..."
-                        ></textarea> --}}
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">Kirim Laporan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    @endforeach
-
-    <!-- Reply Report Modals -->
     @foreach($story->comments as $comment)
-        @foreach($comment->replies ?? [] as $reply)
-        <div class="modal fade" id="reportReplyModal-{{ $reply->id }}" tabindex="-1" aria-labelledby="reportReplyModalLabel-{{ $reply->id }}" aria-hidden="true">
+        <div class="modal fade" id="reportCommentModal-{{ $comment->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form action="{{ route('reports.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="reportable_id" value="{{ $reply->id }}">
-                        <input type="hidden" name="reportable_type" value="comment">
-
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="reportReplyModalLabel-{{ $reply->id }}">Laporkan Balasan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reason" id="reasonSpamReply-{{ $reply->id }}" value="Spam" checked>
-                                <label class="form-check-label" for="reasonSpamReply-{{ $reply->id }}">Spam</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reason" id="reasonHarassmentReply-{{ $reply->id }}" value="Pelecehan">
-                                <label class="form-check-label" for="reasonHarassmentReply-{{ $reply->id }}">Pelecehan</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reason" id="reasonHateSpeechReply-{{ $reply->id }}" value="Ujaran Kebencian">
-                                <label class="form-check-label" for="reasonHateSpeechReply-{{ $reply->id }}">Ujaran Kebencian</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reason" id="reasonMisinfoReply-{{ $reply->id }}" value="Informasi Palsu">
-                                <label class="form-check-label" for="reasonMisinfoReply-{{ $reply->id }}">Informasi Palsu</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reason" id="reasonViolenceReply-{{ $reply->id }}" value="Kekerasan">
-                                <label class="form-check-label" for="reasonViolenceReply-{{ $reply->id }}">Kekerasan</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reason" id="reasonOtherReply-{{ $reply->id }}" value="Lainnya">
-                                <label class="form-check-label" for="reasonOtherReply-{{ $reply->id }}">Lainnya</label>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-danger">Kirim Laporan</button>
-                        </div>
-                    </form>
+                <form action="{{ route('reports.store') }}" method="POST">@csrf <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
+                    <input type="hidden" name="reportable_type" value="comment">
+                    <div class="modal-header">
+                    <h5 class="modal-title">Laporkan Komentar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Spam" checked>
+                        <label class="form-check-label">Spam</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Pelecehan">
+                        <label class="form-check-label">Pelecehan</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Ujaran Kebencian">
+                        <label class="form-check-label">Ujaran Kebencian</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Informasi Palsu">
+                        <label class="form-check-label">Informasi Palsu</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Kekerasan">
+                        <label class="form-check-label">Kekerasan</label>
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        @foreach($comment->replies ?? [] as $reply)
+        <div class="modal fade" id="reportReplyModal-{{ $reply->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <form action="{{ route('reports.store') }}" method="POST">@csrf <input type="hidden" name="reportable_id" value="{{ $reply->id }}">
+                    <input type="hidden" name="reportable_type" value="comment">
+                    <div class="modal-header">
+                    <h5 class="modal-title">Laporkan Balasan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Spam" checked>
+                        <label class="form-check-label">Spam</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Pelecehan">
+                        <label class="form-check-label">Pelecehan</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Ujaran Kebencian">
+                        <label class="form-check-label">Ujaran Kebencian</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Informasi Palsu">
+                        <label class="form-check-label">Informasi Palsu</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Kekerasan">
+                        <label class="form-check-label">Kekerasan</label>
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                    </div>
+                </form>
                 </div>
             </div>
         </div>
         @endforeach
     @endforeach
 
-    <!-- Footer -->
-    <footer>
+    <footer class="bg-body-tertiary mt-5 py-5 border-top">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h5 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-primary"></i>JejakCerita</h5>
-                    <p class="text-muted">Platform berbagi cerita pendek terpopuler di Indonesia. Temukan inspirasi dan bagikan
-                        kisahmu dengan ribuan pembaca di seluruh negeri.</p>
+                    <p class="text-muted">Platform berbagi cerita pendek terpopuler di Indonesia. Temukan inspirasi dan bagikan kisahmu dengan ribuan pembaca di seluruh negeri.</p>
                 </div>
             </div>
             <div class="border-top mt-4 pt-4 text-center">
@@ -490,62 +384,26 @@
         </div>
     </footer>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Store the element that had focus before opening the modal
             let previouslyFocusedElement;
-
-            // All modals on the page
             const modals = document.querySelectorAll('.modal');
-
             modals.forEach(modal => {
-                // When modal is about to be shown
-                modal.addEventListener('show.bs.modal', function() {
-                    // Store the element that currently has focus
-                    previouslyFocusedElement = document.activeElement;
-                });
-
-                // When modal is hidden
-                modal.addEventListener('hidden.bs.modal', function() {
-                    // Return focus to the element that had focus before the modal was opened
-                    if (previouslyFocusedElement) {
-                        previouslyFocusedElement.focus();
-                    }
-                });
-
-                // Handle keyboard focus loop within the modal
+                modal.addEventListener('show.bs.modal', function() { previouslyFocusedElement = document.activeElement; });
+                modal.addEventListener('hidden.bs.modal', function() { if (previouslyFocusedElement) { previouslyFocusedElement.focus(); } });
                 modal.addEventListener('keydown', function(event) {
                     if (event.key === 'Tab') {
-                        // Get all focusable elements in the modal
-                        const focusableElements = modal.querySelectorAll(
-                            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                        );
-
+                        const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
                         const firstElement = focusableElements[0];
                         const lastElement = focusableElements[focusableElements.length - 1];
-
-                        // If shift key is pressed and focus is on first element, move to last element
-                        if (event.shiftKey && document.activeElement === firstElement) {
-                            event.preventDefault();
-                            lastElement.focus();
-                        }
-                        // If focus is on last element, move to first element
-                        else if (!event.shiftKey && document.activeElement === lastElement) {
-                            event.preventDefault();
-                            firstElement.focus();
-                        }
+                        if (event.shiftKey && document.activeElement === firstElement) { event.preventDefault(); lastElement.focus(); }
+                        else if (!event.shiftKey && document.activeElement === lastElement) { event.preventDefault(); firstElement.focus(); }
                     }
-
-                    // Close modal on Escape key
                     if (event.key === 'Escape') {
                         const bsModal = bootstrap.Modal.getInstance(modal);
-                        if (bsModal) {
-                            bsModal.hide();
-                        }
+                        if (bsModal) { bsModal.hide(); }
                     }
                 });
             });

@@ -46,17 +46,15 @@
                                 <td>{{ Str::limit($category->description, 50) }}</td>
                                 <td>{{ $category->stories_count }}</td>
                                 <td>
-                                    <a href="{{ route('categories.edit', $category) }}" class="text-blue-600 hover:underline mr-3">Edit</a>
-                                    {{-- @if($category->id !== auth()->id()) --}}
-                                        <form action="{{ route('categories.destroy', $category) }}"
-                                            method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    {{-- @endif --}}
+                                    <a href="{{ route('categories.edit', $category) }}" class="btn btn-primary mr-3">Edit</a>
+                                    <form action="{{ route('categories.destroy', $category) }}"
+                                        method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger mt-2 mb-2" onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')">
+                                            Hapus
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

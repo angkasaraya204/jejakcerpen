@@ -15,10 +15,6 @@ Route::get('/', [StoryController::class, 'home'])->name('home');
 Route::get('/stories/{story}', [StoryController::class, 'show'])->name('stories.show');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::middleware(['role:user'])->group(function () {
         // Story submission

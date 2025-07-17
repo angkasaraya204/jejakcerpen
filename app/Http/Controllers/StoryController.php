@@ -16,7 +16,10 @@ class StoryController extends Controller
 {
     private function getTrendingStories($period = 'all', $limit = 5)
     {
-        $query = Story::with(['user', 'category']);
+        $query = Story::with(['user', 'category'])
+            ->withCount(['votes as upvotes_count' => function($query) {
+                $query->where('vote_type', 'upvote');
+            }]);
 
         // Filter berdasarkan periode
         switch ($period) {
@@ -29,49 +32,20 @@ class StoryController extends Controller
             case 'monthly':
                 $query->where('created_at', '>=', now()->subMonth());
                 break;
-            case 'all':
-            default:
-                // Tidak ada filter waktu
-                break;
         }
 
-        // Ambil semua stories dengan count, lalu filter dan sort di PHP
-        $stories = $query->withCount([
-                'votes as upvotes_count' => function($query) {
-                    $query->where('vote_type', 'upvote');
-                },
-                'votes as downvotes_count' => function($query) {
-                    $query->where('vote_type', 'downvote');
-                },
-                'comments as comments_count'
-            ])
-            ->get();
-
-        // Filter dan sort di collection
-        $trendingStories = $stories
-            ->filter(function($story) {
-                return $story->upvotes_count > 0; // Minimal 1 upvote
-            })
-            ->map(function($story) {
-                // Hitung trending score
-                $story->trending_score = $story->upvotes_count - $story->downvotes_count + ($story->comments_count * 0.5);
-                return $story;
-            })
-            ->filter(function($story) {
-                return $story->trending_score > 0; // Trending score harus positif
-            })
-            ->sortByDesc('trending_score')
-            ->sortByDesc('created_at') // Secondary sort untuk score yang sama
-            ->take($limit)
-            ->values(); // Reset keys
-
-        return $trendingStories;
+        // Urutkan berdasarkan jumlah upvote terbanyak, lalu berdasarkan yang terbaru.
+        // Ambil data sesuai limit. Semua proses ini dilakukan di database.
+        return $query->orderByDesc('upvotes_count')
+                     ->orderByDesc('created_at')
+                     ->take($limit)
+                     ->get();
     }
 
-    // Method untuk popular stories tanpa pagination
     private function getPopularStories($period = 'all', $limit = 8)
     {
-        $query = Story::with(['user', 'category']);
+        $query = Story::with(['user', 'category'])
+                      ->withCount('views');
 
         switch ($period) {
             case 'daily':
@@ -82,26 +56,10 @@ class StoryController extends Controller
                 break;
         }
 
-        return $query->withCount([
-                'views',
-                'votes as upvotes_count' => function($query) {
-                    $query->where('vote_type', 'upvote');
-                },
-                'votes as downvotes_count' => function($query) {
-                    $query->where('vote_type', 'downvote');
-                },
-                'comments as comments_count'
-            ])
-            ->get()
-            ->map(function ($story) {
-                $story->popularity_score =
-                    ($story->upvotes_count * 3) +
-                    ($story->comments_count * 2) -
-                    ($story->downvotes_count * 1);
-                return $story;
-            })
-            ->sortByDesc('popularity_score')
-            ->take($limit);
+        // Urutkan berdasarkan jumlah views terbanyak dan ambil sesuai limit.
+        return $query->orderByDesc('views_count')
+                     ->take($limit)
+                     ->get();
     }
 
     private function getPopularAuthors($limit = 5)
@@ -115,6 +73,19 @@ class StoryController extends Controller
         ->orderByDesc('stories_count')
         ->take($limit)
         ->get();
+    }
+
+    private function getPopularCategoriesByViews($limit = 5)
+    {
+        return Category::query()
+            ->select('categories.id', 'categories.name', 'categories.slug')
+            ->selectRaw('COUNT(stories_views.id) as total_views')
+            ->join('stories', 'categories.id', '=', 'stories.category_id')
+            ->join('stories_views', 'stories.id', '=', 'stories_views.story_id')
+            ->groupBy('categories.id', 'categories.name', 'categories.slug')
+            ->orderByDesc('total_views')
+            ->take($limit)
+            ->get();
     }
 
     public function index(Request $request, Report $report)
@@ -171,6 +142,8 @@ class StoryController extends Controller
         $trendingStories = $this->getTrendingStories();
         $popularAuthors = $this->getPopularAuthors();
 
+        $popularCategoriesByViews = $this->getPopularCategoriesByViews(5);
+
         return view('home.index', compact(
             'stories',
             'allCategories',
@@ -179,7 +152,8 @@ class StoryController extends Controller
             'popularStoriesDaily',
             'popularStoriesWeekly',
             'popularAuthors',
-            'isFollowing'
+            'isFollowing',
+            'popularCategoriesByViews'
         ));
     }
 

@@ -31,7 +31,7 @@
         </a>
       </li>
       <li class="nav-item menu-items {{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#moderasi" aria-expanded="{{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'true' : 'false' }}" aria-controls="moderasi">
+        <a class="nav-link" data-toggle="collapse" href="#moderasi" aria-expanded="{{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'true' : 'false' }}" aria-controls="moderasi2">
           <span class="menu-icon">
             <i class="mdi mdi-laptop"></i>
           </span>
@@ -61,7 +61,7 @@
         </a>
       </li>
       <li class="nav-item menu-items {{ request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan') ? 'active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#melaporkan" aria-expanded="{{ request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan') ? 'true' : 'false' }}" aria-controls="melaporkan">
+        <a class="nav-link" data-toggle="collapse" href="#melaporkan" aria-expanded="{{ request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan') ? 'true' : 'false' }}" aria-controls="melaporkan2">
           <span class="menu-icon">
             <i class="mdi mdi-laptop"></i>
           </span>
@@ -80,7 +80,7 @@
         </div>
       </li>
       <li class="nav-item menu-items {{ request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan') ? 'active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#dilaporkan" aria-expanded="{{ request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan') ? 'true' : 'false' }}" aria-controls="dilaporkan">
+        <a class="nav-link" data-toggle="collapse" href="#dilaporkan" aria-expanded="{{ request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan') ? 'true' : 'false' }}" aria-controls="dilaporkan2">
           <span class="menu-icon">
             <i class="mdi mdi-laptop"></i>
           </span>
@@ -107,6 +107,14 @@
             <i class="mdi mdi-speedometer"></i>
           </span>
           <span class="menu-title">Pengguna</span>
+        </a>
+      </li>
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="">
+          <span class="menu-icon">
+            <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Seleksi Cerita</span>
         </a>
       </li>
       <li class="nav-item menu-items {{ request()->routeIs('categories.index') ? 'active' : '' }}">
