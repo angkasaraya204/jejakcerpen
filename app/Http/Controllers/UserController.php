@@ -51,7 +51,11 @@ class UserController extends Controller
 
     public function getTrendingbyUser($period = 'all', $limit = 5)
     {
-        $query = Story::with(['user', 'category'])->where('user_id', auth()->id());
+        $query = Story::with(['user', 'category'])
+            ->where('user_id', auth()->id())
+            ->withCount(['votes as upvotes_count' => function($query) {
+                $query->where('vote_type', 'upvote');
+            }]);
 
         // Filter berdasarkan periode
         switch ($period) {
@@ -64,41 +68,15 @@ class UserController extends Controller
             case 'monthly':
                 $query->where('created_at', '>=', now()->subMonth());
                 break;
-            case 'all':
-            default:
-                // Tidak ada filter waktu
-                break;
         }
 
-        // Ambil semua stories dengan count, lalu filter dan sort di PHP
-        $stories = $query->withCount([
-                'votes as upvotes_count' => function($query) {
-                    $query->where('vote_type', 'upvote');
-                },
-                'votes as downvotes_count' => function($query) {
-                    $query->where('vote_type', 'downvote');
-                },
-                'comments as comments_count'
-            ])
-            ->get();
-
-        // Filter dan sort di collection
-        $trendingStories = $stories
-            ->filter(function($story) {
-                return $story->upvotes_count > 0; // Minimal 1 upvote
-            })
-            ->map(function($story) {
-                // Hitung trending score
-                $story->trending_score = $story->upvotes_count - $story->downvotes_count + ($story->comments_count * 0.5);
-                return $story;
-            })
-            ->filter(function($story) {
-                return $story->trending_score > 0; // Trending score harus positif
-            })
-            ->sortByDesc('trending_score')
-            ->sortByDesc('created_at') // Secondary sort untuk score yang sama
-            ->take($limit)
-            ->values(); // Reset keys
+        // Urutkan berdasarkan jumlah upvote terbanyak, lalu berdasarkan yang terbaru.
+        // Ambil data sesuai limit. Semua proses ini dilakukan di database.
+        $trendingStories = $query->having('upvotes_count', '>', 0) // <-- Tambahkan baris ini
+                 ->orderByDesc('upvotes_count')
+                 ->orderByDesc('created_at')
+                 ->take($limit)
+                 ->get();
 
         return view('user.trending.index', compact('trendingStories'));
     }
