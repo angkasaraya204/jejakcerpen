@@ -35,7 +35,7 @@ class ReportController extends Controller
         $request->validate([
             'reportable_type' => 'required|in:story,comment',
             'reportable_id'   => 'required|integer',
-            'reason'          => 'required|string',
+            'reason'          => 'required|string|max:280',
         ]);
 
         // Tentukan class model

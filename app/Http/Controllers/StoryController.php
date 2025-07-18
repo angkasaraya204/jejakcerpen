@@ -203,8 +203,8 @@ class StoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required',
+            'title' => 'required|max:80',
+            'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',
         ]);
@@ -232,8 +232,8 @@ class StoryController extends Controller
     public function update(Request $request, Story $story)
     {
         $validated = $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required',
+            'title' => 'required|max:80',
+            'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',
         ]);

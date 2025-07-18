@@ -17,7 +17,7 @@ return new class extends Migration
                   ->constrained()
                   ->onDelete('cascade'); // pelapor
             $table->morphs('reportable');
-            $table->string('reason')->nullable();
+            $table->string('reason', 280)->nullable();
             $table->enum('status', ['pending','valid','tidak-valid'])
                   ->default('pending');
             $table->timestamps();

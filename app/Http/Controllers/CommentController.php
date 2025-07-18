@@ -35,7 +35,7 @@ class CommentController extends Controller
     public function store(Request $request, Story $story)
     {
         $validated = $request->validate([
-            'content' => 'required',
+            'content' => 'required|max:1000',
             'parent_id' => 'nullable|exists:comments,id',
             'anonymous' => 'boolean',
         ]);
@@ -65,7 +65,7 @@ class CommentController extends Controller
         }
 
         $validated = $request->validate([
-            'content' => 'required',
+            'content' => 'required|max:1000',
             'parent_id' => 'nullable|exists:comments,id',
             'anonymous' => 'boolean',
         ]);
