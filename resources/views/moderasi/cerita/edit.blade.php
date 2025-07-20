@@ -53,8 +53,9 @@
                 </div>
                 <div class="form-group">
                     <div class="form-check">
+                        <input type="hidden" name="anonymous" value="0">
                         <label class="form-check-label">
-                            <input type="checkbox" name="anonymous" class="form-check-input" {{ old('anonymous', $story->anonymous) ? 'checked' : '' }}> Kirim sebagai anonim
+                            <input type="checkbox" name="anonymous" value="1" class="form-check-input" {{ old('anonymous', $story->anonymous) ? 'checked' : '' }}> Kirim sebagai anonim
                         </label>
                     </div>
                 </div>
