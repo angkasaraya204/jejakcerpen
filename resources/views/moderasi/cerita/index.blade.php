@@ -41,6 +41,7 @@
                             <tr>
                                 <th> # </th>
                                 <th> Judul Cerita </th>
+                                <th> Slug </th>
                                 <th> Kategori </th>
                                 <th> Tanggal Dibuat </th>
                                 @role('admin')

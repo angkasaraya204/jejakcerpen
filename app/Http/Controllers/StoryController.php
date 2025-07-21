@@ -204,7 +204,7 @@ class StoryController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:80',
-            'slug' => 'required|string|max:50',
+            'slug' => 'required|string|lowercase|max:50',
             'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',
@@ -235,7 +235,7 @@ class StoryController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:80',
-            'slug' => 'required|string|max:50',
+            'slug' => 'required|string|lowercase|max:50',
             'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',

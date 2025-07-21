@@ -92,10 +92,10 @@ class ReportController extends Controller
     {
         $dilaporkan = Report::with(['reportable', 'user'])
             ->whereHas('reportable', function($q) {
-                $q->where('user_id', auth()->id());
+                $q->where('user_id', auth()->id())->withTrashed();
             })
             ->where('reportable_type', Story::class)
-            ->where('status', 'tidak-valid')
+            ->whereIn('status', ['valid', 'tidak-valid'])
             ->orderBy('updated_at', 'desc')
             ->paginate(8);
 
@@ -105,10 +105,10 @@ class ReportController extends Controller
     {
         $dilaporkan = Report::with(['reportable', 'user'])
             ->whereHas('reportable', function($q) {
-                $q->where('user_id', auth()->id());
+                $q->where('user_id', auth()->id())->withTrashed();
             })
             ->where('reportable_type', Comment::class)
-            ->where('status', 'tidak-valid')
+            ->whereIn('status', ['valid', 'tidak-valid'])
             ->orderBy('updated_at', 'desc')
             ->paginate(8);
 

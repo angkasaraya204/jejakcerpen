@@ -22,7 +22,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:50|unique:categories',
-            'description' => 'required|string|max:50',
+            'slug' => 'required|string|lowercase|max:50',
         ]);
 
         Category::create([

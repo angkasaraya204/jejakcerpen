@@ -57,9 +57,15 @@
                                     <td>{{ $dilaporkanKomentar->created_at->format('d/m/Y H:i') }}</td>
                                     <td>{{ $dilaporkanKomentar->updated_at->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        <small class="text-danger d-block mt-1">
-                                            Komentar tidak sesuai dengan aturan komunitas
-                                        </small>
+                                        @if($dilaporkanKomentar->status == 'valid')
+                                            <small class="text-danger d-block mt-1">
+                                                Komentar tidak sesuai dengan aturan komunitas
+                                            </small>
+                                        @elseif($dilaporkanKomentar->status == 'tidak-valid')
+                                            <small class="text-success d-block mt-1">
+                                                Komentar masih sesuai aturan komunitas
+                                            </small>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

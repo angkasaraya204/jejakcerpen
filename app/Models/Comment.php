@@ -8,7 +8,7 @@ use App\Models\Report;
 
 class Comment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'content',
