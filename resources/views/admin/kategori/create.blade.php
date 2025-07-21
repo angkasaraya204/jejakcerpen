@@ -27,11 +27,11 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="description">Deskripsi:</label>
-                    <textarea id="description" name="description"
-                        class="form-control @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                    <label for="slug">Slug</label>
+                    <input type="text" id="slug" name="slug"
+                        class="form-control @error('slug') border-red-500 @enderror" value="{{ old('slug') }}" placeholder="Contoh: /horror/">
 
-                    @error('description')
+                    @error('slug')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                     @enderror
                 </div>

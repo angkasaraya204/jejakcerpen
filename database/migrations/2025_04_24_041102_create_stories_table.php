@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title', 80);
             $table->text('content');
+            $table->string('slug', 50)->unique();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('anonymous')->default(false);

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -23,13 +22,12 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:50|unique:categories',
-            'description' => 'nullable|string|max:500',
+            'description' => 'required|string|max:50',
         ]);
 
         Category::create([
             'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
-            'description' => $validated['description'],
+            'slug' => $validated['slug'],
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil dibuat.');
@@ -44,13 +42,12 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:50|unique:categories,name,' . $category->id,
-            'description' => 'nullable|string|max:500',
+            'slug' => 'required|string|max:50',
         ]);
 
         $category->update([
             'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
-            'description' => $validated['description'],
+            'slug' => $validated['slug'],
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');

@@ -13,7 +13,7 @@ use App\Http\Controllers\StorySelectionController;
 
 // Public routes (with or without authentication)
 Route::get('/', [StoryController::class, 'home'])->name('home');
-Route::get('/stories/{story}', [StoryController::class, 'show'])->name('stories.show');
+Route::get('/stories/{story:slug}', [StoryController::class, 'show'])->name('stories.show');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 
 Route::middleware('auth')->group(function () {

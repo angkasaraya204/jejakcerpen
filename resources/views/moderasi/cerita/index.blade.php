@@ -61,6 +61,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $story->title }}</td>
+                                    <td>{{ $story->slug }}</td>
                                     <td>{{ $story->category->name }}</td>
                                     <td>{{ $story->created_at->format('d M Y') }}</td>
                                     @role('admin')

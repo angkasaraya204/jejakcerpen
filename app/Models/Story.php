@@ -12,6 +12,7 @@ class Story extends Model
     protected $fillable = [
         'title',
         'content',
+        'slug',
         'user_id',
         'category_id',
         'anonymous',
@@ -21,6 +22,11 @@ class Story extends Model
     protected $casts = [
         'anonymous' => 'boolean',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function user()
     {

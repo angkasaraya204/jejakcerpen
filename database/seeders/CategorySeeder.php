@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Category;
-use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
@@ -14,35 +13,34 @@ class CategorySeeder extends Seeder
         $categories = [
             [
                 'name' => 'Romantis',
-                'description' => 'Cerita dengan tema percintaan dan romansa',
+                'slug' => 'romantis',
             ],
             [
                 'name' => 'Horor',
-                'description' => 'Cerita dengan tema seram dan menakutkan',
+                'slug' => 'horor',
             ],
             [
                 'name' => 'Komedi',
-                'description' => 'Cerita dengan unsur humor dan komedi',
+                'slug' => 'komedi',
             ],
             [
                 'name' => 'Drama',
-                'description' => 'Cerita dengan konflik kehidupan sehari-hari',
+                'slug' => 'drama',
             ],
             [
                 'name' => 'Fantasi',
-                'description' => 'Cerita dengan elemen fantasi dan imajinasi',
+                'slug' => 'fantasi',
             ],
             [
                 'name' => 'Inspiratif',
-                'description' => 'Cerita yang memberikan inspirasi dan motivasi',
+                'slug' => 'inspiratif',
             ],
         ];
 
         foreach ($categories as $category) {
             Category::create([
                 'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'description' => $category['description'],
+                'slug' => $category['slug'],
             ]);
         }
     }

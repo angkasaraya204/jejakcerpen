@@ -33,7 +33,6 @@
                                 <th> # </th>
                                 <th> Nama </th>
                                 <th> Slug </th>
-                                <th> Deskripsi </th>
                                 <th> Jumlah Cerita </th>
                                 <th> Aksi </th>
                             </tr>
@@ -44,7 +43,6 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $category->name }}</td>
                                     <td>{{ $category->slug }}</td>
-                                    <td>{{ Str::limit($category->description, 50) }}</td>
                                     <td>{{ $category->stories_count }}</td>
                                     <td>
                                         <a href="{{ route('categories.edit', $category) }}" class="btn btn-primary mr-3">Edit</a>
