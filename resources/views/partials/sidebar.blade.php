@@ -21,7 +21,7 @@
         <span class="nav-link">Navigation</span>
       </li>
 
-      @hasanyrole(['admin','user'])
+      @role('user')
       <li class="nav-item menu-items {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('dashboard') }}">
           <span class="menu-icon">
@@ -30,15 +30,16 @@
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
+
       <li class="nav-item menu-items {{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#moderasi" aria-expanded="{{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'true' : 'false' }}" aria-controls="moderasi2">
+        <a class="nav-link" data-toggle="collapse" href="#user-moderasi" aria-expanded="{{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'true' : 'false' }}" aria-controls="user-moderasi">
           <span class="menu-icon">
             <i class="mdi mdi-laptop"></i>
           </span>
           <span class="menu-title">Moderasi</span>
           <i class="menu-arrow"></i>
         </a>
-        <div class="collapse {{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'show' : '' }}" id="moderasi">
+        <div class="collapse {{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'show' : '' }}" id="user-moderasi">
           <ul class="nav flex-column sub-menu">
             <li class="nav-item">
               <a class="nav-link {{ request()->routeIs('stories.index') ? 'active' : '' }}" href="{{ route('stories.index') }}">Cerita</a>
@@ -49,26 +50,25 @@
           </ul>
         </div>
       </li>
-      @endhasanyrole
 
-      @role('user')
       <li class="nav-item menu-items {{ request()->routeIs('stories.trending') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('stories.trending') }}">
           <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
+            <i class="mdi mdi-star-circle"></i>
           </span>
           <span class="menu-title">Trending</span>
         </a>
       </li>
-      <li class="nav-item menu-items {{ request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan') ? 'active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#melaporkan" aria-expanded="{{ request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan') ? 'true' : 'false' }}" aria-controls="melaporkan2">
+
+      <li class="nav-item menu-items {{ (request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan')) ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#melaporkan" aria-expanded="{{ (request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan')) ? 'true' : 'false' }}" aria-controls="melaporkan">
           <span class="menu-icon">
-            <i class="mdi mdi-laptop"></i>
+            <i class="mdi mdi-alert-outline"></i>
           </span>
           <span class="menu-title">Melaporkan</span>
           <i class="menu-arrow"></i>
         </a>
-        <div class="collapse {{ request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan') ? 'show' : '' }}" id="melaporkan">
+        <div class="collapse {{ (request()->routeIs('storie.melaporkan') || request()->routeIs('comment.melaporkan')) ? 'show' : '' }}" id="melaporkan">
           <ul class="nav flex-column sub-menu">
             <li class="nav-item">
               <a class="nav-link {{ request()->routeIs('storie.melaporkan') ? 'active' : '' }}" href="{{ route('storie.melaporkan') }}">Cerita</a>
@@ -79,15 +79,16 @@
           </ul>
         </div>
       </li>
-      <li class="nav-item menu-items {{ request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan') ? 'active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#dilaporkan" aria-expanded="{{ request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan') ? 'true' : 'false' }}" aria-controls="dilaporkan2">
+
+      <li class="nav-item menu-items {{ (request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan')) ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#dilaporkan" aria-expanded="{{ (request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan')) ? 'true' : 'false' }}" aria-controls="dilaporkan">
           <span class="menu-icon">
-            <i class="mdi mdi-laptop"></i>
+            <i class="mdi mdi-flag-outline"></i>
           </span>
           <span class="menu-title">Dilaporkan</span>
           <i class="menu-arrow"></i>
         </a>
-        <div class="collapse {{ request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan') ? 'show' : '' }}" id="dilaporkan">
+        <div class="collapse {{ (request()->routeIs('storie.dilaporkan') || request()->routeIs('comment.dilaporkan')) ? 'show' : '' }}" id="dilaporkan">
           <ul class="nav flex-column sub-menu">
             <li class="nav-item">
               <a class="nav-link {{ request()->routeIs('storie.dilaporkan') ? 'active' : '' }}" href="{{ route('storie.dilaporkan') }}">Cerita</a>
@@ -101,10 +102,39 @@
       @endrole
 
       @role('admin')
-      <li class="nav-item menu-items {{ request()->routeIs('users.index') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('users.index') }}">
+      <li class="nav-item menu-items {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('dashboard') }}">
           <span class="menu-icon">
             <i class="mdi mdi-speedometer"></i>
+          </span>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items {{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'active' : '' }}">
+        <a class="nav-link" data-toggle="collapse" href="#admin-moderasi" aria-expanded="{{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'true' : 'false' }}" aria-controls="admin-moderasi">
+          <span class="menu-icon">
+            <i class="mdi mdi-laptop"></i>
+          </span>
+          <span class="menu-title">Moderasi</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ (request()->routeIs('stories.index') || request()->routeIs('comments.index')) ? 'show' : '' }}" id="admin-moderasi">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+              <a class="nav-link {{ request()->routeIs('stories.index') ? 'active' : '' }}" href="{{ route('stories.index') }}">Cerita</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ request()->routeIs('comments.index') ? 'active' : '' }}" href="{{ route('comments.index') }}">Komentar</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="nav-item menu-items {{ request()->routeIs('users.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
+          <span class="menu-icon">
+            <i class="mdi mdi-account-group"></i>
           </span>
           <span class="menu-title">Pengguna</span>
         </a>
@@ -117,22 +147,22 @@
           <span class="menu-title">Seleksi Cerita</span>
         </a>
       </li>
-      <li class="nav-item menu-items {{ request()->routeIs('categories.index') ? 'active' : '' }}">
+      <li class="nav-item menu-items {{ request()->routeIs('categories.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('categories.index') }}">
           <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
+            <i class="mdi mdi-view-grid"></i>
           </span>
           <span class="menu-title">Kategori</span>
         </a>
       </li>
-      <li class="nav-item menu-items {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+      <li class="nav-item menu-items {{ request()->routeIs('reports.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('reports.index') }}">
-          <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
+        <span class="menu-icon">
+            <i class="mdi mdi-flag-variant"></i>
           </span>
           <span class="menu-title">Laporan</span>
         </a>
       </li>
       @endrole
     </ul>
-  </nav>
+</nav>
