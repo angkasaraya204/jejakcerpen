@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/story-selections', [StorySelectionController::class, 'index'])->name('story-selections.index');
         Route::patch('/story-selections/{story}/approve', [StorySelectionController::class, 'approve'])->name('story-selections.approve');
         Route::patch('/story-selections/{story}/reject', [StorySelectionController::class, 'reject'])->name('story-selections.reject');
+        Route::post('story-selections/bulk-action', [StorySelectionController::class, 'bulkAction'])->name('story-selections.bulk-action');
     });
 });
 
