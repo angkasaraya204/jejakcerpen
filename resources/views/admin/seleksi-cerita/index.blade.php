@@ -43,7 +43,8 @@
                                     </th>
                                     <th> # </th>
                                     <th> Judul </th>
-                                    <th> Penulis </th>
+                                    <th> Oleh </th>
+                                    <th> Alias </th>
                                     <th> Kategori </th>
                                     <th> Tanggal Kirim </th>
                                     <th> Aksi </th>
@@ -57,7 +58,25 @@
                                         </td>
                                         <td>{{ $loop->iteration }}</td>
                                         <td> {{ $story->title }} </td>
-                                        <td> {{ $story->user->name }} </td>
+
+                                        {{-- CHANGE: Menyesuaikan kolom Penulis --}}
+                                        <td>
+                                            @if($story->anonymous)
+                                                Anonim
+                                            @else
+                                                {{ $story->user->name }}
+                                            @endif
+                                        </td>
+
+                                        {{-- CHANGE: Menambahkan data untuk kolom Alias --}}
+                                        <td>
+                                            @if($story->anonymous)
+                                                {{ $story->user->name }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+
                                         <td> {{ $story->category->name }} </td>
                                         <td> {{ $story->created_at->format('d M Y') }} </td>
                                         <td>

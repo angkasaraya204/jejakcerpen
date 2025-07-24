@@ -466,7 +466,9 @@
                             @forelse($popularAuthors as $author)
                                 <li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-transparent">
                                     <div>
-                                        <h6 class="mb-0">{{ $author->name }}</h6>
+                                        {{-- MODIFICATION START --}}
+                                        <h6 class="mb-0">{{ $author->name ?? 'Anonim' }}</h6>
+                                        {{-- MODIFICATION END --}}
                                         <small class="text-muted">{{ $author->stories_count }} cerita</small>
                                     </div>
                                 </li>

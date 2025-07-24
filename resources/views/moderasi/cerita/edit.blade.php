@@ -31,7 +31,7 @@
                     <label for="slug">Slug</label>
                     <input type="text" id="slug" name="slug"
                         class="form-control @error('slug') border-red-500 @enderror"
-                        value="{{ old('slug', $story->slug) }}" placeholder="Contoh: /cerita-1/" required>
+                        value="{{ old('slug', $story->slug) }}" placeholder="Contoh: cerita-1" required>
 
                     @error('slug')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>

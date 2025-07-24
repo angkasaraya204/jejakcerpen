@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
@@ -12,7 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StorySelectionController;
 
 // Public routes (with or without authentication)
-Route::get('/', [StoryController::class, 'home'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/stories/{story:slug}', [StoryController::class, 'show'])->name('stories.show');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 

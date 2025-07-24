@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Story;
 use App\Models\Views;
 use App\Models\Follow;
-use App\Models\Report;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,82 +12,7 @@ use Illuminate\Support\Facades\Session;
 
 class StoryController extends Controller
 {
-    private function getTrendingStories($period = 'all', $limit = 5)
-    {
-        $query = Story::with(['user', 'category'])
-            ->withCount(['votes as upvotes_count' => function($query) {
-                $query->where('vote_type', 'upvote');
-            }]);
-
-        // Filter berdasarkan periode
-        switch ($period) {
-            case 'daily':
-                $query->where('created_at', '>=', now()->subDay());
-                break;
-            case 'weekly':
-                $query->where('created_at', '>=', now()->subWeek());
-                break;
-            case 'monthly':
-                $query->where('created_at', '>=', now()->subMonth());
-                break;
-        }
-
-        // Urutkan berdasarkan jumlah upvote terbanyak, lalu berdasarkan yang terbaru.
-        // Ambil data sesuai limit. Semua proses ini dilakukan di database.
-        return $query->having('upvotes_count', '>', 0) // <-- Tambahkan baris ini
-                 ->orderByDesc('upvotes_count')
-                 ->orderByDesc('created_at')
-                 ->take($limit)
-                 ->get();
-    }
-
-    private function getPopularStories($period = 'all', $limit = 8)
-    {
-        $query = Story::with(['user', 'category'])
-                      ->withCount('views')->where('status', 'approved');
-
-        switch ($period) {
-            case 'daily':
-                $query->where('created_at', '>=', now()->subDay());
-                break;
-            case 'weekly':
-                $query->where('created_at', '>=', now()->subWeek());
-                break;
-        }
-
-        // Urutkan berdasarkan jumlah views terbanyak dan ambil sesuai limit.
-        return $query->orderByDesc('views_count')
-                     ->take($limit)
-                     ->get();
-    }
-
-    private function getPopularAuthors($limit = 5)
-    {
-        return User::withCount('stories')
-        ->withCount(['votes' => function($query) {
-            $query->where('vote_type', 'upvote');
-        }])
-        ->having('stories_count', '>', 0)
-        ->orderByDesc('votes_count')
-        ->orderByDesc('stories_count')
-        ->take($limit)
-        ->get();
-    }
-
-    private function getPopularCategoriesByViews($limit = 5)
-    {
-        return Category::query()
-            ->select('categories.id', 'categories.name', 'categories.slug')
-            ->selectRaw('COUNT(stories_views.id) as total_views')
-            ->join('stories', 'categories.id', '=', 'stories.category_id')
-            ->join('stories_views', 'stories.id', '=', 'stories_views.story_id')
-            ->groupBy('categories.id', 'categories.name', 'categories.slug')
-            ->orderByDesc('total_views')
-            ->take($limit)
-            ->get();
-    }
-
-    public function index(Request $request, Report $report)
+    public function index(Request $request)
     {
         if (Auth::user()->hasRole('user')) {
             $query = Story::with(['user', 'category'])->where('status', 'approved');
@@ -105,57 +28,6 @@ class StoryController extends Controller
 
             return view('moderasi.cerita.index', compact('stories'));
         }
-    }
-
-    public function home(Request $request)
-    {
-        $query = Story::with(['user', 'category', 'userVote', 'votes'])->withCount('views')->where('status', 'approved');
-
-        if ($request->has('category')) {
-            $query->whereHas('category', function($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
-        }
-
-        $isFollowing = [];
-        $allCategories = Category::withCount(['stories' => function ($query) {
-            $query->where('status', 'approved');
-        }])->orderByDesc('stories_count')->get();
-
-        if (Auth::check()) {
-            $stories = $query->latest('created_at')->get();
-            foreach ($stories as $story) {
-                if ($story->user_id) {
-                    $isFollowing[$story->user_id] = Follow::where('follower_id', Auth::id())
-                        ->where('followed_id', $story->user_id)
-                        ->exists();
-                }
-            }
-        }
-
-        $stories = $query->latest('created_at')->paginate(6);
-
-        // Cerita populer tanpa pagination
-        $popularStoriesAllTime = $this->getPopularStories('all', 8);
-        $popularStoriesDaily = $this->getPopularStories('daily', 8);
-        $popularStoriesWeekly = $this->getPopularStories('weekly', 8);
-
-        $trendingStories = $this->getTrendingStories();
-        $popularAuthors = $this->getPopularAuthors();
-
-        $popularCategoriesByViews = $this->getPopularCategoriesByViews(5);
-
-        return view('home.index', compact(
-            'stories',
-            'allCategories',
-            'trendingStories',
-            'popularStoriesAllTime',
-            'popularStoriesDaily',
-            'popularStoriesWeekly',
-            'popularAuthors',
-            'isFollowing',
-            'popularCategoriesByViews'
-        ));
     }
 
     public function show(Story $story)
@@ -204,7 +76,7 @@ class StoryController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:80',
-            'slug' => 'required|string|lowercase|max:50',
+            'slug'  => 'required|string|lowercase|max:50|alpha|unique:stories,slug',
             'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',
@@ -235,7 +107,7 @@ class StoryController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:80',
-            'slug' => 'required|string|lowercase|max:50',
+            'slug' => 'required|string|lowercase|max:50|alpha|unique:stories,slug',
             'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',

@@ -46,6 +46,8 @@
                                 <th> Tanggal Dibuat </th>
                                 @role('admin')
                                 <th> Oleh </th>
+                                {{-- MODIFICATION: Menambahkan header kolom Alias untuk admin --}}
+                                <th> Alias </th>
                                 <th> Jumlah Komentar </th>
                                 <th> Jumlah Upvote </th>
                                 <th> Jumlah Downvote </th>
@@ -71,6 +73,14 @@
                                             Anonim
                                         @else
                                             {{ optional($story->user)->name ?? 'User' }}
+                                        @endif
+                                    </td>
+                                    {{-- MODIFICATION: Menambahkan data untuk kolom Alias untuk admin --}}
+                                    <td>
+                                        @if($story->anonymous)
+                                            {{ optional($story->user)->name ?? 'User' }}
+                                        @else
+                                            -
                                         @endif
                                     </td>
                                     <td>{{ $story->comments->count() }} komentar</td>

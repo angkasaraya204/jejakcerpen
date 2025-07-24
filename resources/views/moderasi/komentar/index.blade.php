@@ -37,6 +37,10 @@
                                 <th> Komentar </th>
                                 <th> Tanggal Dibuat </th>
                                 <th> Oleh </th>
+                                {{-- MODIFICATION: Menambahkan header kolom Alias untuk admin --}}
+                                @role('admin')
+                                <th> Alias </th>
+                                @endrole
                                 <th> Aksi </th>
                             </tr>
                         </thead>
@@ -53,6 +57,16 @@
                                             {{ optional($comment->user)->name ?? 'Anonim' }}
                                         @endif
                                     </td>
+                                    {{-- MODIFICATION: Menambahkan data untuk kolom Alias untuk admin --}}
+                                    @role('admin')
+                                    <td>
+                                        @if($comment->anonymous)
+                                            {{ optional($comment->user)->name ?? 'Anonim' }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    @endrole
                                     <td>
                                         @hasanyrole(['admin','user'])
                                         <a href="{{ route('comments.edit', $comment) }}" class="btn btn-primary mr-3">Ubah</a>
@@ -63,12 +77,12 @@
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
                                         </form>
-                                        <a href="{{ route('stories.show', $comment) }}" class="text-blue-600 hover:underline">
+                                        <a href="{{ route('stories.show', $comment->story) }}" class="text-blue-600 hover:underline">
                                             Baca selengkapnya →
                                         </a>
                                         @endhasanyrole
                                         @role('moderator')
-                                        <a href="{{ route('stories.sensitive', $story) }}" class="btn btn-warning mr-3">Tandai Sensitif</a>
+                                        <a href="{{ route('stories.sensitive', $story->story) }}" class="btn btn-warning mr-3">Tandai Sensitif</a>
                                         @endrole
                                     </td>
                                 </tr>
