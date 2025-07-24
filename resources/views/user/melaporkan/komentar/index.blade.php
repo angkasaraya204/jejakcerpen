@@ -59,8 +59,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-6">
-                    {{ $melaporkan->links() }}
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $stories->links() }}
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">
+                        Showing {{ $stories->firstItem() }} to {{ $stories->lastItem() }} of {{ $stories->total() }} results
+                    </small>
                 </div>
             @else
                 <div class="alert alert-info">Belum ada laporan komentar yang Anda kirim.</div>

@@ -89,8 +89,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-6">
-                    {{ $reports->links() }}
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $stories->links() }}
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">
+                        Showing {{ $stories->firstItem() }} to {{ $stories->lastItem() }} of {{ $stories->total() }} results
+                    </small>
                 </div>
             @else
                 <div class="alert alert-info">

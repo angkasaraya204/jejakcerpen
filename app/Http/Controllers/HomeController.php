@@ -38,11 +38,11 @@ class HomeController extends Controller
             }
         }
 
-        $stories = $query->latest('created_at')->paginate(6);
+        $stories = $query->latest('created_at')->paginate(5);
 
-        $popularStoriesAllTime = $this->getPopularStories('all', 8);
-        $popularStoriesDaily = $this->getPopularStories('daily', 8);
-        $popularStoriesWeekly = $this->getPopularStories('weekly', 8);
+        $popularStoriesAllTime = $this->getPopularStories('all', 5);
+        $popularStoriesDaily = $this->getPopularStories('daily', 5);
+        $popularStoriesWeekly = $this->getPopularStories('weekly', 5);
 
         $trendingStories = $this->getTrendingStories();
         $popularAuthors = $this->getPopularAuthors();
@@ -90,7 +90,7 @@ class HomeController extends Controller
                  ->get();
     }
 
-    private function getPopularStories($period = 'all', $limit = 8)
+    private function getPopularStories($period = 'all', $limit = 5)
     {
         $query = Story::with(['user', 'category'])
                       ->withCount('views')->where('status', 'approved');
