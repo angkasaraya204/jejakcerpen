@@ -91,11 +91,6 @@
                 <div class="mt-4 d-flex justify-content-center">
                     {{ $stories->links() }}
                 </div>
-                <div class="text-center mt-2">
-                    <small class="text-muted">
-                        Showing {{ $stories->firstItem() }} to {{ $stories->lastItem() }} of {{ $stories->total() }} results
-                    </small>
-                </div>
             @else
                 <div class="alert alert-info">
                     Tidak ada cerita yang menunggu persetujuan.
