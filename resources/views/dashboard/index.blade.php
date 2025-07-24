@@ -5,7 +5,6 @@
     <h3 class="page-title"> Statistik Platform </h3>
 </div>
 @role('admin')
-    <!-- Original card stats -->
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card">
@@ -94,7 +93,6 @@
         </div>
     </div>
 
-    <!-- NEW: Anonymous vs Non-Anonymous distribution -->
     <div class="row">
         <div class="col-lg-6 grid-margin">
             <div class="card">
@@ -167,7 +165,6 @@
             </div>
         </div>
 
-        <!-- Tambahan untuk fitur Follow/Teman -->
         <div class="col-md-3 mb-4">
             <div class="card">
                 <div class="card-body">
@@ -201,7 +198,6 @@
         </div>
     </div>
 
-    <!-- Profil dan Dashboard Aktivitas Pribadi -->
     <div class="row">
         <div class="col-lg-6 grid-margin">
             <div class="card">
@@ -279,333 +275,342 @@
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            @role('admin')
-                // Chart Distribusi Posting Anonim
-                const anonymousData = @json($anonymousData);
-                if (anonymousData && anonymousData.reduce((a, b) => a + b, 0) > 0) {
-                    const anonymityCtx = document.getElementById('anonymityChart').getContext('2d');
-                    new Chart(anonymityCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Konten Anonim', 'Konten Bukan Anonim'],
-                            datasets: [{
-                                data: anonymousData,
-                                backgroundColor: [ 'rgba(153, 102, 255, 0.7)', 'rgba(54, 162, 235, 0.7)' ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'bottom' },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
-                                            const percentage = Math.round((context.raw / total) * 100);
-                                            return `${context.label}: ${context.raw} (${percentage}%)`;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    document.getElementById('anonymityChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Distribusi Posting Anonim vs Teridentifikasi)</div>';
-                }
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Fungsi untuk memastikan nilai sumbu Y adalah integer
+    function integerTicks(value) {
+        if (Math.floor(value) === value) {
+            return value;
+        }
+    }
 
-                // Chart Pertumbuhan & Aktivitas Pengguna
-                const growthMonths = @json($growthMonths);
-                const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
-                new Chart(userGrowthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: growthMonths,
-                        datasets: [{
-                            label: 'Pengguna Baru',
-                            data: @json($newUserCounts),
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Pengguna Aktif',
-                            data: @json($activeUserCounts),
-                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            borderWidth: 2,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: { display: true, text: 'Jumlah Pengguna' }
-                            },
-                            x: {
-                                title: { display: true, text: 'Bulan' }
+    @role('admin')
+        // Chart Distribusi Posting Anonim
+        const anonymousData = @json($anonymousData);
+        if (anonymousData && anonymousData.reduce((a, b) => a + b, 0) > 0) {
+            const anonymityCtx = document.getElementById('anonymityChart').getContext('2d');
+            new Chart(anonymityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Konten Anonim', 'Konten Bukan Anonim'],
+                    datasets: [{
+                        data: anonymousData,
+                        backgroundColor: [ 'rgba(153, 102, 255, 0.7)', 'rgba(54, 162, 235, 0.7)' ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    legend: { position: 'bottom' },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                const dataset = data.datasets[tooltipItem.datasetIndex];
+                                const total = dataset.data.reduce((acc, data) => acc + data, 0);
+                                const currentValue = dataset.data[tooltipItem.index];
+                                const percentage = Math.round((currentValue / total) * 100);
+                                return `${data.labels[tooltipItem.index]}: ${currentValue} (${percentage}%)`;
                             }
                         }
                     }
-                });
-
-                // Chart Cerita yang User Baca per Kategori
-                const adminCategoryLabels = @json($categoryReadLabels ?? []);
-                const adminCategoryCounts = @json($categoryReadCounts ?? []);
-                if (adminCategoryLabels.length > 0) {
-                    const userReadStoriesCtx = document.getElementById('userReadStoriesChart').getContext('2d');
-                    new Chart(userReadStoriesCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: adminCategoryLabels,
-                            datasets: [{
-                                data: adminCategoryCounts,
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.8)','rgba(54, 162, 235, 0.8)','rgba(255, 206, 86, 0.8)',
-                                    'rgba(75, 192, 192, 0.8)','rgba(153, 102, 255, 0.8)','rgba(255, 159, 64, 0.8)'
-                                ],
-                                borderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true
-                        }
-                    });
-                } else {
-                    document.getElementById('userReadStoriesChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:300px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Cerita yang User Baca per Kategori)</div>';
                 }
+            });
+        } else {
+            document.getElementById('anonymityChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Distribusi Posting Anonim vs Teridentifikasi)</div>';
+        }
 
-                // Chart Aktivitas User
-                const adminActivityData = {
-                    week: { labels: @json($weekLabels), stories: @json($weekStories), comments: @json($weekComments), votes: @json($weekVotes) },
-                    month: { labels: @json($monthLabels), stories: @json($monthStories), comments: @json($monthComments), votes: @json($monthVotes) },
-                    year: { labels: @json($yearLabels), stories: @json($yearStories), comments: @json($yearComments), votes: @json($yearVotes) }
-                };
-                const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
-                let userActivityChart = new Chart(userActivityCtx, {
-                    type: 'line',
-                    data: {
-                        labels: adminActivityData.week.labels,
-                        datasets: [
-                            { label: 'Cerita', data: adminActivityData.week.stories, backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 2, tension: 0.3, fill: true },
-                            { label: 'Komentar', data: adminActivityData.week.comments, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 2, tension: 0.3, fill: true },
-                            { label: 'Voting', data: adminActivityData.week.votes, backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 2, tension: 0.3, fill: true }
-                        ]
-                    },
-                    options: {
-                        responsive: true, layout: { padding: { top: 20, bottom: 20, left: 20, right: 20 } },
-                        plugins: {
-                            legend: { display: true, position: 'top' },
-                            tooltip: { mode: 'index', intersect: false, callbacks: {
-                                title: function(context) { return 'Tanggal: ' + context[0].label; },
-                                label: function(context) { return context.dataset.label + ': ' + context.parsed.y + ' aktivitas'; }
-                            }}
-                        },
-                        scales: {
-                            y: { beginAtZero: true, display: true, title: { display: true, text: 'Jumlah Aktivitas', font: { size: 14, weight: 'bold' }}, ticks: { display: true, stepSize: 1, font: { size: 12 }, callback: function(value) { return Number.isInteger(value) ? value : ''; }}, grid: { display: true }},
-                            x: { display: true, title: { display: true, text: 'Periode Waktu', font: { size: 14, weight: 'bold' }}, ticks: { display: true, maxRotation: 45, minRotation: 0, font: { size: 11 }}, grid: { display: true }}
-                        },
-                        interaction: { mode: 'nearest', axis: 'x', intersect: false }
-                    }
-                });
-                document.querySelectorAll('.period-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const period = this.dataset.period;
-                        document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-                        this.classList.add('active');
-                        userActivityChart.data.labels = adminActivityData[period].labels;
-                        userActivityChart.data.datasets[0].data = adminActivityData[period].stories;
-                        userActivityChart.data.datasets[1].data = adminActivityData[period].comments;
-                        userActivityChart.data.datasets[2].data = adminActivityData[period].votes;
-                        userActivityChart.update();
-                    });
-                });
-
-                const style = document.createElement('style');
-                style.textContent = `.period-btn.active { background-color: #007bff !important; color: white !important; border-color: #007bff !important; } .period-btn:hover { background-color: #0056b3 !important; color: white !important; border-color: #0056b3 !important; }`;
-                document.head.appendChild(style);
-
-                // Chart Laporan Harian
-                const reportsData = @json($reportsPerDay);
-                if (reportsData && reportsData.length > 0) {
-                    const ctx = document.getElementById('reportsChart').getContext('2d');
-                    const dates = reportsData.map(r => new Date(r.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
-                    const totals = reportsData.map(r => r.total);
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: dates,
-                            datasets: [{ label: 'Total Laporan per Hari', data: totals, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 2, fill: true, tension: 0.3 }]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                x: { display: true, title: { display: true, text: 'Tanggal' } },
-                                y: { beginAtZero: true, title: { display: true, text: 'Jumlah Laporan' } }
-                            }
-                        }
-                    });
-                } else {
-                    document.getElementById('reportsChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <a href="/reports">Lihat laporan lainnya.</a></div>';
+        // Chart Pertumbuhan & Aktivitas Pengguna
+        const growthMonths = @json($growthMonths);
+        const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+        new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: growthMonths,
+                datasets: [{
+                    label: 'Pengguna Baru',
+                    data: @json($newUserCounts),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: 'Pengguna Aktif',
+                    data: @json($activeUserCounts),
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        scaleLabel: { display: true, labelString: 'Jumlah Pengguna', fontSize: 14, fontStyle: 'bold' },
+                        ticks: { beginAtZero: true, callback: integerTicks }
+                    }],
+                    xAxes: [{
+                        scaleLabel: { display: true, labelString: 'Bulan', fontSize: 14, fontStyle: 'bold' }
+                    }]
                 }
-
-                // Chart Distribusi Status Laporan
-                const reportStatusData = [
-                    {{ $storyReportsPending + $commentReportsPending }},
-                    {{ $storyReportsValid + $commentReportsValid }},
-                    {{ $storyReportsInvalid + $commentReportsInvalid }}
-                ];
-                if(reportStatusData.reduce((a, b) => a + b, 0) > 0) {
-                    const statusCtx = document.getElementById('reportStatusChart').getContext('2d');
-                    new Chart(statusCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Pending', 'Valid', 'Tidak Valid'],
-                            datasets: [{
-                                data: reportStatusData,
-                                backgroundColor: [ 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)' ]
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'bottom' }
-                            }
-                        }
-                    });
-                } else {
-                     document.getElementById('reportStatusChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <a href="/reports">Lihat laporan lainnya.</a></div>';
-                }
-            @endrole
-
-            @role('user')
-                const categoryLabels = @json($categoryReadLabels ?? []);
-                const categoryCounts = @json($categoryReadCounts ?? []);
-                const visitorCounts = @json($visitorStoriesPerCategory->pluck('total_views')->toArray() ?? []);
-
-                // Chart Cerita yang Dibaca per Kategori
-                if (categoryLabels.length > 0) {
-                    const myReadStoriesCtx = document.getElementById('myReadStoriesChart').getContext('2d');
-                    new Chart(myReadStoriesCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: categoryLabels,
-                            datasets: [{
-                                data: categoryCounts,
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.8)','rgba(54, 162, 235, 0.8)','rgba(255, 206, 86, 0.8)',
-                                    'rgba(75, 192, 192, 0.8)','rgba(153, 102, 255, 0.8)','rgba(255, 159, 64, 0.8)'
-                                ],
-                                borderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true
-                        }
-                    });
-                } else {
-                    document.getElementById('myReadStoriesChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:300px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Cerita yang User Baca per Kategori)</div>';
-                }
-
-                // Chart Perbandingan dengan Semua Pengunjung
-                if (categoryLabels.length > 0) {
-                    const readComparisonCtx = document.getElementById('readComparisonChart').getContext('2d');
-                    new Chart(readComparisonCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: categoryLabels,
-                            datasets: [{
-                                label: 'Saya Baca',
-                                data: categoryCounts,
-                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
-                            }, {
-                                label: 'Semua Pengunjung',
-                                data: visitorCounts,
-                                backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Jumlah Cerita Dibaca'
-                                    }
-                                },
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Kategori'
-                                    }
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    document.getElementById('readComparisonChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:300px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Perbandingan dengan Semua Pengunjung)</div>';
-                }
-
-                // Chart Aktivitas Saya
-                const userActivityData = {
-                    week: { labels: @json($weekLabels), stories: @json($weekStories), comments: @json($weekComments), votes: @json($weekVotes) },
-                    month: { labels: @json($monthLabels), stories: @json($monthStories), comments: @json($monthComments), votes: @json($monthVotes) },
-                    year: { labels: @json($yearLabels), stories: @json($yearStories), comments: @json($yearComments), votes: @json($yearVotes) }
-                };
-                const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
-                let userActivityChart = new Chart(userActivityCtx, {
-                    type: 'line',
-                    data: {
-                        labels: userActivityData.week.labels,
-                        datasets: [
-                            { label: 'Cerita', data: userActivityData.week.stories, backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 2, tension: 0.3, fill: true },
-                            { label: 'Komentar', data: userActivityData.week.comments, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 2, tension: 0.3, fill: true },
-                            { label: 'Voting', data: userActivityData.week.votes, backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 2, tension: 0.3, fill: true }
-                        ]
-                    },
-                    options: {
-                        responsive: true, layout: { padding: { top: 20, bottom: 20, left: 20, right: 20 } },
-                        plugins: {
-                            legend: { display: true, position: 'top' },
-                            tooltip: { mode: 'index', intersect: false, callbacks: {
-                                title: function(context) { return 'Tanggal: ' + context[0].label; },
-                                label: function(context) { return context.dataset.label + ': ' + context.parsed.y + ' aktivitas'; }
-                            }}
-                        },
-                        scales: {
-                            y: { beginAtZero: true, display: true, title: { display: true, text: 'Jumlah Aktivitas', font: { size: 14, weight: 'bold' }}, ticks: { display: true, stepSize: 1, font: { size: 12 }, callback: function(value) { return Number.isInteger(value) ? value : ''; }}, grid: { display: true }},
-                            x: { display: true, title: { display: true, text: 'Periode Waktu', font: { size: 14, weight: 'bold' }}, ticks: { display: true, maxRotation: 45, minRotation: 0, font: { size: 11 }}, grid: { display: true }}
-                        },
-                        interaction: { mode: 'nearest', axis: 'x', intersect: false }
-                    }
-                });
-                document.querySelectorAll('.period-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const period = this.dataset.period;
-                        document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-                        this.classList.add('active');
-                        userActivityChart.data.labels = userActivityData[period].labels;
-                        userActivityChart.data.datasets[0].data = userActivityData[period].stories;
-                        userActivityChart.data.datasets[1].data = userActivityData[period].comments;
-                        userActivityChart.data.datasets[2].data = userActivityData[period].votes;
-                        userActivityChart.update();
-                    });
-                });
-
-                const style = document.createElement('style');
-                style.textContent = `.period-btn.active { background-color: #007bff !important; color: white !important; border-color: #007bff !important; } .period-btn:hover { background-color: #0056b3 !important; color: white !important; border-color: #0056b3 !important; }`;
-                document.head.appendChild(style);
-            @endrole
+            }
         });
-    </script>
+
+        // Chart Cerita yang User Baca per Kategori
+        const adminCategoryLabels = @json($categoryReadLabels ?? []);
+        const adminCategoryCounts = @json($categoryReadCounts ?? []);
+        if (adminCategoryLabels.length > 0) {
+            const userReadStoriesCtx = document.getElementById('userReadStoriesChart').getContext('2d');
+            new Chart(userReadStoriesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: adminCategoryLabels,
+                    datasets: [{
+                        data: adminCategoryCounts,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)','rgba(54, 162, 235, 0.8)','rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)','rgba(153, 102, 255, 0.8)','rgba(255, 159, 64, 0.8)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        } else {
+            document.getElementById('userReadStoriesChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:300px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Cerita yang User Baca per Kategori)</div>';
+        }
+
+        // Chart Aktivitas User
+        const adminActivityData = {
+            week: { labels: @json($weekLabels), stories: @json($weekStories), comments: @json($weekComments), votes: @json($weekVotes) },
+            month: { labels: @json($monthLabels), stories: @json($monthStories), comments: @json($monthComments), votes: @json($monthVotes) },
+            year: { labels: @json($yearLabels), stories: @json($yearStories), comments: @json($yearComments), votes: @json($yearVotes) }
+        };
+        const adminUserActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+        let adminUserActivityChart = new Chart(adminUserActivityCtx, {
+            type: 'line',
+            data: {
+                labels: adminActivityData.week.labels,
+                datasets: [
+                    { label: 'Cerita', data: adminActivityData.week.stories, backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 2, tension: 0.3, fill: true },
+                    { label: 'Komentar', data: adminActivityData.week.comments, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 2, tension: 0.3, fill: true },
+                    { label: 'Voting', data: adminActivityData.week.votes, backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 2, tension: 0.3, fill: true }
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: { display: true, position: 'top' },
+                tooltips: {
+                    mode: 'index', intersect: false,
+                    callbacks: {
+                        title: (tooltipItem) => 'Tanggal: ' + tooltipItem[0].label,
+                        label: (tooltipItem, data) => data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + ' aktivitas'
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: { display: true, labelString: 'Jumlah Aktivitas', fontSize: 14, fontStyle: 'bold' },
+                        ticks: { beginAtZero: true, stepSize: 1, callback: integerTicks }
+                    }],
+                    xAxes: [{
+                        scaleLabel: { display: true, labelString: 'Periode Waktu', fontSize: 14, fontStyle: 'bold' }
+                    }]
+                }
+            }
+        });
+        document.querySelectorAll('.period-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const period = this.dataset.period;
+                document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                adminUserActivityChart.data.labels = adminActivityData[period].labels;
+                adminUserActivityChart.data.datasets[0].data = adminActivityData[period].stories;
+                adminUserActivityChart.data.datasets[1].data = adminActivityData[period].comments;
+                adminUserActivityChart.data.datasets[2].data = adminActivityData[period].votes;
+                adminUserActivityChart.update();
+            });
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `.period-btn.active { background-color: #007bff !important; color: white !important; border-color: #007bff !important; } .period-btn:hover { background-color: #0056b3 !important; color: white !important; border-color: #0056b3 !important; }`;
+        document.head.appendChild(style);
+
+        // Chart Laporan Harian
+        const reportsData = @json($reportsPerDay);
+        if (reportsData && reportsData.length > 0) {
+            const ctx = document.getElementById('reportsChart').getContext('2d');
+            const dates = reportsData.map(r => new Date(r.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
+            const totals = reportsData.map(r => r.total);
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{ label: 'Total Laporan per Hari', data: totals, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 2, fill: true, tension: 0.3 }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        xAxes: [{ scaleLabel: { display: true, labelString: 'Tanggal', fontSize: 14, fontStyle: 'bold' } }],
+                        yAxes: [{ scaleLabel: { display: true, labelString: 'Jumlah Laporan', fontSize: 14, fontStyle: 'bold' }, ticks: { beginAtZero: true, callback: integerTicks } }]
+                    }
+                }
+            });
+        } else {
+            document.getElementById('reportsChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <a href="/reports">Lihat laporan lainnya.</a></div>';
+        }
+
+        // Chart Distribusi Status Laporan
+        const reportStatusData = [
+            {{ $storyReportsPending + $commentReportsPending }},
+            {{ $storyReportsValid + $commentReportsValid }},
+            {{ $storyReportsInvalid + $commentReportsInvalid }}
+        ];
+        if(reportStatusData.reduce((a, b) => a + b, 0) > 0) {
+            const statusCtx = document.getElementById('reportStatusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Valid', 'Tidak Valid'],
+                    datasets: [{
+                        data: reportStatusData,
+                        backgroundColor: [ 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)' ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    legend: { position: 'bottom' }
+                }
+            });
+        } else {
+             document.getElementById('reportStatusChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <a href="/reports">Lihat laporan lainnya.</a></div>';
+        }
+    @endrole
+
+    @role('user')
+        const categoryLabels = @json($categoryReadLabels ?? []);
+        const categoryCounts = @json($categoryReadCounts ?? []);
+        const visitorCounts = @json($visitorStoriesPerCategory->pluck('total_views')->toArray() ?? []);
+
+        // Chart Cerita yang Dibaca per Kategori
+        if (categoryLabels.length > 0) {
+            const myReadStoriesCtx = document.getElementById('myReadStoriesChart').getContext('2d');
+            new Chart(myReadStoriesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryCounts,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)','rgba(54, 162, 235, 0.8)','rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)','rgba(153, 102, 255, 0.8)','rgba(255, 159, 64, 0.8)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        } else {
+            document.getElementById('myReadStoriesChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:300px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Cerita yang User Baca per Kategori)</div>';
+        }
+
+        // Chart Perbandingan dengan Semua Pengunjung
+        if (categoryLabels.length > 0) {
+            const readComparisonCtx = document.getElementById('readComparisonChart').getContext('2d');
+            new Chart(readComparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        label: 'Saya Baca',
+                        data: categoryCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Semua Pengunjung',
+                        data: visitorCounts,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            scaleLabel: { display: true, labelString: 'Jumlah Cerita Dibaca', fontSize: 14, fontStyle: 'bold' },
+                            ticks: { beginAtZero: true, callback: integerTicks }
+                        }],
+                        xAxes: [{
+                            scaleLabel: { display: true, labelString: 'Kategori', fontSize: 14, fontStyle: 'bold' }
+                        }]
+                    }
+                }
+            });
+        } else {
+            document.getElementById('readComparisonChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:300px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Perbandingan dengan Semua Pengunjung)</div>';
+        }
+
+        // Chart Aktivitas Saya
+        const userActivityData = {
+            week: { labels: @json($weekLabels), stories: @json($weekStories), comments: @json($weekComments), votes: @json($weekVotes) },
+            month: { labels: @json($monthLabels), stories: @json($monthStories), comments: @json($monthComments), votes: @json($monthVotes) },
+            year: { labels: @json($yearLabels), stories: @json($yearStories), comments: @json($yearComments), votes: @json($yearVotes) }
+        };
+        const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+        let userActivityChart = new Chart(userActivityCtx, {
+            type: 'line',
+            data: {
+                labels: userActivityData.week.labels,
+                datasets: [
+                    { label: 'Cerita', data: userActivityData.week.stories, backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 2, tension: 0.3, fill: true },
+                    { label: 'Komentar', data: userActivityData.week.comments, backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 2, tension: 0.3, fill: true },
+                    { label: 'Voting', data: userActivityData.week.votes, backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 2, tension: 0.3, fill: true }
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: { display: true, position: 'top' },
+                tooltips: {
+                    mode: 'index', intersect: false,
+                    callbacks: {
+                        title: (tooltipItem) => 'Tanggal: ' + tooltipItem[0].label,
+                        label: (tooltipItem, data) => data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + ' aktivitas'
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: { display: true, labelString: 'Jumlah Aktivitas', fontSize: 14, fontStyle: 'bold' },
+                        ticks: { beginAtZero: true, stepSize: 1, callback: integerTicks }
+                    }],
+                    xAxes: [{
+                        scaleLabel: { display: true, labelString: 'Periode Waktu', fontSize: 14, fontStyle: 'bold' }
+                    }]
+                }
+            }
+        });
+        document.querySelectorAll('.period-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const period = this.dataset.period;
+                document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                userActivityChart.data.labels = userActivityData[period].labels;
+                userActivityChart.data.datasets[0].data = userActivityData[period].stories;
+                userActivityChart.data.datasets[1].data = userActivityData[period].comments;
+                userActivityChart.data.datasets[2].data = userActivityData[period].votes;
+                userActivityChart.update();
+            });
+        });
+
+        const userStyle = document.createElement('style');
+        userStyle.textContent = `.period-btn.active { background-color: #007bff !important; color: white !important; border-color: #007bff !important; } .period-btn:hover { background-color: #0056b3 !important; color: white !important; border-color: #0056b3 !important; }`;
+        document.head.appendChild(userStyle);
+    @endrole
+});
+</script>
 @endpush

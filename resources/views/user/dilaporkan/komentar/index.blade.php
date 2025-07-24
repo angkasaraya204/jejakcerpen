@@ -57,11 +57,11 @@
                                     <td>{{ $dilaporkanKomentar->created_at->format('d/m/Y H:i') }}</td>
                                     <td>{{ $dilaporkanKomentar->updated_at->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        @if($dilaporkanKomentar->status == 'valid')
+                                        @if($dilaporkanKomentar->status === 'valid')
                                             <small class="text-danger d-block mt-1">
                                                 Komentar tidak sesuai dengan aturan komunitas
                                             </small>
-                                        @elseif($dilaporkanKomentar->status == 'tidak-valid')
+                                        @elseif($dilaporkanKomentar->status === 'tidak-valid')
                                             <small class="text-success d-block mt-1">
                                                 Komentar masih sesuai aturan komunitas
                                             </small>

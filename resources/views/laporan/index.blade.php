@@ -67,18 +67,22 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <form action="{{ route('reports.update', $report) }}" method="POST">
-                                            @csrf
-                                            @method('patch')
-                                            <input type="hidden" name="status" value="valid">
-                                            <button type="submit" class="btn btn-danger">Valid (Hapus)</button>
-                                        </form>
-                                        <form action="{{ route('reports.update', $report) }}" method="POST">
-                                            @csrf
-                                            @method('patch')
-                                            <input type="hidden" name="status" value="tidak-valid">
-                                            <button type="submit" class="btn btn-success mt-2">Tidak Valid</button>
-                                        </form>
+                                        @if ($report->status === 'pending')
+                                            <form action="{{ route('reports.update', $report) }}" method="POST">
+                                                @csrf
+                                                @method('patch')
+                                                <input type="hidden" name="status" value="valid">
+                                                <button type="submit" class="btn btn-danger">Valid (Hapus)</button>
+                                            </form>
+                                            <form action="{{ route('reports.update', $report) }}" method="POST">
+                                                @csrf
+                                                @method('patch')
+                                                <input type="hidden" name="status" value="tidak-valid">
+                                                <button type="submit" class="btn btn-success mt-2">Tidak Valid</button>
+                                            </form>
+                                        @else
+                                            <span class="badge bg-info text-white">Tindakan telah diambil</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

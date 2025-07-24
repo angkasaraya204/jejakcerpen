@@ -55,11 +55,11 @@
                                     <td>{{ $dilaporkanCerita->created_at->format('d/m/Y H:i') }}</td>
                                     <td>{{ $dilaporkanCerita->updated_at->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        @if($dilaporkanCerita->status == 'valid')
+                                        @if($dilaporkanCerita->status === 'valid')
                                             <small class="text-danger d-block mt-1">
                                                 Cerita tidak sesuai dengan aturan komunitas
                                             </small>
-                                        @elseif($dilaporkanCerita->status == 'tidak-valid')
+                                        @elseif($dilaporkanCerita->status === 'tidak-valid')
                                             <small class="text-success d-block mt-1">
                                                 Cerita masih sesuai aturan komunitas
                                             </small>
