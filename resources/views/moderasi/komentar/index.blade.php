@@ -91,7 +91,7 @@
                     </table>
                 </div>
                 <div class="mt-4 d-flex justify-content-center">
-                    {{ $stories->links() }}
+                    {{ $comments->links() }}
                 </div>
             @else
                 <div class="alert alert-info">Belum ada komentar tersedia.</div>

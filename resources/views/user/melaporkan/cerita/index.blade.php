@@ -60,7 +60,7 @@
                     </table>
                 </div>
                 <div class="mt-4 d-flex justify-content-center">
-                    {{ $stories->links() }}
+                    {{ $melaporkan->links() }}
                 </div>
             @else
                 <div class="alert alert-info">Belum ada laporan cerita yang Anda kirim.</div>

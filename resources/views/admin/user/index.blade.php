@@ -60,7 +60,7 @@
                     </table>
                 </div>
                 <div class="mt-4 d-flex justify-content-center">
-                    {{ $stories->links() }}
+                    {{ $users->links() }}
                 </div>
             @else
                 <div class="alert alert-info">
