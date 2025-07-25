@@ -49,7 +49,7 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
     }
 
-    public function getTrendingbyUser($period = 'all', $limit = 5)
+    public function getTrendingbyUser($period = 'all')
     {
         $query = Story::with(['user', 'category'])
             ->where('user_id', auth()->id())
@@ -75,8 +75,7 @@ class UserController extends Controller
         $trendingStories = $query->having('upvotes_count', '>', 0) // <-- Tambahkan baris ini
                  ->orderByDesc('upvotes_count')
                  ->orderByDesc('created_at')
-                 ->take($limit)
-                 ->get();
+                 ->paginate(5);
 
         return view('user.trending.index', compact('trendingStories'));
     }
