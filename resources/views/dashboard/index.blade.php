@@ -171,12 +171,11 @@
                     <div class="row">
                         <div class="col-9">
                             <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0">{{ $followingCount }}</h3>
+                                <h3 class="mb-0"></h3>
                             </div>
                         </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Mengikuti</h6>
-                    <a href="{{ route('dashboard.following') }}" class="btn btn-sm btn-primary mt-2">Lihat</a>
+                    <h6 class="text-muted font-weight-normal">Total Trending</h6>
                 </div>
             </div>
         </div>
@@ -187,12 +186,26 @@
                     <div class="row">
                         <div class="col-9">
                             <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0">{{ $followersCount }}</h3>
+                                <h3 class="mb-0"></h3>
                             </div>
                         </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Pengikut</h6>
-                    <a href="{{ route('dashboard.followers') }}" class="btn btn-sm btn-primary mt-2">Lihat</a>
+                    <h6 class="text-muted font-weight-normal">Total Melaporkan</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0"></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Total Dilaporkan</h6>
                 </div>
             </div>
         </div>

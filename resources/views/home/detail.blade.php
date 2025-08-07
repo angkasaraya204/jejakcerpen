@@ -9,27 +9,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /*
-         * Blok style ini penting untuk mendukung fungsionalitas yang digerakkan oleh script.js
-         * dan beberapa gaya kustom yang tidak bisa digantikan oleh class Bootstrap.
-         */
         body {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Sidebar & Overlay */
         .sidebar {
             width: 280px;
             height: 100vh;
             position: fixed;
             top: 0;
-            left: -280px; /* Posisi awal di luar layar */
+            left: -280px;
             z-index: 1050;
             transition: left 0.4s ease;
             overflow-y: auto;
         }
         .sidebar.active {
-            left: 0; /* Posisi aktif di dalam layar */
+            left: 0;
         }
         .sidebar-overlay {
             position: fixed;
@@ -39,10 +34,9 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1040;
-            display: none; /* Diatur oleh JS */
+            display: none !important;
         }
 
-        /* Dark Mode Toggle */
         .dark-mode-toggle .toggle-circle { transition: left 0.3s ease; }
         .dark-mode-toggle.active .toggle-circle { left: 30px !important; }
         [data-bs-theme="light"] .dark-mode-toggle { background-color: #ddd; }
@@ -50,14 +44,12 @@
         [data-bs-theme="dark"] .dark-mode-toggle { background-color: #3e3e3e; }
         [data-bs-theme="dark"] .dark-mode-toggle.active { background-color: #6e86ff !important; }
 
-        /* Parsedown Content Styling */
         .story-content-parsed h1, .story-content-parsed h2, .story-content-parsed h3 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
         .story-content-parsed p { margin-bottom: 1rem; line-height: 1.7; }
         .story-content-parsed ul, .story-content-parsed ol { padding-left: 2rem; margin-bottom: 1rem; }
         .story-content-parsed blockquote { border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #6c757d; }
         .story-content-parsed a { color: var(--bs-link-color); text-decoration: underline; }
 
-        /* Animations */
         .slide-up {
             animation: slideUp 0.5s ease forwards;
         }
@@ -163,6 +155,20 @@
                             </div>
                             <div class="text-muted small">Ditulis sejak: {{ $story->published_at ? $story->published_at->format('d M Y') : $story->created_at->format('d M Y') }}</div>
                         </div>
+
+                        <div class="ms-auto">
+                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @guest
+                                    <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
+                                @endguest
+                                @auth
+                                    @if(Auth::id() != $story->id && $story->id)
+                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
                     </div>
                     <h1 class="mb-4 h2">{{ $story->title }}</h1>
                     <div class="story-content-parsed py-3 border-top border-bottom">
@@ -207,7 +213,7 @@
                                                         @if(Auth::id() != $comment->user_id)
                                                             <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
                                                         @endif
-                                                        @if(Auth::id() == $comment->user_id || Auth::user()->hasRole('moderator'))
+                                                        @if(Auth::id() == $comment->user_id || Auth::user()->hasRole('admin'))
                                                             <li><form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i> Hapus</button></form></li>
                                                         @endif
                                                     @endauth
@@ -221,60 +227,6 @@
                                     <div class="mb-2">
                                         <p class="mb-0">{{ $comment->content }}</p>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <button class="btn btn-sm btn-light" onclick="toggleReplyForm('reply-form-{{ $comment->id }}')"><i class="fas fa-reply me-1"></i> Balas</button>
-                                    </div>
-
-                                    <div id="reply-form-{{ $comment->id }}" class="mt-3" style="display: none;">
-                                        <form action="{{ route('comments.store', $story) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                            <div class="input-group mb-2">
-                                                <input type="text" name="content" class="form-control" placeholder="Balas komentar ini..." required>
-                                                <button class="btn btn-primary" type="submit">Balas</button>
-                                            </div>
-                                            <div class="form-check">
-                                                <input type="hidden" name="anonymous" value="0">
-                                                <input type="checkbox" name="anonymous" value="1" class="form-check-input" id="anonymousReply-{{ $comment->id }}">
-                                                <label class="form-check-label" for="anonymousReply-{{ $comment->id }}">Balas sebagai anonim</label>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    @if($comment->replies->count() > 0)
-                                    <div class="mt-3 ps-3 border-start border-primary border-2" style="background-color: rgba(82, 113, 255, 0.05); border-radius: 0 8px 8px 0;">
-                                        @foreach($comment->replies as $reply)
-                                        <div class="pt-3">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <div class="fw-bold">
-                                                    @if($reply->anonymous) Anonim @else {{ optional($reply->user)->name ?? 'Pengunjung' }} @endif
-                                                </div>
-                                                <div class="d-flex align-items-center text-muted small">
-                                                    {{ $reply->created_at->diffForHumans() }}
-                                                    <div class="dropdown ms-2">
-                                                         <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                                        <ul class="dropdown-menu dropdown-menu-end">
-                                                            @auth
-                                                                @if(Auth::id() != $reply->user_id)
-                                                                    <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportReplyModal-{{ $reply->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                                @endif
-                                                                @if(Auth::id() == $reply->user_id || Auth::user()->hasRole('moderator'))
-                                                                    <li><form action="{{ route('comments.destroy', $reply) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i> Hapus</button></form></li>
-                                                                @endif
-                                                            @endauth
-                                                            @guest
-                                                                <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                            @endguest
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <p class="mb-3">{{ $reply->content }}</p>
-                                        </div>
-                                        @if(!$loop->last) <hr class="my-0"> @endif
-                                        @endforeach
-                                    </div>
-                                    @endif
                                 </div>
                             </div>
                             @empty
@@ -287,87 +239,98 @@
         </div>
     </div>
 
+    <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
+                @csrf
+                <input type="hidden" name="reportable_id" value="{{ $story->id }}">
+                <input type="hidden" name="reportable_type" value="story">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Spam" checked>
+                        <label class="form-check-label">Spam</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Pelecehan / Bullying">
+                        <label class="form-check-label">Pelecehan / Bullying</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Ujaran Kebencian">
+                        <label class="form-check-label">Ujaran Kebencian</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Informasi Palsu">
+                        <label class="form-check-label">Informasi Palsu</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Kekerasan">
+                        <label class="form-check-label">Kekerasan</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reason" value="Lainnya">
+                        <label class="form-check-label">Lainnya</label>
+                    </div>
+                    <textarea name="other_reason" id="otherReasonText-{{ $story->id }}" class="form-control mt-2 d-none" placeholder="Jelaskan alasanmu..."></textarea>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
     @foreach($story->comments as $comment)
         <div class="modal fade" id="reportCommentModal-{{ $comment->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <form action="{{ route('reports.store') }}" method="POST">@csrf <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
+                <form action="{{ route('reports.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
                     <input type="hidden" name="reportable_type" value="comment">
                     <div class="modal-header">
-                    <h5 class="modal-title">Laporkan Komentar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title">Pilih Jenis Laporan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Spam" checked>
-                        <label class="form-check-label">Spam</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Pelecehan">
-                        <label class="form-check-label">Pelecehan</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Ujaran Kebencian">
-                        <label class="form-check-label">Ujaran Kebencian</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Informasi Palsu">
-                        <label class="form-check-label">Informasi Palsu</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Kekerasan">
-                        <label class="form-check-label">Kekerasan</label>
-                    </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" value="Spam" checked>
+                            <label class="form-check-label">Spam</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" value="Pelecehan / Bullying">
+                            <label class="form-check-label">Pelecehan / Bullying</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" value="Ujaran Kebencian">
+                            <label class="form-check-label">Ujaran Kebencian</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" value="Informasi Palsu">
+                            <label class="form-check-label">Informasi Palsu</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" value="Kekerasan">
+                            <label class="form-check-label">Kekerasan</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="reason" value="Lainnya">
+                            <label class="form-check-label">Lainnya</label>
+                        </div>
+                        <textarea name="other_reason" id="otherReasonText-{{ $story->id }}" class="form-control mt-2 d-none" placeholder="Jelaskan alasanmu..."></textarea>
                     </div>
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Kirim Laporan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Kirim Laporan</button>
                     </div>
                 </form>
                 </div>
             </div>
         </div>
-        @foreach($comment->replies ?? [] as $reply)
-        <div class="modal fade" id="reportReplyModal-{{ $reply->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <form action="{{ route('reports.store') }}" method="POST">@csrf <input type="hidden" name="reportable_id" value="{{ $reply->id }}">
-                    <input type="hidden" name="reportable_type" value="comment">
-                    <div class="modal-header">
-                    <h5 class="modal-title">Laporkan Balasan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Spam" checked>
-                        <label class="form-check-label">Spam</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Pelecehan">
-                        <label class="form-check-label">Pelecehan</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Ujaran Kebencian">
-                        <label class="form-check-label">Ujaran Kebencian</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Informasi Palsu">
-                        <label class="form-check-label">Informasi Palsu</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="reason" value="Kekerasan">
-                        <label class="form-check-label">Kekerasan</label>
-                    </div>
-                    </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Kirim Laporan</button>
-                    </div>
-                </form>
-                </div>
-            </div>
-        </div>
-        @endforeach
     @endforeach
 
     <footer class="bg-body-tertiary mt-5 py-5 border-top">
@@ -388,11 +351,16 @@
     <script src="{{ asset('js/script.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let previouslyFocusedElement;
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
-                modal.addEventListener('show.bs.modal', function() { previouslyFocusedElement = document.activeElement; });
-                modal.addEventListener('hidden.bs.modal', function() { if (previouslyFocusedElement) { previouslyFocusedElement.focus(); } });
+                modal.addEventListener('show.bs.modal', function() {
+                    if (sidebarOverlay) {
+                        sidebarOverlay.style.display = 'none';
+                    }
+                });
+                modal.addEventListener('hidden.bs.modal', function() {
+                });
                 modal.addEventListener('keydown', function(event) {
                     if (event.key === 'Tab') {
                         const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
@@ -404,6 +372,16 @@
                     if (event.key === 'Escape') {
                         const bsModal = bootstrap.Modal.getInstance(modal);
                         if (bsModal) { bsModal.hide(); }
+                    }
+                });
+                modal.addEventListener('change', function(event){
+                    if (event.target && event.target.name === 'reason') {
+                        const otherReasonText = modal.querySelector('textarea[name="other_reason"]');
+                        if (event.target.value === 'Lainnya') {
+                            otherReasonText.classList.remove('d-none');
+                        } else {
+                            otherReasonText.classList.add('d-none');
+                        }
                     }
                 });
             });

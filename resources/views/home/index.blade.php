@@ -40,10 +40,9 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1040;
-            display: none; /* Diatur oleh JS */
+            display: none;
         }
 
-        /* Dark Mode Toggle */
         .dark-mode-toggle .toggle-circle { transition: left 0.3s ease; }
         .dark-mode-toggle.active .toggle-circle { left: 30px !important; }
         [data-bs-theme="light"] .dark-mode-toggle { background-color: #ddd; }
@@ -51,7 +50,6 @@
         [data-bs-theme="dark"] .dark-mode-toggle { background-color: #3e3e3e; }
         [data-bs-theme="dark"] .dark-mode-toggle.active { background-color: #6e86ff !important; }
 
-        /* Card Hover Effect */
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -60,7 +58,6 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        /* Vote Buttons State */
         .vote-btn.voted-up {
             color: #4CAF50 !important;
             background-color: rgba(76, 175, 80, 0.1) !important;
@@ -70,9 +67,8 @@
             background-color: rgba(244, 67, 54, 0.1) !important;
         }
 
-        /* Animations */
         .fade-in {
-            opacity: 0; /* Initial state for JS */
+            opacity: 0;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -119,8 +115,8 @@
                                 </li>
                                 @endrole
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                        <i class="fas fa-cog me-2"></i> Pengaturan
+                                    <a class="dropdown-item" href="{{ route('home') }}">
+                                        <i class="fas fa-home me-2"></i> Dasbor
                                     </a>
                                 </li>
                                 <li>
@@ -157,13 +153,11 @@
         <div class="p-4">
             <h5 class="mb-4 fw-bold">Menu</h5>
             <ul class="list-group list-group-flush">
-                <a href="{{ route('home') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-home me-2"></i> Beranda</a>
-                <a href="{{ route('stories.create') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-plus-circle me-2"></i> Tulis Cerita</a>
+                <a href="{{ route('home') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-home me-2"></i> Dasbor</a>
             </ul>
             @auth
             <h5 class="mb-3 fw-bold mt-4">Akun</h5>
             <ul class="list-group list-group-flush">
-                <a href="{{ route('profile.edit') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-cog me-2"></i> Pengaturan</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                      <a href="{{ route('logout') }}" class="list-group-item list-group-item-action bg-transparent text-danger" onclick="event.preventDefault(); this.closest('form').submit();">
@@ -232,25 +226,6 @@
                                                 @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                     <span class="badge bg-danger rounded-pill me-2"><i class="fas fa-fire me-1"></i> Trending</span>
                                                 @endif
-                                                <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    @guest
-                                                        <li><button disabled class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></li>
-                                                        <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                    @endguest
-                                                    @auth
-                                                        @role('user')
-                                                            @if(Auth::id() != $story->user_id && $story->user_id)
-                                                                <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                                @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
-                                                                    <li><form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti</button></form></li>
-                                                                @else
-                                                                    <li><form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></form></li>
-                                                                @endif
-                                                            @endif
-                                                        @endrole
-                                                    @endauth
-                                                </ul>
                                             </div>
                                         </div>
                                         <div class="p-3">
@@ -292,28 +267,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
-                                                @csrf
-                                                <input type="hidden" name="reportable_id" value="{{ $story->id }}">
-                                                <input type="hidden" name="reportable_type" value="story">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked><label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying"><label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonKebencian-{{ $story->id }}" value="Ujaran Kebencian"><label class="form-check-label" for="reasonKebencian-{{ $story->id }}">Ujaran Kebencian</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonPalsu-{{ $story->id }}" value="Informasi Palsu"><label class="form-check-label" for="reasonPalsu-{{ $story->id }}">Informasi Palsu</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonKekerasan-{{ $story->id }}" value="Kekerasan"><label class="form-check-label" for="reasonKekerasan-{{ $story->id }}">Kekerasan</label></div>
-                                                </div>
-                                                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-danger">Kirim Laporan</button></div>
-                                            </form>
-                                        </div>
-                                    </div>
                                 @endforeach
 
                                 <div class="mt-4 d-flex justify-content-center">
@@ -351,25 +304,6 @@
                                                 @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                     <span class="badge bg-danger rounded-pill me-2"><i class="fas fa-fire me-1"></i> Trending</span>
                                                 @endif
-                                                <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    @guest
-                                                        <li><button disabled class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></li>
-                                                        <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                    @endguest
-                                                    @auth
-                                                        @role('user')
-                                                            @if(Auth::id() != $story->user_id && $story->user_id)
-                                                                <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                                @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
-                                                                    <li><form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti</button></form></li>
-                                                                @else
-                                                                    <li><form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></form></li>
-                                                                @endif
-                                                            @endif
-                                                        @endrole
-                                                    @endauth
-                                                </ul>
                                             </div>
                                         </div>
                                         <div class="p-3">
@@ -410,28 +344,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
-                                                @csrf
-                                                <input type="hidden" name="reportable_id" value="{{ $story->id }}">
-                                                <input type="hidden" name="reportable_type" value="story">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked><label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying"><label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa"><label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label></div>
-                                                    <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya"><label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label></div>
-                                                    <textarea name="other_reason" id="otherReasonText-{{ $story->id }}" class="form-control mt-2 d-none" placeholder="Jelaskan alasanmu..."></textarea>
-                                                </div>
-                                                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-danger">Kirim Laporan</button></div>
-                                            </form>
-                                        </div>
-                                    </div>
                                 @empty
                                     <div class="alert alert-info"><p class="mb-0">Belum ada cerita untuk kategori {{ $category->name }}.</p></div>
                                 @endforelse
@@ -470,9 +382,7 @@
                             @forelse($popularAuthors as $author)
                                 <li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-transparent">
                                     <div>
-                                        {{-- MODIFICATION START --}}
                                         <h6 class="mb-0">{{ $author->name ?? 'Anonim' }}</h6>
-                                        {{-- MODIFICATION END --}}
                                         <small class="text-muted">{{ $author->stories_count }} cerita</small>
                                     </div>
                                 </li>
@@ -541,25 +451,6 @@
                                             @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                 <span class="badge bg-danger rounded-pill me-2"><i class="fas fa-fire me-1"></i> Trending</span>
                                             @endif
-                                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                @guest
-                                                    <li><button disabled class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></li>
-                                                    <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                @endguest
-                                                @auth
-                                                    @role('user')
-                                                        @if(Auth::id() != $story->user_id && $story->user_id)
-                                                            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                            @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
-                                                                <li><form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti</button></form></li>
-                                                            @else
-                                                                <li><form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></form></li>
-                                                            @endif
-                                                        @endif
-                                                    @endrole
-                                                @endauth
-                                            </ul>
                                         </div>
                                     </div>
                                     <div class="p-3">
@@ -599,27 +490,6 @@
                                         <span class="text-muted"><i class="fas fa-comment me-1"></i>{{ $story->comments->count() }} Komentar</span>
                                     </div>
                                 </div>
-                                <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
-                                            @csrf
-                                            <input type="hidden" name="reportable_id" value="{{ $story->id }}">
-                                            <input type="hidden" name="reportable_type" value="story">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked><label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label></div>
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying"><label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label></div>
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa"><label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label></div>
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya"><label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label></div>
-                                                <textarea name="other_reason" id="otherReasonText-{{ $story->id }}" class="form-control mt-2 d-none" placeholder="Jelaskan alasanmu..."></textarea>
-                                            </div>
-                                            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-danger">Kirim Laporan</button></div>
-                                        </form>
-                                    </div>
-                                </div>
                             @endforeach
                         @else
                             <div class="alert alert-info"><p class="mb-0">Belum ada cerita populer hari ini.</p></div>
@@ -650,25 +520,6 @@
                                             @if($story->votes()->where('vote_type', 'like')->count() > 10)
                                                 <span class="badge bg-danger rounded-pill me-2"><i class="fas fa-fire me-1"></i> Trending</span>
                                             @endif
-                                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                @guest
-                                                    <li><button disabled class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></li>
-                                                    <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                @endguest
-                                                @auth
-                                                    @role('user')
-                                                        @if(Auth::id() != $story->user_id && $story->user_id)
-                                                            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                            @if(isset($isFollowing[$story->user_id]) && $isFollowing[$story->user_id])
-                                                                <li><form action="{{ route('dashboard.unfollow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-minus me-2"></i> Berhenti Mengikuti</button></form></li>
-                                                            @else
-                                                                <li><form action="{{ route('dashboard.follow', $story->user_id) }}" method="POST">@csrf<button type="submit" class="dropdown-item"><i class="fas fa-user-plus me-2"></i> Ikuti</button></form></li>
-                                                            @endif
-                                                        @endif
-                                                    @endrole
-                                                @endauth
-                                            </ul>
                                         </div>
                                     </div>
                                     <div class="p-3">
@@ -708,27 +559,6 @@
                                         <div>
                                             <span class="text-muted"><i class="fas fa-comment me-1"></i>{{ $story->comments->count() }} Komentar</span>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="modal fade" id="reportModal-{{ $story->id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ $story->id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <form action="{{ route('reports.store') }}" method="POST" class="modal-content">
-                                            @csrf
-                                            <input type="hidden" name="reportable_id" value="{{ $story->id }}">
-                                            <input type="hidden" name="reportable_type" value="story">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="reportModalLabel-{{ $story->id }}">Pilih Jenis Laporan</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonSpam-{{ $story->id }}" value="Spam" checked><label class="form-check-label" for="reasonSpam-{{ $story->id }}">Spam</label></div>
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonHarassment-{{ $story->id }}" value="Pelecehan / Bullying"><label class="form-check-label" for="reasonHarassment-{{ $story->id }}">Pelecehan / Bullying</label></div>
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonPorn-{{ $story->id }}" value="Konten Dewasa"><label class="form-check-label" for="reasonPorn-{{ $story->id }}">Konten Dewasa</label></div>
-                                                <div class="form-check"><input class="form-check-input" type="radio" name="reason" id="reasonOther-{{ $story->id }}" value="Lainnya"><label class="form-check-label" for="reasonOther-{{ $story->id }}">Lainnya</label></div>
-                                                <textarea name="other_reason" id="otherReasonText-{{ $story->id }}" class="form-control mt-2 d-none" placeholder="Jelaskan alasanmu..."></textarea>
-                                            </div>
-                                            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-danger">Kirim Laporan</button></div>
-                                        </form>
                                     </div>
                                 </div>
                             @endforeach
