@@ -180,6 +180,7 @@
 
                         <div class="card mb-4 border-0">
                             <div class="card-body">
+                                @if(Auth::check())
                                 <form action="{{ route('comments.store', $story) }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
@@ -193,6 +194,9 @@
                                     </div>
                                     <button type="submit" class="btn btn-primary">Kirim Komentar</button>
                                 </form>
+                                @else
+                                    <a href="{{ route('register') }}" class="btn btn-primary">Daftar untuk Berkomentar</a>
+                                @endif
                             </div>
                         </div>
 

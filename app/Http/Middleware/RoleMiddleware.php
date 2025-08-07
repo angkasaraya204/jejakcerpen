@@ -11,7 +11,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, $role)
     {
         if (!Auth::check()) {
-            return redirect('register');
+            return redirect('login');
         }
 
         $roles = is_array($role) ? $role : explode('|', $role);
