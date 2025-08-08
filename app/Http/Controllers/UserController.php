@@ -15,6 +15,32 @@ class UserController extends Controller
         return view('admin.user.index', compact('users'));
     }
 
+    public function create()
+    {
+        $roles = Role::all(); // Ambil semua role untuk ditampilkan di form
+        return view('admin.user.create', compact('roles'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:50',
+            'email' => 'required|string|email|lowercase|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'roles' => 'required|array',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        $user->assignRole($validated['roles']);
+
+        return redirect()->route('users.index')->with('success', 'User berhasil dibuat.');
+    }
+
     public function edit(User $user)
     {
         $roles = Role::all();

@@ -33,36 +33,26 @@ class StoryController extends Controller
     public function show(Story $story)
     {
        if (Auth::check()) {
-            // LOGIKA UNTUK PENGGUNA YANG LOGIN
-            // Mencari view berdasarkan story_id dan user_id.
-            // Jika belum ada, akan dibuat. Jika sudah ada, tidak terjadi apa-apa.
             Views::updateOrCreate(
                 ['story_id' => $story->id, 'user_id' => Auth::id()]
             );
         } else {
-            // LOGIKA UNTUK PENGUNJUNG/GUEST
-            // 1. Ambil daftar cerita yang sudah dilihat dari session
             $viewedStories = Session::get('viewed_stories', []);
 
-            // 2. Cek apakah ID cerita ini belum ada di dalam daftar session
             if (!in_array($story->id, $viewedStories)) {
-                // 3. Jika belum ada, catat kunjungan di database
                 Views::create([
                     'story_id' => $story->id,
                     'user_id' => null // user_id dikosongkan untuk guest
                 ]);
 
-                // 4. Tambahkan ID cerita ini ke dalam session agar tidak dihitung lagi
                 Session::push('viewed_stories', $story->id);
             }
         }
 
-        // Memuat data relasi untuk ditampilkan (tidak ada perubahan di sini)
         $story->load(['user', 'category', 'comments' => function($query) {
             $query->whereNull('parent_id')->with(['user', 'replies.user']);
         }]);
 
-        // Mengembalikan view 'home.detail'
         return view('home.detail', compact('story'));
     }
 
@@ -72,11 +62,11 @@ class StoryController extends Controller
         return view('moderasi.cerita.create', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Story $story)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:80',
-            'slug'  => 'required|string|lowercase|max:50|alpha|unique:stories,slug',
+            'slug' => 'required|string|regex:/^[a-z0-9\/\-]+$/|max:50|unique:stories,slug,' . $story->id,
             'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',
@@ -107,7 +97,7 @@ class StoryController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:80',
-            'slug' => 'required|string|lowercase|max:50|alpha|unique:stories,slug',
+            'slug' => 'required|string|regex:/^[a-z0-9\/\-]+$/|max:50|unique:stories,slug,' . $story->id,
             'content' => 'required|max:10000',
             'category_id' => 'required|exists:categories,id',
             'anonymous' => 'boolean',

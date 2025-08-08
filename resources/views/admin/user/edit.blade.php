@@ -37,12 +37,19 @@
                     @enderror
                 </div>
                 <div class="form-group">
+                    <label for="role">Peran</label>
                     @foreach($roles as $role)
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input type="checkbox" name="roles[]" value="{{ $role->name }}" class="form-check-input" {{ $user->hasRole($role->name) ? 'checked' : '' }}> {{ ucfirst($role->name) }} </label>
+                            <input type="checkbox" name="roles[]" value="{{ $role->name }}" class="form-check-input" {{ $user->hasRole($role->name) ? 'checked' : '' }}>
+                            {{ ucfirst($role->name) }}
+                        </label>
                     </div>
                     @endforeach
+
+                    @error('roles')
+                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <button type="submit" class="btn btn-primary mr-2">Submit</button>
                 <button class="btn btn-dark">Cancel</button>

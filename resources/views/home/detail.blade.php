@@ -85,18 +85,25 @@
                         </li>
                     @else
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('stories.create') }}"><i class="fas fa-plus me-2"></i> Buat Cerita</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-cog me-2"></i> Pengaturan</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                        <i class="fas fa-home me-2"></i> Dasbor
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i> Keluar</button>
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i> Keluar
+                                        </button>
                                     </form>
                                 </li>
                             </ul>
@@ -118,19 +125,19 @@
         <div class="p-4">
             <h5 class="mb-4 fw-bold">Menu</h5>
             <ul class="list-group list-group-flush">
-                <a href="{{ route('home') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-home me-2"></i> Beranda</a>
-                <a href="{{ route('stories.create') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-plus-circle me-2"></i> Tulis Cerita</a>
+                <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-home me-2"></i> Dasbor</a>
             </ul>
+            @auth
             <h5 class="mb-3 fw-bold mt-4">Akun</h5>
             <ul class="list-group list-group-flush">
-                <a href="{{ route('profile.edit') }}" class="list-group-item list-group-item-action bg-transparent"><i class="fas fa-cog me-2"></i> Pengaturan</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <a href="{{ route('logout') }}" class="list-group-item list-group-item-action bg-transparent text-danger" onclick="event.preventDefault(); this.closest('form').submit();">
+                     <a href="{{ route('logout') }}" class="list-group-item list-group-item-action bg-danger" onclick="event.preventDefault(); this.closest('form').submit();">
                         <i class="fas fa-sign-out-alt me-2"></i> Keluar
                     </a>
                 </form>
             </ul>
+            @endauth
         </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>

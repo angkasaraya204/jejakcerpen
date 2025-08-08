@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Vote;
 use App\Models\Story;
 use App\Models\Views;
-use App\Models\Follow;
 use App\Models\Report;
 use App\Models\Comment;
 use App\Models\Category;
@@ -175,6 +174,17 @@ class DashboardController extends Controller
             $totalStories = Story::where('user_id', $userId)->count();
             $totalComments = Comment::where('user_id', $userId)->count();
 
+            // Total trending stories
+            $totalTrending = $this->getTrendingStories('all')->count();
+
+            // Total reports made by the user
+            $totalReportsMade = Report::where('user_id', $userId)->count();
+
+            // Total reports received by the user's stories or comments
+            $totalReportsReceived = Report::whereHas('reportable', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->count();
+
             // Data cerita yang dibaca user per kategori
             $readStoriesPerCategory = Views::join('stories', 'stories_views.story_id', '=', 'stories.id')
                 ->join('categories', 'stories.category_id', '=', 'categories.id')
@@ -195,10 +205,6 @@ class DashboardController extends Controller
             // Pastikan data tidak kosong sebelum di-pass ke view
             $categoryReadLabels = $readStoriesPerCategory->pluck('category_name')->toArray();
             $categoryReadCounts = $readStoriesPerCategory->pluck('total_reads')->toArray();
-
-            // Tambahan untuk fitur Follow/Teman
-            $followingCount = Follow::where('follower_id', $userId)->count();
-            $followersCount = Follow::where('followed_id', $userId)->count();
 
             // Statistik Interaksi
             $upvotesReceived = Vote::join('stories', 'votes.story_id', '=', 'stories.id')
@@ -292,8 +298,6 @@ class DashboardController extends Controller
         }
 
         // Set data default untuk user
-        $followingCount = $followingCount ?? 0;
-        $followersCount = $followersCount ?? 0;
         $upvotesReceived = $upvotesReceived ?? 0;
         $downvotesReceived = $downvotesReceived ?? 0;
         $commentReceived = $commentReceived ?? 0;
@@ -306,8 +310,6 @@ class DashboardController extends Controller
             $viewData = array_merge($viewData, [
                 'totalStories',
                 'totalComments',
-                'followingCount',
-                'followersCount',
                 'upvotesReceived',
                 'downvotesReceived',
                 'commentReceived',
@@ -325,7 +327,10 @@ class DashboardController extends Controller
                 'yearVotes',
                 'categoryReadLabels',
                 'categoryReadCounts',
-                'visitorStoriesPerCategory'
+                'visitorStoriesPerCategory',
+                'totalTrending',
+                'totalReportsMade',
+                'totalReportsReceived'
             ]);
         }
 
@@ -367,59 +372,29 @@ class DashboardController extends Controller
         return view('dashboard.index', compact(...$viewData));
     }
 
-    // Fitur Follow/Teman
-    public function followers()
+    private function getTrendingStories($period = 'all')
     {
-        $followers = Follow::where('followed_id', Auth::id())
-            ->with('follower')
-            ->paginate(15);
+        $query = Story::with(['user', 'category'])
+            ->where('user_id', auth()->id())
+            ->withCount(['votes as upvotes_count' => function ($query) {
+                $query->where('vote_type', 'upvote');
+            }]);
 
-        return view('dashboard.followers', compact('followers'));
-    }
-
-    public function following()
-    {
-        $following = Follow::where('follower_id', Auth::id())
-            ->with('followed')
-            ->paginate(15);
-
-        return view('dashboard.following', compact('following'));
-    }
-
-    public function follow(User $user)
-    {
-        // Mencegah user mem-follow dirinya sendiri
-        if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat mengikuti diri sendiri.');
+        switch ($period) {
+            case 'daily':
+                $query->where('created_at', '>=', now()->subDay());
+                break;
+            case 'weekly':
+                $query->where('created_at', '>=', now()->subWeek());
+                break;
+            case 'monthly':
+                $query->where('created_at', '>=', now()->subMonth());
+                break;
         }
 
-        // Cek apakah sudah follow sebelumnya
-        $existingFollow = Follow::where('follower_id', Auth::id())
-            ->where('followed_id', $user->id)
-            ->first();
-
-        if (!$existingFollow) {
-            // Buat follow baru
-            Follow::create([
-                'follower_id' => Auth::id(),
-                'followed_id' => $user->id
-            ]);
-            return redirect()->back()->with('success', 'Berhasil mengikuti pengguna.');
-        }
-
-        return redirect()->back()->with('info', 'Anda sudah mengikuti pengguna ini.');
-    }
-
-    public function unfollow(User $user)
-    {
-        $deleted = Follow::where('follower_id', Auth::id())
-            ->where('followed_id', $user->id)
-            ->delete();
-
-        if ($deleted) {
-            return redirect()->back()->with('success', 'Berhasil berhenti mengikuti pengguna.');
-        }
-
-        return redirect()->back()->with('info', 'Anda belum mengikuti pengguna ini.');
+        return $query->having('upvotes_count', '>', 0)
+            ->orderByDesc('upvotes_count')
+            ->orderByDesc('created_at')
+            ->get();
     }
 }

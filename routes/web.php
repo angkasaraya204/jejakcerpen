@@ -61,15 +61,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     });
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/followers', [DashboardController::class, 'followers'])->name('dashboard.followers');
-    Route::get('/following', [DashboardController::class, 'following'])->name('dashboard.following');
-    Route::post('/follow/{user}', [DashboardController::class, 'follow'])->name('dashboard.follow');
-    Route::post('/unfollow/{user}', [DashboardController::class, 'unfollow'])->name('dashboard.unfollow');
-
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);

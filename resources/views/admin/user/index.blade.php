@@ -18,6 +18,11 @@
 <div class="grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <div class="template-demo">
+                <a href="{{ route('users.create') }}" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Tambah Pengguna
+                </a>
+            </div>
             @if($users->count() > 0)
                 <div class="table-responsive mt-4">
                     <table class="table table-bordered">

@@ -27,13 +27,11 @@
 <div class="grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            @role('user')
             <div class="template-demo">
                 <a href="{{ route('stories.create') }}" class="btn btn-primary btn-icon-text">
                     <i class="mdi mdi-file-check btn-icon-prepend"></i> Tambah Cerita
                 </a>
             </div>
-            @endrole
             @if($stories->count() > 0)
                 <div class="table-responsive mt-4">
                     <table class="table table-bordered">
@@ -101,7 +99,7 @@
                                             <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
                                         </form>
                                         <a href="{{ route('stories.show', $story) }}"
-                                            class="text-blue-600 hover:underline">Baca selengkapnya →</a>
+                                            class="btn btn-info">Baca selengkapnya →</a>
                                     </td>
                                     @endhasanyrole
                                 </tr>

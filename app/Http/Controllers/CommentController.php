@@ -36,13 +36,11 @@ class CommentController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|max:1000',
-            'parent_id' => 'nullable|exists:comments,id',
             'anonymous' => 'boolean',
         ]);
 
         $comment = new Comment([
             'content' => $validated['content'],
-            'parent_id' => $validated['parent_id'] ?? null,
             'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
@@ -66,13 +64,11 @@ class CommentController extends Controller
 
         $validated = $request->validate([
             'content' => 'required|max:1000',
-            'parent_id' => 'nullable|exists:comments,id',
             'anonymous' => 'boolean',
         ]);
 
         $comment->update([
             'content' => $validated['content'],
-            'parent_id' => $validated['parent_id'] ?? $comment->parent_id,
             'anonymous' => $validated['anonymous'] ?? false,
         ]);
 
@@ -82,7 +78,7 @@ class CommentController extends Controller
     public function show(Comment $comment)
     {
         $story->load(['user', 'category', 'comments' => function($query) {
-            $query->whereNull('parent_id')->with(['user', 'replies.user']);
+            $query->with(['user']);
         }]);
 
         return view('home.detail', compact('comment'));
@@ -95,14 +91,4 @@ class CommentController extends Controller
 
         return back()->with('success', 'Komentar berhasil dihapus.');
     }
-
-    public function markSensitive(Comment $comment)
-    {
-        $comment->is_sensitive = !$comment->is_sensitive;
-        $comment->save();
-
-        $status = $comment->is_sensitive ? 'ditandai sebagai sensitif' : 'ditandai sebagai tidak sensitif';
-        return back()->with('success', "Cerita berhasil $status.");
-    }
-
 }

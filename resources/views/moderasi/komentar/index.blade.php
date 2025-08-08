@@ -77,7 +77,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
                                         </form>
-                                        <a href="{{ route('stories.show', $comment->story) }}" class="text-blue-600 hover:underline">
+                                        <a href="{{ route('stories.show', $comment->story) }}" class="btn btn-info">
                                             Baca selengkapnya →
                                         </a>
                                         @endhasanyrole

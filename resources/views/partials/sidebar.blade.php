@@ -164,5 +164,14 @@
         </a>
       </li>
       @endrole
+
+      <li class="nav-item menu-items">
+        <form method="POST" action="{{ route('logout') }}">
+        @csrf
+            <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
+                <span class="menu-title btn btn-danger w-100"><i class="mdi mdi-logout"></i>Keluar</span>
+            </a>
+        </form>
+      </li>
     </ul>
 </nav>

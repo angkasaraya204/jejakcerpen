@@ -56,6 +56,7 @@ class RolePermissionSeeder extends Seeder
             'view users',
             'edit users',
             'delete users',
+            'create stories',
             'view stories',
             'edit stories',
             'delete stories',
