@@ -7,51 +7,18 @@
     <title>JejakCerita - Platform Berbagi Cerita</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
-        body {
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: -280px;
-            z-index: 1050;
-            transition: left 0.4s ease;
-            overflow-y: auto;
-        }
-        .sidebar.active {
-            left: 0;
-        }
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1040;
-            display: none !important;
-        }
-
-        .dark-mode-toggle .toggle-circle { transition: left 0.3s ease; }
-        .dark-mode-toggle.active .toggle-circle { left: 30px !important; }
-        [data-bs-theme="light"] .dark-mode-toggle { background-color: #ddd; }
-        [data-bs-theme="light"] .dark-mode-toggle.active { background-color: #5271ff !important; }
-        [data-bs-theme="dark"] .dark-mode-toggle { background-color: #3e3e3e; }
-        [data-bs-theme="dark"] .dark-mode-toggle.active { background-color: #6e86ff !important; }
-
-        .story-content-parsed h1, .story-content-parsed h2, .story-content-parsed h3 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; }
-        .story-content-parsed p { margin-bottom: 1rem; line-height: 1.7; }
-        .story-content-parsed ul, .story-content-parsed ol { padding-left: 2rem; margin-bottom: 1rem; }
-        .story-content-parsed blockquote { border-left: 4px solid #ccc; padding-left: 1rem; margin-left: 0; font-style: italic; color: #6c757d; }
-        .story-content-parsed a { color: var(--bs-link-color); text-decoration: underline; }
-
         .slide-up {
             animation: slideUp 0.5s ease forwards;
+        }
+        .vote-btn.voted-up {
+            color: #4CAF50 !important;
+            background-color: rgba(76, 175, 80, 0.1) !important;
+        }
+        .vote-btn.voted-down {
+            color: #F44336 !important;
+            background-color: rgba(244, 67, 54, 0.1) !important;
         }
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
@@ -180,6 +147,26 @@
                     <h1 class="mb-4 h2">{{ $story->title }}</h1>
                     <div class="story-content-parsed py-3 border-top border-bottom">
                         {!! (new \Parsedown())->text($story->content) !!}
+                    </div>
+                    <div class="border-bottom py-3">
+                        <form action="{{ route('stories.vote', $story) }}" method="POST" class="d-inline-flex align-items-center gap-2">
+                            @csrf
+                            <input type="hidden" name="vote_type" value="upvote">
+                            <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
+                            </button>
+                            <span class="text-muted small">Upvote</span>
+                        </form>
+                        <form action="{{ route('stories.vote', $story) }}" method="POST" class="d-inline-flex align-items-center gap-2">
+                            @csrf
+                            <input type="hidden" name="vote_type" value="downvote">
+                            <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
+                            </button>
+                            <span class="text-muted small">Downvote</span>
+                        </form>
                     </div>
 
                     <div class="mt-5">

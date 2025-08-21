@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Dashboard')
+@section('title', 'Daftar Komentar')
 @section('content')
 
 <div class="page-header">
@@ -68,22 +68,19 @@
                                     </td>
                                     @endrole
                                     <td>
-                                        @hasanyrole(['admin','user'])
+                                        @hasanyrole(['admin','penulis'])
                                         <a href="{{ route('comments.edit', $comment) }}" class="btn btn-primary mr-3">Ubah</a>
                                         @endhasanyrole
-                                        @hasanyrole(['admin','moderator','user'])
+                                        @hasanyrole(['admin','penulis'])
                                         <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
                                         </form>
                                         <a href="{{ route('stories.show', $comment->story) }}" class="btn btn-info">
-                                            Baca selengkapnya →
+                                            Lihat
                                         </a>
                                         @endhasanyrole
-                                        @role('moderator')
-                                        <a href="{{ route('stories.sensitive', $story->story) }}" class="btn btn-warning mr-3">Tandai Sensitif</a>
-                                        @endrole
                                     </td>
                                 </tr>
                             @endforeach

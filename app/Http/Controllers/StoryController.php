@@ -14,7 +14,7 @@ class StoryController extends Controller
 {
     public function index(Request $request)
     {
-        if (Auth::user()->hasRole('user')) {
+        if (Auth::user()->hasRole('penulis')) {
             $query = Story::with(['user', 'category'])->where('status', 'approved');
 
             $stories = $query->where('user_id', Auth::id())->latest('created_at')->paginate(10);

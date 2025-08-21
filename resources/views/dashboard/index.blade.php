@@ -133,7 +133,7 @@
     </div>
 @endrole
 
-@role('user')
+@role('penulis')
     <div class="row">
         <div class="col-md-3 mb-4">
             <div class="card">
@@ -502,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     @endrole
 
-    @role('user')
+    @role('penulis')
         const categoryLabels = @json($categoryReadLabels ?? []);
         const categoryCounts = @json($categoryReadCounts ?? []);
         const visitorCounts = @json($visitorStoriesPerCategory->pluck('total_views')->toArray() ?? []);

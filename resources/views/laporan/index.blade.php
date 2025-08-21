@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Dashboard')
+@section('title', 'Daftar Laporan')
 @section('content')
 
 {{-- Alert Section --}}
@@ -59,9 +59,9 @@
                                     </td>
                                     <td>
                                         @if ($report->status === 'valid')
-                                            <span class="badge bg-danger text-white">Valid</span>
+                                            <span class="badge bg-danger text-white">Disetujui</span>
                                         @elseif ($report->status === 'tidak-valid')
-                                            <span class="badge bg-success text-white">Tidak Valid</span>
+                                            <span class="badge bg-success text-white">Ditolak</span>
                                         @else
                                             <span class="badge bg-warning text-white">Pending</span>
                                         @endif
@@ -72,13 +72,13 @@
                                                 @csrf
                                                 @method('patch')
                                                 <input type="hidden" name="status" value="valid">
-                                                <button type="submit" class="btn btn-danger">Valid (Hapus)</button>
+                                                <button type="submit" class="btn btn-danger">Setujui</button>
                                             </form>
                                             <form action="{{ route('reports.update', $report) }}" method="POST">
                                                 @csrf
                                                 @method('patch')
                                                 <input type="hidden" name="status" value="tidak-valid">
-                                                <button type="submit" class="btn btn-success mt-2">Tidak Valid</button>
+                                                <button type="submit" class="btn btn-success mt-2">Tolak</button>
                                             </form>
                                         @else
                                             <span class="badge bg-info text-white">Tindakan telah diambil</span>

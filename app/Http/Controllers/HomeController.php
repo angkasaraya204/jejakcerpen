@@ -21,20 +21,19 @@ class HomeController extends Controller
             });
         }
 
+        $stories = $query->latest('created_at')->paginate(5)->withQueryString();
+
         $allCategories = Category::withCount(['stories' => function ($query) {
             $query->where('status', 'approved');
         }])->orderByDesc('stories_count')->get();
 
-        $stories = $query->latest('created_at')->paginate(5);
-
         $popularStoriesAllTime = $this->getPopularStories('all', 5);
         $popularStoriesDaily = $this->getPopularStories('daily', 5);
         $popularStoriesWeekly = $this->getPopularStories('weekly', 5);
-
         $trendingStories = $this->getTrendingStories();
         $popularAuthors = $this->getPopularAuthors();
-
         $popularCategoriesByViews = $this->getPopularCategoriesByViews(5);
+        $activeCategory = $request->category;
 
         return view('home.index', compact(
             'stories',
@@ -44,7 +43,8 @@ class HomeController extends Controller
             'popularStoriesDaily',
             'popularStoriesWeekly',
             'popularAuthors',
-            'popularCategoriesByViews'
+            'popularCategoriesByViews',
+            'activeCategory'
         ));
     }
 

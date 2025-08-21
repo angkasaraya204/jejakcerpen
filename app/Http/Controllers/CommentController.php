@@ -11,7 +11,7 @@ class CommentController extends Controller
 {
     public function index(Request $request)
     {
-        if (Auth::user()->hasRole('user')) {
+        if (Auth::user()->hasRole('penulis')) {
             $query = Comment::with(['user', 'story']);
 
             if ($request->has('story_id')) {
@@ -19,7 +19,7 @@ class CommentController extends Controller
             }
 
             $comments = $query->where('user_id', Auth::id())->latest()->paginate(10);
-        } elseif (Auth::user()->hasRole(['moderator', 'admin'])) {
+        } elseif (Auth::user()->hasRole('admin')) {
             $query = Comment::with(['user', 'story']);
 
             if ($request->has('story_id')) {

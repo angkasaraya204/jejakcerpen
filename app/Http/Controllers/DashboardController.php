@@ -168,7 +168,7 @@ class DashboardController extends Controller
                 ->groupBy('date')
                 ->orderBy('date')
                 ->get();
-        } elseif (Auth::user()->hasRole('user')) {
+        } elseif (Auth::user()->hasRole('penulis')) {
             $userId = Auth::id();
 
             $totalStories = Story::where('user_id', $userId)->count();
@@ -306,7 +306,7 @@ class DashboardController extends Controller
         $viewData = [];
 
         // Tambahkan variabel khusus user jika role-nya user
-        if (Auth::user()->hasRole('user')) {
+        if (Auth::user()->hasRole('penulis')) {
             $viewData = array_merge($viewData, [
                 'totalStories',
                 'totalComments',

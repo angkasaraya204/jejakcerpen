@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Dashboard')
+@section('title', 'Daftar Cerita')
 @section('content')
 
 {{-- Alert Section --}}
@@ -14,7 +14,7 @@
     </div>
 @endif
 
-@hasanyrole(['admin','user'])
+@hasanyrole(['admin','penulis'])
 <div class="page-header">
     <h3 class="page-title"> Daftar Cerita </h3>
     <nav aria-label="breadcrumb">
@@ -50,7 +50,7 @@
                                 <th> Jumlah Upvote </th>
                                 <th> Jumlah Downvote </th>
                                 @endrole
-                                @role('user')
+                                @role('penulis')
                                 <th> Jumlah Downvote </th>
                                 @endrole
                                 <th> Deskripsi </th>
@@ -70,13 +70,12 @@
                                         @if($story->anonymous)
                                             Anonim
                                         @else
-                                            {{ optional($story->user)->name ?? 'User' }}
+                                            {{ optional($story->user)->name ?? 'penulis' }}
                                         @endif
                                     </td>
-                                    {{-- MODIFICATION: Menambahkan data untuk kolom Alias untuk admin --}}
                                     <td>
                                         @if($story->anonymous)
-                                            {{ optional($story->user)->name ?? 'User' }}
+                                            {{ optional($story->user)->name ?? 'penulis' }}
                                         @else
                                             -
                                         @endif
@@ -85,11 +84,11 @@
                                     <td>{{ $story->votes->where('vote_type', 'upvote')->count() }} Upvote</td>
                                     <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
                                     @endrole
-                                    @role('user')
+                                    @role('penulis')
                                     <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
                                     @endrole
                                     <td>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</td>
-                                    @hasanyrole(['admin','user'])
+                                    @hasanyrole(['admin','penulis'])
                                     <td>
                                         <a href="{{ route('stories.edit', $story) }}"
                                             class="btn btn-primary mr-3">Ubah</a>
@@ -99,7 +98,7 @@
                                             <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
                                         </form>
                                         <a href="{{ route('stories.show', $story) }}"
-                                            class="btn btn-info">Baca selengkapnya →</a>
+                                            class="btn btn-info">Lihat</a>
                                     </td>
                                     @endhasanyrole
                                 </tr>

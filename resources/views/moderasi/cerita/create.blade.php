@@ -54,7 +54,7 @@
                 </div>
                 <div class="form-group">
                     <label for="content">Isi Cerita</label>
-                    <textarea id="simpleMde" name="content" class="form-control @error('content') border-red-500 @enderror">{{ old('content') }}</textarea>
+                    <textarea name="content" class="form-control @error('content') border-red-500 @enderror">{{ old('content') }}</textarea>
 
                     @error('content')
                         <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>

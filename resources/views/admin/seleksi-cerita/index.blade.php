@@ -58,8 +58,6 @@
                                         </td>
                                         <td>{{ $loop->iteration }}</td>
                                         <td> {{ $story->title }} </td>
-
-                                        {{-- CHANGE: Menyesuaikan kolom Penulis --}}
                                         <td>
                                             @if($story->anonymous)
                                                 Anonim
@@ -67,8 +65,6 @@
                                                 {{ $story->user->name }}
                                             @endif
                                         </td>
-
-                                        {{-- CHANGE: Menambahkan data untuk kolom Alias --}}
                                         <td>
                                             @if($story->anonymous)
                                                 {{ $story->user->name }}
@@ -76,7 +72,6 @@
                                                 -
                                             @endif
                                         </td>
-
                                         <td> {{ $story->category->name }} </td>
                                         <td> {{ $story->created_at->format('d M Y') }} </td>
                                         <td>

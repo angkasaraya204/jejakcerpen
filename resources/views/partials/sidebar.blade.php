@@ -21,7 +21,7 @@
         <span class="nav-link">Navigation</span>
       </li>
 
-      @role('user')
+      @role('penulis')
       <li class="nav-item menu-items {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('dashboard') }}">
           <span class="menu-icon">

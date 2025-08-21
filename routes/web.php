@@ -12,13 +12,12 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StorySelectionController;
 
-// Public routes (with or without authentication)
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/stories/{story:slug}', [StoryController::class, 'show'])->name('stories.show');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 
 Route::middleware('auth')->group(function () {
-    Route::middleware(['role:user'])->group(function () {
+    Route::middleware(['role:penulis'])->group(function () {
         // Story submission
         Route::get('/stories/create/new', [StoryController::class, 'create'])->name('stories.create');
         Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
@@ -43,7 +42,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dilaporkan/comment', [ReportController::class, 'commentdilaporkan'])->name('comment.dilaporkan');
     });
 
-    Route::middleware(['role:admin|user'])->group(function () {
+    Route::middleware(['role:admin|penulis'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Story submission

@@ -65,7 +65,7 @@ class RolePermissionSeeder extends Seeder
             'manage categories',
         ]);
 
-        $userRole = Role::create(['name' => 'user']);
+        $userRole = Role::create(['name' => 'penulis']);
         $userRole->givePermissionTo([
             'view stories',
             'create stories',
@@ -88,10 +88,10 @@ class RolePermissionSeeder extends Seeder
 
         // Create normal user
         $user = User::create([
-            'name' => 'User',
-            'email' => 'user@example.com',
+            'name' => 'Penulis',
+            'email' => 'penulis@example.com',
             'password' => Hash::make('password123'),
         ]);
-        $user->assignRole('user');
+        $user->assignRole('penulis');
     }
 }

@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Dashboard')
+@section('title', 'Tambah Kategori')
 @section('content')
 <div class="page-header">
     <h3 class="page-title"> Tambah Kategori </h3>

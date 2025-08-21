@@ -24,7 +24,6 @@
                                 <th>No</th>
                                 <th>Judul Cerita</th>
                                 <th>Alasan Pelaporan</th>
-                                {{-- <th>Melaporkan</th> --}}
                                 <th>Tanggal Laporan</th>
                                 <th>Status</th>
                             </tr>
@@ -37,13 +36,6 @@
                                     <td>
                                         <span class="badge badge-danger">{{ $melaporkanItem->reason }}</span>
                                     </td>
-                                    {{-- <td>
-                                        @if($melaporkanItem->user)
-                                            {{ $melaporkanItem->user->name }}
-                                        @else
-                                            <span class="text-muted">Pengguna tidak ditemukan</span>
-                                        @endif
-                                    </td> --}}
                                     <td>{{ $melaporkanItem->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
                                         @if($melaporkanItem->status == 'valid')
