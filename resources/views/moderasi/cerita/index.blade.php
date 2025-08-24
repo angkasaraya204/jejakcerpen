@@ -44,7 +44,6 @@
                                 <th> Tanggal Dibuat </th>
                                 @role('admin')
                                 <th> Oleh </th>
-                                {{-- MODIFICATION: Menambahkan header kolom Alias untuk admin --}}
                                 <th> Alias </th>
                                 <th> Jumlah Komentar </th>
                                 <th> Jumlah Upvote </th>
@@ -88,7 +87,7 @@
                                     <td>{{ $story->votes->where('vote_type', 'downvote')->count() }} Downvote</td>
                                     @endrole
                                     <td>{{ Str::limit(strip_tags((new \Parsedown())->text($story->content))) }}</td>
-                                    @hasanyrole(['admin','penulis'])
+                                    @role('penulis')
                                     <td>
                                         <a href="{{ route('stories.edit', $story) }}"
                                             class="btn btn-primary mr-3">Ubah</a>
@@ -100,7 +99,18 @@
                                         <a href="{{ route('stories.show', $story) }}"
                                             class="btn btn-info">Lihat</a>
                                     </td>
-                                    @endhasanyrole
+                                    @endrole
+                                    @role('admin')
+                                    <td>
+                                        <form action="{{ route('stories.destroy', $story) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus cerita ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
+                                        </form>
+                                        <a href="{{ route('stories.show', $story) }}"
+                                            class="btn btn-info">Lihat</a>
+                                    </td>
+                                    @endrole
                                 </tr>
                             @endforeach
                         </tbody>

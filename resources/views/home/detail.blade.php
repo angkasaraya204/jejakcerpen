@@ -131,17 +131,24 @@
                         </div>
 
                         <div class="ms-auto">
+                            @guest
                             <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                @guest
-                                    <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                @endguest
-                                @auth
-                                    @if(Auth::id() != $story->id && $story->id)
-                                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                    @endif
-                                @endauth
+                                <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
                             </ul>
+                            @endguest
+                            @auth
+                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                @if(Auth::user()->hasRole('penulis') && Auth::id() != $story->id)
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportModal-{{ $story->id }}">
+                                                <i class="fas fa-exclamation-circle me-2"></i> Laporkan
+                                            </button>
+                                        </li>
+                                    </ul>
+                                @endif
+                            @endauth
                         </div>
                     </div>
                     <h1 class="mb-4 h2">{{ $story->title }}</h1>
@@ -205,20 +212,25 @@
                                         <div class="d-flex align-items-center text-muted small">
                                             {{ $comment->created_at->diffForHumans() }}
                                             <div class="dropdown ms-2">
-                                                <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    @auth
-                                                        @if(Auth::id() != $comment->user_id)
+                                                @guest
+                                                    <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button>
+                                                        </li>
+                                                    </ul>
+                                                @endguest
+                                                @auth
+                                                    <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        @if(Auth::user()->hasRole('penulis') && Auth::id() != $comment->id)
                                                             <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#reportCommentModal-{{ $comment->id }}"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
                                                         @endif
                                                         @if(Auth::id() == $comment->user_id || Auth::user()->hasRole('admin'))
                                                             <li><form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i> Hapus</button></form></li>
                                                         @endif
-                                                    @endauth
-                                                    @guest
-                                                        <li><button disabled class="dropdown-item"><i class="fas fa-exclamation-circle me-2"></i> Laporkan</button></li>
-                                                    @endguest
-                                                </ul>
+                                                    </ul>
+                                                @endauth
                                             </div>
                                         </div>
                                     </div>

@@ -18,18 +18,6 @@ Route::post('/reports', [ReportController::class, 'store'])->name('reports.store
 
 Route::middleware('auth')->group(function () {
     Route::middleware(['role:penulis'])->group(function () {
-        // Story submission
-        Route::get('/stories/create/new', [StoryController::class, 'create'])->name('stories.create');
-        Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
-        Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
-        Route::patch('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
-
-        // Comments
-        Route::post('/stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
-
-        // Vote routes
-        Route::post('/stories/{story}/vote', [VoteController::class, 'vote'])->name('stories.vote');
-
         // Trending
         Route::get('/trending/stories', [UserController::class, 'getTrendingbyUser'])->name('stories.trending');
 
@@ -45,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:admin|penulis'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Story submission
+        // Story
         Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
         Route::get('/stories/create/new', [StoryController::class, 'create'])->name('stories.create');
         Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
@@ -55,14 +43,18 @@ Route::middleware('auth')->group(function () {
 
         // Comments
         Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
+        Route::post('/stories/{story}/comments', [CommentController::class, 'store'])->name('comments.store');
         Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->name('comments.edit');
         Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+        // Vote
+        Route::post('/stories/{story}/vote', [VoteController::class, 'vote'])->name('stories.vote');
     });
 
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
-        Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class);
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

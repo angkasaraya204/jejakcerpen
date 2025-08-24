@@ -209,57 +209,65 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-lg-6 grid-margin">
+        <div class="col-md-3 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="card-title">Aktivitas Saya</h4>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-primary btn-sm period-btn active" data-period="week">Minggu</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="month">Bulan</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="year">Tahun</button>
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $upvotesReceived }}</h3>
+                            </div>
                         </div>
                     </div>
-                    <canvas id="userActivityChart" style="height:300px"></canvas>
+                    <h6 class="text-muted font-weight-normal">Upvotes Diterima</h6>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
+        <div class="col-md-3 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Statistik Interaksi</h4>
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Upvotes Diterima:</span>
-                                <span class="badge badge-success">{{ $upvotesReceived }}</span>
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $downvotesReceived }}</h3>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Downvotes Diterima:</span>
-                                <span class="badge badge-danger">{{ $downvotesReceived }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Komen Diterima:</span>
-                                <span class="badge badge-primary">{{ $commentReceived }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="progress mb-3">
-                                <div class="progress-bar bg-success" role="progressbar"
-                                    style="width: {{ $upvotesReceived + $downvotesReceived + $commentReceived > 0 ? ($upvotesReceived / ($upvotesReceived + $downvotesReceived + $commentReceived) * 100) : 0 }}%"
-                                    aria-valuenow="{{ $upvotesReceived }}" aria-valuemin="0"
-                                    aria-valuemax="{{ $upvotesReceived + $downvotesReceived + $commentReceived }}">
-                                    {{ $upvotesReceived + $downvotesReceived + $commentReceived > 0 ? round(($upvotesReceived / ($upvotesReceived + $downvotesReceived + $commentReceived) * 100), 1) : 0 }}%
-                                </div>
-                            </div>
-                            <small class="text-muted">Rasio Upvote/Downvote/Komentar</small>
                         </div>
                     </div>
+                    <h6 class="text-muted font-weight-normal">Downvotes Diterima</h6>
                 </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0">{{ $commentReceived }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Komen Diterima</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title">Aktivitas Saya</h4>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm period-btn active" data-period="week">Minggu</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="month">Bulan</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="year">Tahun</button>
+                    </div>
+                </div>
+                <canvas id="userActivityChart" style="height:300px"></canvas>
             </div>
         </div>
     </div>

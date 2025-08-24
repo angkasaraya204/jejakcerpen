@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                <a href="" class="btn btn-dark">Cancel</a>
+                <a href="{{ route('stories.index') }}" class="btn btn-dark">Cancel</a>
             </form>
         </div>
     </div>

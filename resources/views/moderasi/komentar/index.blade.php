@@ -37,7 +37,6 @@
                                 <th> Komentar </th>
                                 <th> Tanggal Dibuat </th>
                                 <th> Oleh </th>
-                                {{-- MODIFICATION: Menambahkan header kolom Alias untuk admin --}}
                                 @role('admin')
                                 <th> Alias </th>
                                 @endrole
@@ -54,24 +53,12 @@
                                         @if($comment->anonymous)
                                             Anonim
                                         @else
-                                            {{ optional($comment->user)->name ?? 'Anonim' }}
+                                            {{ optional($comment->user)->name ?? 'Pengguna Terhapus' }}
                                         @endif
                                     </td>
-                                    {{-- MODIFICATION: Menambahkan data untuk kolom Alias untuk admin --}}
-                                    @role('admin')
+                                    @role('penulis')
                                     <td>
-                                        @if($comment->anonymous)
-                                            {{ optional($comment->user)->name ?? 'Anonim' }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                    @endrole
-                                    <td>
-                                        @hasanyrole(['admin','penulis'])
                                         <a href="{{ route('comments.edit', $comment) }}" class="btn btn-primary mr-3">Ubah</a>
-                                        @endhasanyrole
-                                        @hasanyrole(['admin','penulis'])
                                         <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
                                             @csrf
                                             @method('DELETE')
@@ -80,8 +67,27 @@
                                         <a href="{{ route('stories.show', $comment->story) }}" class="btn btn-info">
                                             Lihat
                                         </a>
-                                        @endhasanyrole
                                     </td>
+                                    @endrole
+                                    @role('admin')
+                                    <td>
+                                        @if($comment->anonymous)
+                                            {{ optional($comment->user)->name ?? 'Pengguna Terhapus' }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger mt-2 mb-2">Hapus</button>
+                                        </form>
+                                        <a href="{{ route('stories.show', $comment->story) }}" class="btn btn-info">
+                                            Lihat
+                                        </a>
+                                    </td>
+                                    @endrole
                                 </tr>
                             @endforeach
                         </tbody>
