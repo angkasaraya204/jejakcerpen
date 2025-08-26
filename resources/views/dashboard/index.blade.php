@@ -256,19 +256,17 @@
         </div>
     </div>
 
-    <div class="col grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title">Aktivitas Saya</h4>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary btn-sm period-btn active" data-period="week">Minggu</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="month">Bulan</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="year">Tahun</button>
-                    </div>
+    <div class="card grid-margin">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="card-title">Aktivitas Saya</h4>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary btn-sm period-btn active" data-period="week">Minggu</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="month">Bulan</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm period-btn" data-period="year">Tahun</button>
                 </div>
-                <canvas id="userActivityChart" style="height:300px"></canvas>
             </div>
+            <canvas id="userActivityChart" style="height:300px"></canvas>
         </div>
     </div>
 

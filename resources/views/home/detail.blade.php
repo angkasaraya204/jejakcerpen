@@ -156,24 +156,40 @@
                         {!! (new \Parsedown())->text($story->content) !!}
                     </div>
                     <div class="border-bottom py-3">
-                        <form action="{{ route('stories.vote', $story) }}" method="POST" class="d-inline-flex align-items-center gap-2">
-                            @csrf
-                            <input type="hidden" name="vote_type" value="upvote">
-                            <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
+                        @guest
+                            <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn upvote" disabled>
                                 <i class="fas fa-arrow-up"></i>
                                 <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
                             </button>
                             <span class="text-muted small">Upvote</span>
-                        </form>
-                        <form action="{{ route('stories.vote', $story) }}" method="POST" class="d-inline-flex align-items-center gap-2">
-                            @csrf
-                            <input type="hidden" name="vote_type" value="downvote">
-                            <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
+
+                            <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn downvote" disabled>
                                 <i class="fas fa-arrow-down"></i>
                                 <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
                             </button>
                             <span class="text-muted small">Downvote</span>
-                        </form>
+                        @endguest
+
+                        @auth
+                            <form action="{{ route('stories.vote', $story) }}" method="POST" class="d-inline-flex align-items-center gap-2">
+                                @csrf
+                                <input type="hidden" name="vote_type" value="upvote">
+                                <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn upvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'upvote') voted-up @endif">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>{{ $story->votes()->where('vote_type', 'upvote')->count() }}</span>
+                                </button>
+                                <span class="text-muted small">Upvote</span>
+                            </form>
+                            <form action="{{ route('stories.vote', $story) }}" method="POST" class="d-inline-flex align-items-center gap-2">
+                                @csrf
+                                <input type="hidden" name="vote_type" value="downvote">
+                                <button type="submit" class="btn btn-sm btn-light rounded-pill vote-btn downvote @if(Auth::check() && $story->userVote && $story->userVote->vote_type == 'downvote') voted-down @endif">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>{{ $story->votes()->where('vote_type', 'downvote')->count() }}</span>
+                                </button>
+                                <span class="text-muted small">Downvote</span>
+                            </form>
+                        @endauth
                     </div>
 
                     <div class="mt-5">

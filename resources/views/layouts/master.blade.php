@@ -13,7 +13,13 @@
   </head>
   <body>
     <div class="container-scroller">
-      @include('partials.sidebar')
+      @role('admin')
+        @include('partials.admin.sidebar')
+      @endrole
+
+      @role('penulis')
+        @include('partials.penulis.sidebar')
+      @endrole
       <div class="container-fluid page-body-wrapper">
         @include('partials.navbar')
         <div class="main-panel">
