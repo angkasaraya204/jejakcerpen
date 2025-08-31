@@ -324,11 +324,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltips: {
                         callbacks: {
                             label: function(tooltipItem, data) {
-                                const dataset = data.datasets[tooltipItem.datasetIndex];
-                                const total = dataset.data.reduce((acc, data) => acc + data, 0);
-                                const currentValue = dataset.data[tooltipItem.index];
-                                const percentage = Math.round((currentValue / total) * 100);
-                                return `${data.labels[tooltipItem.index]}: ${currentValue} (${percentage}%)`;
+                                const currentValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                return `${data.labels[tooltipItem.index]}: ${currentValue}`;
                             }
                         }
                     }
@@ -492,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function () {
             new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pending', 'Valid', 'Tidak Valid'],
+                    labels: ['Pending', 'Disetujui', 'Ditolak'],
                     datasets: [{
                         data: reportStatusData,
                         backgroundColor: [ 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)' ]

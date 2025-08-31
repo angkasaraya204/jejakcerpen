@@ -102,6 +102,10 @@
                                     @endrole
                                     @role('admin')
                                     <td>
+                                        @if($story->user_id === auth()->id())
+                                        <a href="{{ route('stories.edit', $story) }}"
+                                            class="btn btn-primary mr-3">Ubah</a>
+                                        @endif
                                         <form action="{{ route('stories.destroy', $story) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus cerita ini?');">
                                             @csrf
                                             @method('DELETE')

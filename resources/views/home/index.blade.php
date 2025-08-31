@@ -298,7 +298,7 @@
                                         <span class="badge bg-secondary rounded-pill me-2">{{ $index + 1 }}</span>
                                         <a href="{{ route('stories.show', $trendingStory) }}" class="text-decoration-none text-body">{{ $trendingStory->title }}</a>
                                     </div>
-                                    <span class="badge bg-light text-dark">{{ $trendingStory->votes()->where('vote_type', 'upvote')->count() }} <i class="fas fa-thumbs-up ms-1"></i></span>
+                                    <span class="badge bg-light text-dark">{{ $trendingStory->votes()->where('vote_type', 'upvote')->count() }} <i class="fas fa-arrow-up ms-1"></i></span>
                                 </li>
                             @empty
                                 <li class="list-group-item border-0 border-bottom bg-transparent"><p class="mb-0 text-muted">Belum ada cerita trending.</p></li>

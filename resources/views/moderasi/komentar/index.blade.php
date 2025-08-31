@@ -78,6 +78,9 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @if($comment->user_id === auth()->id())
+                                        <a href="{{ route('comments.edit', $comment) }}" class="btn btn-primary mr-3">Ubah</a>
+                                        @endif
                                         <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
                                             @csrf
                                             @method('DELETE')
