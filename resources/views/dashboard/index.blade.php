@@ -97,7 +97,7 @@
         <div class="col-lg-6 grid-margin">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Distribusi Posting Anonim vs Teridentifikasi</h4>
+                    <h4 class="card-title">Distribusi Posting Anonim vs Non-Anonim</h4>
                     <canvas id="anonymityChart" style="height:250px"></canvas>
                 </div>
             </div>
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         } else {
-            document.getElementById('anonymityChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Distribusi Posting Anonim vs Teridentifikasi)</div>';
+            document.getElementById('anonymityChart').parentElement.innerHTML = '<div class="text-center text-muted py-5" style="height:250px; display:flex; align-items:center; justify-content:center;">Data tidak tersedia. <br>(Distribusi Posting Anonim vs Non-Anonim)</div>';
         }
 
         // Chart Pertumbuhan & Aktivitas Pengguna
